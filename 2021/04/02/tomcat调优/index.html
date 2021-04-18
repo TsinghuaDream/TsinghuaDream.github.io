@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<!-- Head tag -->
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!--Description-->
+    
+        <meta name="description" content="title: tomcat调优date: 2021-04-02 16:46:34tags: tomcat调优
+一、描述最近，在补充自己的短板，刚好整理到 Tomcat 调优这块，基本上面试必问，于是就花了点时间去搜集一下 Tomcat 调优都调了些什么，先记录一下调优手段，更多详细的原理和实现以后用">
+    
+
+    <!--Author-->
+    
+        <meta name="author" content="John Doe">
+    
+
+    <!--Open Graph Title-->
+    
+        <meta property="og:title" content="Hexo"/>
+    
+
+    <!--Open Graph Description-->
+    
+
+    <!--Open Graph Site Name-->
+    <meta property="og:site_name" content="Hexo"/>
+
+    <!--Type page-->
+    
+        <meta property="og:type" content="website" />
+    
+
+    <!--Page Cover-->
+    
+
+    
+        <meta name="twitter:card" content="summary" />
+    
+    
+    
+
+    <!-- Title -->
+    
+    <title>Hexo</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
+
+    <!-- Custom Fonts -->
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Gallery -->
+    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
+
+    <!-- Custom CSS -->
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    <!-- Google Analytics -->
+    
+
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+
+<body>
+
+<div class="bg-gradient"></div>
+<div class="bg-pattern"></div>
+
+<!-- Menu -->
+<!--Menu Links and Overlay-->
+<div class="menu-bg">
+    <div class="menu-container">
+        <ul>
+            
+            <li class="menu-item">
+                <a href="/">
+                    Home
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/archives">
+                    Archives
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/about.html">
+                    About
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/tags">
+                    Tags
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/categories">
+                    Categories
+                </a>
+            </li>
+            
+            <li class="menu-item">
+                <a href="/contact.html">
+                    Contact
+                </a>
+            </li>
+            
+        </ul>
+    </div>
+</div>
+
+<!--Hamburger Icon-->
+<nav>
+    <a href="#menu"></a>
+</nav>
+
+<div class="container">
+
+    <!-- Main Content -->
+    <div class="row">
+    <div class="col-sm-12">
+
+        <!--Title and Logo-->
+        <header>
+    <div class="logo">
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
+        
+    </div>
+</header>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2021/04/02/tomcat%E8%B0%83%E4%BC%98/">
+                Untitled
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2021-04-02</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
+        
+
+        <!-- Post Content -->
+        <h2 id="title-tomcat调优"><a href="#title-tomcat调优" class="headerlink" title="title: tomcat调优"></a>title: tomcat调优</h2><p>date: 2021-04-02 16:46:34<br>tags: tomcat调优</p>
+<h1 id="一、描述"><a href="#一、描述" class="headerlink" title="一、描述"></a><strong>一、描述</strong></h1><p>最近，在补充自己的短板，刚好整理到<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485487&idx=2&sn=614b2cbce66acfd2361c7024f521cf35&chksm=fe7959f7c90ed0e14f8037f3ff3f132aa4c9097d5656f9ae9a8cacefae2d8b09d16d90820482&scene=21#wechat_redirect"> Tomcat 调优</a>这块，基本上面试必问，于是就花了点时间去搜集一下 Tomcat 调优都调了些什么，先记录一下调优手段，更多详细的原理和实现以后用到时候再来补充记录，下面就来介绍一下，Tomcat 调优大致分为两大类。</p>
+<h2 id="1、Tomcat的自身调优"><a href="#1、Tomcat的自身调优" class="headerlink" title="1、Tomcat的自身调优"></a><strong>1、Tomcat的自身调优</strong></h2><p>采用动静分离节约 Tomcat 的性能</p>
+<p>调整 Tomcat 的线程池</p>
+<p>调整 Tomcat 的连接器</p>
+<p>修改 Tomcat 的运行模式</p>
+<p>禁用 AJP 连接器</p>
+<h2 id="2、JVM的调优"><a href="#2、JVM的调优" class="headerlink" title="2、JVM的调优"></a><strong>2、JVM的调优</strong></h2><p>调优jvm内存</p>
+<h1 id="二、Tomcat-自身调优"><a href="#二、Tomcat-自身调优" class="headerlink" title="二、Tomcat 自身调优"></a><strong>二、Tomcat 自身调优</strong></h1><h2 id="1、采用动静分离"><a href="#1、采用动静分离" class="headerlink" title="1、采用动静分离"></a><strong>1、采用动静分离</strong></h2><p>静态资源如果让<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485556&idx=3&sn=4d4b240eefa802b398f2e6b47a6957ca&chksm=fe7959acc90ed0ba4aed31874fe0dbde62e1af19670ea349d68dba804b14d27d402d049343dd&scene=21#wechat_redirect"> Tomcat 处理</a>的话 Tomcat 的性能会被损耗很多，所以我们一般都是采用：Nginx+Tomcat 实现动静分离，让 Tomcat 只负责 jsp 文件的解析工作，Nginx 实现静态资源的访问。</p>
+<h2 id="2、调优-Tomcat-线程池"><a href="#2、调优-Tomcat-线程池" class="headerlink" title="2、调优 Tomcat 线程池"></a><strong>2、调优 Tomcat 线程池</strong></h2><p>打开tomcat的serve.xml，配置Executor，相关参数说明如下。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eaMr9cKHOkFXzBnBmNrYJk4srZOWxLd8fTj53XIwT5NhziaPiaA9FCBxw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p><strong>name</strong>：给执行器（线程池）起一个名字；</p>
+<p><strong>namePrefix</strong>：指定线程池中的每一个线程的 name 前缀；</p>
+<p><strong>maxThreads</strong>：线程池中最大的线程数量，假设请求的数量超过了 750，这将不是意味着将 maxThreads 属性值设置为 750，它的最好解决方案是使用「Tomcat集群」。也就是说，如果有 1000 请求，两个 Tomcat 实例设置 maxThreads = 500，而不在单 Tomcat 实例的情况下设置 maxThreads=1000。</p>
+<p><strong>minSpareThreads</strong>：<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485480&idx=3&sn=c95756a9ea720d73d35540e6791514d1&chksm=fe7959f0c90ed0e6c430895737a1f36bb6d3bf43c3bb3f548d3309ba5a6ef67bcc36e41f53ff&scene=21#wechat_redirect">线程池中</a>允许空闲的线程数量（多余的线程都杀死）；</p>
+<p><strong>maxIdLeTime</strong>：一个线程空闲多久算是一个空闲线程；</p>
+<p>其他的配置其实阅读官方文档是最好的「见参考链接」。</p>
+<h2 id="3、调优-Tomcat-的连接器-Connector"><a href="#3、调优-Tomcat-的连接器-Connector" class="headerlink" title="3、调优 Tomcat 的连接器 Connector"></a><strong>3、调优 Tomcat 的连接器 Connector</strong></h2><p>打开 Tomcat 的 serve.xml，配置 Connector，参数说明如下。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eiaWjmYkqmFb0aasaAIuHJDJ3WcfrspyWmIetMibasv4ibjhWfmGGtXvmg/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>executor：指定这个连接器所使用的执行器（线程池）；</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eDjrMWf0OAUl8zH8qCGK9TUPTQ7PxFvl2uCl8Uvh7ozcpTkAIk0gmPw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p><strong>enableLookups=false</strong>：关闭 DNS 解析，减少性能损耗；</p>
+<p><strong>minProcessors</strong>：服务器启动时创建的最少线程数；</p>
+<p><strong>maxProcessors</strong>：最大可以创建的线程数；</p>
+<p><strong>acceptCount=1000</strong>：线程池中的线程都被占用，允许放到队列中的请求数；</p>
+<p><strong>maxThreads=3000</strong>：最大线程数；</p>
+<p><strong>minSpareThreads=20</strong>：最小空闲线程数，这里是一直会运行的线程；</p>
+<p><strong>与压缩有关系的配置</strong>：如果已经对代码进行了动静分离，静态页面和图片等数据就不需要 Tomcat 处理了，那么也就不需要配置在 Tomcat 中配置压缩了；</p>
+<p>一个完整的配置如下。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eibbsMVvvy9OV0KHsobSIGoQbXbMyicXEke0ia2yiaoKfkrC0b9YhKBhZwA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<h2 id="4、通过修改-Tomcat-的运行模式"><a href="#4、通过修改-Tomcat-的运行模式" class="headerlink" title="4、通过修改 Tomcat 的运行模式"></a><strong>4、通过修改 Tomcat 的运行模式</strong></h2><p><strong>BIO</strong></p>
+<p>Tomcat8 以下版本，默认使用的就是 BIO「<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247484671&idx=2&sn=5f741a1c649d3fd1b1fd447f3ed5176b&chksm=fe795527c90edc31bfc1dacdc93443b66d493f9c8068da942a77f8edfdb15783e369d6545ae8&scene=21#wechat_redirect">阻塞式IO</a>)」模式。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_jpg/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eP8DnfFuLR00yoz9vbfeYsOY2ayfFhVz27NytfpkYPccthSgvTATjuA/640?wx_fmt=jpeg&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>对于每一个请求都要创建一个线程来进行处理，不适合高并发。</p>
+<p><strong>NIO</strong></p>
+<p>Tomcat8 以上版本，默认使用的就是NIO模式「非阻塞式 IO」。</p>
+<p><strong>APR</strong></p>
+<p>全称 Apache Portable Runtime，是Tomcat生产环境运行的首选方式，如果操作系统未安装 APR 或者 APR 路径未指到<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485545&idx=3&sn=ba1a4da11310d2e6e2bd6d817fe4695c&chksm=fe7959b1c90ed0a737adbb9d9475d4f4c7d04683249951448aa71b1266f01e80bdf135dd3cda&scene=21#wechat_redirect"> Tomcat 默认</a>可识别的路径，则 APR 模式无法启动，自动切换启动 NIO 模式。所以必须要安装 APR 和 Native，直接启动就支持 APR，APR是从操作系统级别解决异步 IO 问题，APR 的本质就是使用 JNI 技术调用操作系统底层的 IO 接口，所以需要提前安装所需要的依赖</p>
+<p>提升 Tomcat 对静态文件的处理性能，当然也可以采用动静分离。</p>
+<h2 id="5、禁用-AJP-连接器"><a href="#5、禁用-AJP-连接器" class="headerlink" title="5、禁用 AJP 连接器"></a><strong>5、禁用 AJP 连接器</strong></h2><p>AJP的全称 Apache JServer Protocol，使用 Nginx+Tomca t的架构，所以用不着 AJP 协议，所以把AJP连接器禁用。</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eeO43E3Qc1E0CpSNYj2UGfL3IekLPNFPnJC3ricickb26pOgDbHoJEKIw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p><strong>三、JVM 调优</strong></p>
+<p>Tomcat 是运行在 JVM 上的，所以对 JVM 的调优也是非常有必要的。</p>
+<p>找到 catalina.sh；</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2e5Vn6VProqfpRggbTiah2jK6oh6CV3ib9pJEHo99ANOIzic9CZkBS9ndRA/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>添加；</p>
+<p><img src="https://mmbiz.qpic.cn/mmbiz_png/bcPwoCALib9Kq5ia9Pk8NVHhwxDARqSx2eib8js0Cw3GvGRc8fxO7aib1ria704xictV1s1ZVkcUpMhRnq0Z1VMtLiayw/640?wx_fmt=png&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
+<p>参数设置；</p>
+<blockquote>
+<p>JAVA_OPTS=”-Djava.awt.headless=true -Dfile.encoding=UTF-8-server -Xms1024m -Xmx1024m -XX:NewSize=512m -XX:MaxNewSize=512m -XXermSize=512m -XX:MaxPermSize=512m -XX:+DisableExplicitGC”</p>
+</blockquote>
+<p>调整堆大小的的目的是最小化垃圾收集的时间，以在特定的时间内最大化处理客户的请求。</p>
+<p><strong>参考</strong></p>
+<p><a target="_blank" rel="noopener" href="https://tomcat.apache.org/tomcat-8.0-doc/config/executor.html">https://tomcat.apache.org/tomcat-8.0-doc/config/executor.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://tomcat.apache.org/tomcat-8.0-doc/config/index.html">https://tomcat.apache.org/tomcat-8.0-doc/config/index.html</a></p>
+
+    </div>
+
+    
+
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
+    </div>
+</div>
+
+
+</div>
+
+<!-- Footer -->
+<div class="push"></div>
+
+<footer class="footer-content">
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
+                <h2>About</h2>
+                <p>
+                    This theme was developed by <a target="_blank" rel="noopener" href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
+                </p>
+            </div>
+            
+    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
+        <h2>Recent Posts</h2>
+        <ul>
+            
+            <li>
+                <a class="footer-post" href="/2021/04/08/%E9%9B%B6%E6%98%9F%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%AC/">零星的问题们</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2021/04/02/mysql%E8%B0%83%E4%BC%98/">mysql调优</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2021/04/02/jvm%E8%B0%83%E4%BC%98/">jvm调优</a>
+            </li>
+            
+            <li>
+                <a class="footer-post" href="/2021/04/02/tomcat%E8%B0%83%E4%BC%98/">Untitled</a>
+            </li>
+            
+        </ul>
+    </div>
+
+
+
+            
+<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
+    <h2>Categories</h2>
+    <ul>
+        
+        <li>
+            <a class="footer-post" href="/categories/categories/">categories</a>
+        </li>
+        
+    </ul>
+</div>
+
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <ul class="list-inline footer-social-icons">
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://github.com/klugjo/hexo-theme-alpha-dust">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-github"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://twitter.com/?lang=en">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-twitter"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://www.facebook.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-facebook"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://www.instagram.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-instagram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://dribbble.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-dribbble"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://telegram.org/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-telegram"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://www.behance.net/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-behance"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a target="_blank" rel="noopener" href="https://500px.com/">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-500px"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="mailto:test@example.com">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-envelope-o"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                    
+                    <li class="list-inline-item">
+                        <a href="\#">
+                            <span class="footer-icon-container">
+                                <i class="fa fa-rss"></i>
+                            </span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                <div class="footer-copyright">
+                    @Untitled. All right reserved | Design & Hexo <a target="_blank" rel="noopener" href="http://www.codeblocq.com/">Jonathan Klughertz</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</footer>
+
+<!-- After footer scripts -->
+
+<!-- jQuery -->
+<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
+
+<!-- Tween Max -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
+
+<!-- Gallery -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
+
+<!-- Custom JavaScript -->
+
+<script src="/js/main.js"></script>
+
+
+<!-- Disqus Comments -->
+
+
+
+</body>
+
+</html>

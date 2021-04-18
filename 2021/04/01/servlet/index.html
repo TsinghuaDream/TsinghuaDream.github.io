@@ -10,6 +10,11 @@
 
     <!--Description-->
     
+        <meta name="description" content="古老的技术Servlettomcattomcat是一个web服务器（同时也是servlet容器），通过它我们可以很方便地接收和返回到请求（如果不用tomcat，那我们需要自己写socket来接收和返回请求）。
+各个目录的含义：
+bin：存放启动和关闭tomcat的脚本文件
+conf：存放tomcat">
+    
 
     <!--Author-->
     
@@ -18,7 +23,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="All tags"/>
+        <meta property="og:title" content="servlet"/>
     
 
     <!--Open Graph Description-->
@@ -43,7 +48,7 @@
 
     <!-- Title -->
     
-    <title>All tags - Hexo</title>
+    <title>servlet - Hexo</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -136,25 +141,70 @@
     <div class="col-sm-12">
 
         <!--Title and Logo-->
-        
-            <header>
+        <header>
     <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-folder-open" aria-hidden="true"></i></a>
-        
-            <h1 id="main-title" class="title">All tags</h1>
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
         
     </div>
 </header>
-            <section class="main archive-container">
-                
-                        <div class="archive-post">
-    <a href="/categories/categories/">
-        categories
-    </a>
-</div>
-                
-            </section>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2021/04/01/servlet/">
+                servlet
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2021-04-01</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
         
+
+        <!-- Post Content -->
+        <h1 id="古老的技术Servlet"><a href="#古老的技术Servlet" class="headerlink" title="古老的技术Servlet"></a>古老的技术Servlet</h1><h2 id="tomcat"><a href="#tomcat" class="headerlink" title="tomcat"></a>tomcat</h2><p>tomcat是一个web服务器（<strong>同时也是servlet容器</strong>），通过它我们可以很方便地接收和返回到请求（如果不用tomcat，那我们需要自己写socket来接收和返回请求）。</p>
+<p>各个目录的含义：</p>
+<p>bin：存放启动和关闭tomcat的脚本文件</p>
+<p>conf：存放tomcat服务器的各种配置文件</p>
+<p>lib：存放tomcat服务器的支撑jar包</p>
+<p>logs：存放tomcat的日志文件</p>
+<p>temp：存放tomcat运行时产生的临时文件</p>
+<p>webapps：web应用所在目录，即供外界访问的web资源的存放目录。</p>
+<p>work：tomcat工作目录</p>
+<h2 id="Servlet版”hello-world”"><a href="#Servlet版”hello-world”" class="headerlink" title="Servlet版”hello world”"></a>Servlet版”hello world”</h2><p>首先，我们需要认清一个JavaWeb的标准目录结构：</p>
+<p>webapps–&gt;bbs(web应用目录)–&gt;html文件，jsp文件</p>
+<p>​                                                     –&gt;web-inf目录–&gt;web.xml、taolib.tld</p>
+<p>​                                                                               –&gt;classes目录–&gt;类的包目录–&gt;各种class文件标签处理类</p>
+<p>​                                                    –&gt;lib目录（web应用需要的jar包）</p>
+<h3 id="servlet案例"><a href="#servlet案例" class="headerlink" title="servlet案例"></a>servlet案例</h3>
+    </div>
+
+    
+
+    
+        <div class="post-tags">
+            <i class="fa fa-tags" aria-hidden="true"></i>
+            <a href="/tags/java/">#java</a>
+        </div>
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
     </div>
 </div>
 

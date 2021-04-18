@@ -10,6 +10,10 @@
 
     <!--Description-->
     
+        <meta name="description" content="堆内存什么时候被释放？怎么调用父类的私有方法呢？（super）怎么调用自己的方法呢？（this）局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！递归求阶乘需求：用递归求5的阶乘，并把结果在控制台输出
+分析：
+①阶乘：一个正整数的阶乘是所有小于及等于该数的正整数的积，自然数n的阶乘写作n">
+    
 
     <!--Author-->
     
@@ -18,7 +22,7 @@
 
     <!--Open Graph Title-->
     
-        <meta property="og:title" content="All tags"/>
+        <meta property="og:title" content="零星的问题们"/>
     
 
     <!--Open Graph Description-->
@@ -43,7 +47,7 @@
 
     <!-- Title -->
     
-    <title>All tags - Hexo</title>
+    <title>零星的问题们 - Hexo</title>
 
     <!-- Bootstrap Core CSS -->
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
@@ -136,25 +140,67 @@
     <div class="col-sm-12">
 
         <!--Title and Logo-->
-        
-            <header>
+        <header>
     <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-folder-open" aria-hidden="true"></i></a>
-        
-            <h1 id="main-title" class="title">All tags</h1>
+        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
         
     </div>
 </header>
-            <section class="main archive-container">
-                
-                        <div class="archive-post">
-    <a href="/categories/categories/">
-        categories
-    </a>
-</div>
-                
-            </section>
+
+        <section class="main">
+            
+<div class="post">
+
+    <div class="post-header">
+        <h1 class="title">
+            <a href="/2021/04/08/%E9%9B%B6%E6%98%9F%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%AC/">
+                零星的问题们
+            </a>
+        </h1>
+        <div class="post-info">
+            
+                <span class="date">2021-04-08</span>
+            
+            
+            
+        </div>
+    </div>
+
+    <div class="content">
+
+        <!-- Gallery -->
         
+
+        <!-- Post Content -->
+        <h1 id="堆内存什么时候被释放？"><a href="#堆内存什么时候被释放？" class="headerlink" title="堆内存什么时候被释放？"></a>堆内存什么时候被释放？</h1><h1 id="怎么调用父类的私有方法呢？（super）"><a href="#怎么调用父类的私有方法呢？（super）" class="headerlink" title="怎么调用父类的私有方法呢？（super）"></a>怎么调用父类的私有方法呢？（super）</h1><h1 id="怎么调用自己的方法呢？（this）"><a href="#怎么调用自己的方法呢？（this）" class="headerlink" title="怎么调用自己的方法呢？（this）"></a>怎么调用自己的方法呢？（this）</h1><h1 id="局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！"><a href="#局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！" class="headerlink" title="局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！"></a>局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！</h1><h1 id="递归求阶乘"><a href="#递归求阶乘" class="headerlink" title="递归求阶乘"></a>递归求阶乘</h1><p>需求：用递归求5的阶乘，并把结果在控制台输出</p>
+<p><strong>分析</strong>：</p>
+<p>①阶乘：一个正整数的阶乘是所有小于及等于该数的正整数的积，自然数n的阶乘写作n!</p>
+<p>​    5! = 5<em>4</em>3<em>2</em>1</p>
+<p>②递归出口：1! = 1</p>
+<p>③递归规则：n!=n*(n-1)!</p>
+<p>​    5! = 5*4!</p>
+<p><strong>思路</strong>：</p>
+<p>①定义一个方法，用于递归求阶乘，参数为一个int类型的变量</p>
+<p>②在方法内部判断该变量的值是否是1</p>
+<p>是：返回1</p>
+<p>不是：返回n*(n-1)!</p>
+<p>③调用方法</p>
+<p>输出结果</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DiGuiDemo01</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = jc(<span class="number">5</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;5的阶乘是：&quot;</span>+ result);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">jc</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> n * jc(n - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+
+    
+
+    <!-- Comments -->
+    
+
+</div>
+        </section>
+
     </div>
 </div>
 
