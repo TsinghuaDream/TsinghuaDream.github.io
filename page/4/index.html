@@ -197,6 +197,82 @@
 
 <div class="post">
 
+    <a href="/2018/05/15/day08_html&css/1_表单标签/">
+        <h2>
+            
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2018/5/15
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
+            <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>表单标签</title>
+</head>
+<body>
+
+    <!--
+        form：用于定义表单的。可以定义一个范围，范围代表采集用户数据的范围
+            * 属性：
+                * action：指定提交数据的URL
+                * method:指定提交方式
+                    * 分类：一共7种，2种比较常用
+                        get：
+                            1. 请求参数会在地址栏中显示。会封装到请求行中(HTTP协议后讲解)。
+                            2. 请求参数大小是有限制的。
+                            3. 不太安全。
+                        post：
+                            2. 请求参数不会再地址栏中显示。会封装在请求体中(HTTP协议后讲解)
+                            2. 请求参数的大小没有限制。
+                            3. 较为安全。
+
+            * 表单项中的数据要想被提交：必须指定其name属性
+
+    -->
+
+<form action="#" method="post">
+
+    用户名：<input type="text" name="username"><br>
+    密码：<input name="password"><br>
+
+    <input type="submit" value="登录" >
+</form>
+
+</body>
+</html>
+            
+        </div>
+    </div>
+
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2018/05/15/day08_html&css/1_表单标签/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
     <a href="/2018/05/14/day07_html/9_综合案例_网站首页/">
         <h2>
             
@@ -1225,55 +1301,6 @@
     </a>
 </div>
 
-<div class="post">
-
-    <a href="/2018/05/13/day07_html/1_HelloWorld/">
-        <h2>
-            
-        </h2>
-    </a>
-
-    <div class="category-and-date">
-
-        
-
-        <span class="date">
-            <span class="icon">
-                <a-icon type="calendar" theme="filled" />
-            </span>
-            2018/5/13
-        </span>
-
-    </div>
-
-    <div class="excerpt">
-        <div class="content" v-pre>
-            
-            
-            <!DOCTYPE html>
-<html lang="ch">
-<head>
-    <meta charset="UTF-8">
-    <title>呵呵</title>
-</head>
-<body>
-呵呵
-</body>
-</html>
-            
-        </div>
-    </div>
-
-    <div class="post-tags">
-        
-        
-    </div>
-
-    <a href="/2018/05/13/day07_html/1_HelloWorld/ " class="go-post">
-        阅读全文
-    </a>
-</div>
-
 
              
 <div class="page-current">
@@ -1324,10 +1351,28 @@
         </span>
 
         
+        <span>
+            <a href="/page/5/">
+                <span class="page-num">
+                    5
+                </span>
+            </a>
+            
+
+            
+
+        </span>
+        
 
     </div>
 
     <div class="next">
+        
+        <a href="/page/5/ ">
+            <span class="page-num">
+                <a-icon type="caret-right" theme="filled" />
+            </span>
+        </a>
         
     </div>
 
