@@ -1,172 +1,225 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en ">
 
-<!-- Head tag -->
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!--Description-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexo || </title>
+    <meta name="author" content="phenix-fledgling">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/images/avatar.png">
+    <link rel="stylesheet" href="/css/antd.min.css">
     
-
-    <!--Author-->
+    <link rel="stylesheet" href="/css/maiden-theme.css">
     
-        <meta name="author" content="John Doe">
-    
-
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Hexo"/>
-    
-
-    <!--Open Graph Description-->
-    
-
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="Hexo"/>
-
-    <!--Type page-->
-    
-        <meta property="og:type" content="website" />
-    
-
-    <!--Page Cover-->
-    
-
-    
-        <meta name="twitter:card" content="summary" />
-    
-    
-    
-
-    <!-- Title -->
-    
-    <title>page - Hexo</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
-
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
-
-    <!-- Custom CSS -->
-    
-<link rel="stylesheet" href="/css/style.css">
-
-
-    <!-- Google Analytics -->
-    
-
-
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
 <meta name="generator" content="Hexo 5.4.0"></head>
-
 
 <body>
 
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about.html">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact.html">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
-    </div>
-</div>
-
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
-</nav>
-
-<div class="container">
-
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
-
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-            <h1 id="main-title" class="title">Hexo</h1>
-        
-    </div>
-</header>
-
-        <section class="main">
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/23/JDBC%E8%BF%9E%E6%8E%A5%E6%B1%A0&JDBCTemplate%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0/">
-                数据库连接池（jdbc）
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-23</span>
-            
-            
-            
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    
-        <div class="content">
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">Hexo</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+        <a href="/about">
+            <span>
+                <a-icon type="idcard" theme="filled" />
+            </span>
+            <span>about</span>
+        </a>
+        
+        <a href="/archives">
+            <span>
+                <a-icon type="folder" theme="filled" />
+            </span>
+            <span>archives</span>
+        </a>
+        
+        <a href="/like/categories">
+            <span>
+                <a-icon type="book" theme="filled" />
+            </span>
+            <span>categories</span>
+        </a>
+        
+        <a href="/like/tags">
+            <span>
+                <a-icon type="tags" theme="filled" />
+            </span>
+            <span>tags</span>
+        </a>
+        
+        <a target="_blank" rel="noopener" href="https://en.korilin.com">
+            <span>
+                <a-icon type="compass" theme="filled" />
+            </span>
+            <span>英文博客</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>Hexo</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+            <a href="/about">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="idcard" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">about</div>
+                </div>
+            </a>
+            
+            <a href="/archives">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="folder" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">archives</div>
+                </div>
+            </a>
+            
+            <a href="/like/categories">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="book" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">categories</div>
+                </div>
+            </a>
+            
+            <a href="/like/tags">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="tags" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">tags</div>
+                </div>
+            </a>
+            
+            <a target="_blank" rel="noopener" href="https://en.korilin.com">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="compass" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">英文博客</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                    <div id="home-head" style=background-image:url('home.jpg')>
+    <script>
+        var menu = document.getElementById("menu")
+        menu.className += " menu-color"
+    </script>
+     
+    <div id="home-info" class="home-info" @click="home_click">
+        <span class="loop"></span>
+        <span class="loop"></span>
+        <span class="loop"></span>
+        <span class="loop"></span>
+        <span class="info">
+            <div class="wrap">
+                <h1>Hexo</h1>
+                <h3></h3>
+                <h5></h5>
+            </div>
+        </span>
+    </div>
+     
+</div>
+
+
+
+<div id="home-posts-wrap" class=>
+    <div id="home-posts">
+
+        <div id="posts">
+            
+
+<div class="post">
+
+    <a href="/2021/03/23/JDBC连接池&JDBCTemplate课堂笔记/">
+        <h2>
+            数据库连接池（jdbc）
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/23
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="今日内容"><a href="#今日内容" class="headerlink" title="今日内容"></a>今日内容</h1><pre><code>1. 数据库连接池
 
 
@@ -427,31 +480,56 @@
             &#125;
 </code></pre>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/23/MySQL%E5%9F%BA%E7%A1%80%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0/">
-                数据库（mysql）
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-23</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/数据库" style=color:#ffa2c4>
+                数据库
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/03/23/JDBC连接池&JDBCTemplate课堂笔记/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/03/23/MySQL基础课堂笔记/">
+        <h2>
+            数据库（mysql）
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/23
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="今日内容"><a href="#今日内容" class="headerlink" title="今日内容"></a>今日内容</h1><ol>
 <li>数据库的基本概念</li>
 </ol>
@@ -739,31 +817,56 @@
 <p>​<br>                – 查询姓名中包含德的人<br>                SELECT * FROM student WHERE NAME LIKE ‘%德%’;</p>
 <p>​    </p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/23/Spring%20Boot%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0/">
-                Spring Boot 总结
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-23</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/数据库" style=color:#ffa2c4>
+                数据库
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/03/23/MySQL基础课堂笔记/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/03/23/Spring Boot课堂笔记/">
+        <h2>
+            Spring Boot 总结
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/23
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h2 id="1-Spring-Boot概述"><a href="#1-Spring-Boot概述" class="headerlink" title="1. Spring Boot概述"></a>1. Spring Boot概述</h2><p><strong>目标</strong>：了解Spring Boot是什么，有什么作用</p>
 <p><strong>小结</strong>：</p>
 <p>Spring Boot是一个便捷搭建 基于spring工程的脚手架；作用是帮助开发人员快速搭建大型的spring 项目。简化工程的配置，依赖管理；实现开发人员把时间都集中在业务开发上。</p>
@@ -1008,58 +1111,97 @@
 <figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">java -jar 包名</span><br></pre></td></tr></table></figure></li>
 </ul>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/23/%E6%96%B0%E5%BB%BAmd%E6%96%87%E4%BB%B6/">
-                新建md文件命令
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-23</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/springboot" style=color:#879cff>
+                springboot
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/03/23/Spring Boot课堂笔记/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/03/23/新建md文件/">
+        <h2>
+            新建md文件命令
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/23
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="新建md"><a href="#新建md" class="headerlink" title="新建md"></a>新建md</h1><p>‘$ hexo new “title”‘</p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/08/26/HTML&CSS%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0/">
-                html&css
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-08-26</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2021/03/23/新建md文件/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2019/08/26/HTML&CSS课堂笔记/">
+        <h2>
+            html&css
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2019/8/26
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h2 id="HTML标签：表单标签"><a href="#HTML标签：表单标签" class="headerlink" title="HTML标签：表单标签"></a>HTML标签：表单标签</h2><pre><code>* 表单：
     * 概念：用于采集用户输入的数据的。用于和服务器进行交互。
     * form：用于定义表单的。可以定义一个范围，范围代表采集用户数据的范围
@@ -1227,31 +1369,56 @@
 </code></pre>
 <h2 id="案例："><a href="#案例：" class="headerlink" title="案例："></a>案例：</h2><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">&lt;!DOCTYPE <span class="meta-keyword">html</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">html</span> <span class="attr">lang</span>=<span class="string">&quot;en&quot;</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">head</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">meta</span> <span class="attr">charset</span>=<span class="string">&quot;UTF-8&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">title</span>&gt;</span>注册页面<span class="tag">&lt;/<span class="name">title</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">style</span>&gt;</span></span><br><span class="line">    *&#123;</span><br><span class="line"><span class="css">        <span class="attribute">margin</span>: <span class="number">0px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">padding</span>: <span class="number">0px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">box-sizing</span>: border-box;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="css">    <span class="selector-tag">body</span>&#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">background</span>: <span class="built_in">url</span>(<span class="string">&quot;img/register_bg.png&quot;</span>) no-repeat center;</span></span><br><span class="line"><span class="css">        <span class="attribute">padding-top</span>: <span class="number">25px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .rg_layout&#123;</span><br><span class="line"><span class="css">        <span class="attribute">width</span>: <span class="number">900px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">height</span>: <span class="number">500px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">8px</span> solid <span class="number">#EEEEEE</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">background-color</span>: white;</span></span><br><span class="line"><span class="css">        <span class="comment">/*让div水平居中*/</span></span></span><br><span class="line"><span class="css">        <span class="attribute">margin</span>: auto;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .rg_left&#123;</span><br><span class="line"><span class="css">        <span class="comment">/*border: 1px solid red;*/</span></span></span><br><span class="line"><span class="css">        <span class="attribute">float</span>: left;</span></span><br><span class="line"><span class="css">        <span class="attribute">margin</span>: <span class="number">15px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"><span class="css">    <span class="selector-class">.rg_left</span> &gt; <span class="selector-tag">p</span><span class="selector-pseudo">:first</span>-child&#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">color</span>:<span class="number">#FFD026</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">font-size</span>: <span class="number">20px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="css">    <span class="selector-class">.rg_left</span> &gt; <span class="selector-tag">p</span><span class="selector-pseudo">:last-child</span>&#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">color</span>:<span class="number">#A6A6A6</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">font-size</span>: <span class="number">20px</span>;</span></span><br><span class="line"></span><br><span class="line">    &#125;		</span><br><span class="line">	    .rg_center&#123;</span><br><span class="line"><span class="css">	        <span class="attribute">float</span>: left;</span></span><br><span class="line"><span class="css">	       <span class="comment">/* border: 1px solid red;*/</span></span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .rg_right&#123;</span><br><span class="line"><span class="css">        <span class="comment">/*border: 1px solid red;*/</span></span></span><br><span class="line"><span class="css">        <span class="attribute">float</span>: right;</span></span><br><span class="line"><span class="css">        <span class="attribute">margin</span>: <span class="number">15px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="css">    <span class="selector-class">.rg_right</span> &gt; <span class="selector-tag">p</span><span class="selector-pseudo">:first</span>-child&#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">font-size</span>: <span class="number">15px</span>;</span></span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line"><span class="css">    <span class="selector-class">.rg_right</span> <span class="selector-tag">p</span> <span class="selector-tag">a</span> &#123;</span></span><br><span class="line"><span class="css">        <span class="attribute">color</span>:pink;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    .td_left&#123;</span><br><span class="line"><span class="css">        <span class="attribute">width</span>: <span class="number">100px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">text-align</span>: right;</span></span><br><span class="line"><span class="css">        <span class="attribute">height</span>: <span class="number">45px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line">    .td_right&#123;</span><br><span class="line"><span class="css">        <span class="attribute">padding-left</span>: <span class="number">50px</span> ;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    #username,#password,#email,#name,#tel,#birthday,#checkcode&#123;</span><br><span class="line"><span class="css">        <span class="attribute">width</span>: <span class="number">251px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">height</span>: <span class="number">32px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#A6A6A6</span> ;</span></span><br><span class="line"><span class="css">        <span class="comment">/*设置边框圆角*/</span></span></span><br><span class="line"><span class="css">        <span class="attribute">border-radius</span>: <span class="number">5px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">padding-left</span>: <span class="number">10px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line">    #checkcode&#123;</span><br><span class="line"><span class="css">        <span class="attribute">width</span>: <span class="number">110px</span>;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    #img_check&#123;</span><br><span class="line"><span class="css">        <span class="attribute">height</span>: <span class="number">32px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">vertical-align</span>: middle;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    #btn_sub&#123;</span><br><span class="line"><span class="css">        <span class="attribute">width</span>: <span class="number">150px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">height</span>: <span class="number">40px</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">background-color</span>: <span class="number">#FFD026</span>;</span></span><br><span class="line"><span class="css">        <span class="attribute">border</span>: <span class="number">1px</span> solid <span class="number">#FFD026</span> ;</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">style</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;/<span class="name">head</span>&gt;</span></span><br><span class="line"><span class="tag">&lt;<span class="name">body</span>&gt;</span></span><br><span class="line"></span><br><span class="line"><span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;rg_layout&quot;</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;rg_left&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>新用户注册<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>USER REGISTER<span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line"></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;rg_center&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;rg_form&quot;</span>&gt;</span></span><br><span class="line">            <span class="comment">&lt;!--定义表单 form--&gt;</span></span><br><span class="line">            <span class="tag">&lt;<span class="name">form</span> <span class="attr">action</span>=<span class="string">&quot;#&quot;</span> <span class="attr">method</span>=<span class="string">&quot;post&quot;</span>&gt;</span></span><br><span class="line">                <span class="tag">&lt;<span class="name">table</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;username&quot;</span>&gt;</span>用户名<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;username&quot;</span> <span class="attr">id</span>=<span class="string">&quot;username&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入用户名&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;password&quot;</span>&gt;</span>密码<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;password&quot;</span> <span class="attr">name</span>=<span class="string">&quot;password&quot;</span> <span class="attr">id</span>=<span class="string">&quot;password&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入密码&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;email&quot;</span>&gt;</span>Email<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;email&quot;</span> <span class="attr">name</span>=<span class="string">&quot;email&quot;</span> <span class="attr">id</span>=<span class="string">&quot;email&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入邮箱&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;name&quot;</span>&gt;</span>姓名<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;name&quot;</span> <span class="attr">id</span>=<span class="string">&quot;name&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入姓名&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;tel&quot;</span>&gt;</span>手机号<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;tel&quot;</span> <span class="attr">id</span>=<span class="string">&quot;tel&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入手机号&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span>&gt;</span>性别<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">name</span>=<span class="string">&quot;gender&quot;</span> <span class="attr">value</span>=<span class="string">&quot;male&quot;</span>&gt;</span> 男</span><br><span class="line">                            <span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;radio&quot;</span> <span class="attr">name</span>=<span class="string">&quot;gender&quot;</span> <span class="attr">value</span>=<span class="string">&quot;female&quot;</span>&gt;</span> 女</span><br><span class="line">                        <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;birthday&quot;</span>&gt;</span>出生日期<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;date&quot;</span> <span class="attr">name</span>=<span class="string">&quot;birthday&quot;</span> <span class="attr">id</span>=<span class="string">&quot;birthday&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入出生日期&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line"></span><br><span class="line">                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_left&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">label</span> <span class="attr">for</span>=<span class="string">&quot;checkcode&quot;</span> &gt;</span>验证码<span class="tag">&lt;/<span class="name">label</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">class</span>=<span class="string">&quot;td_right&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;text&quot;</span> <span class="attr">name</span>=<span class="string">&quot;checkcode&quot;</span> <span class="attr">id</span>=<span class="string">&quot;checkcode&quot;</span> <span class="attr">placeholder</span>=<span class="string">&quot;请输入验证码&quot;</span>&gt;</span></span><br><span class="line">                            <span class="tag">&lt;<span class="name">img</span> <span class="attr">id</span>=<span class="string">&quot;img_check&quot;</span> <span class="attr">src</span>=<span class="string">&quot;img/verify_code.jpg&quot;</span>&gt;</span></span><br><span class="line">                        <span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">	                    <span class="tag">&lt;<span class="name">tr</span>&gt;</span></span><br><span class="line">	                        <span class="tag">&lt;<span class="name">td</span> <span class="attr">colspan</span>=<span class="string">&quot;2&quot;</span> <span class="attr">align</span>=<span class="string">&quot;center&quot;</span>&gt;</span><span class="tag">&lt;<span class="name">input</span> <span class="attr">type</span>=<span class="string">&quot;submit&quot;</span> <span class="attr">id</span>=<span class="string">&quot;btn_sub&quot;</span> <span class="attr">value</span>=<span class="string">&quot;注册&quot;</span>&gt;</span><span class="tag">&lt;/<span class="name">td</span>&gt;</span></span><br><span class="line">	                    <span class="tag">&lt;/<span class="name">tr</span>&gt;</span></span><br><span class="line">	                <span class="tag">&lt;/<span class="name">table</span>&gt;</span></span><br><span class="line">            <span class="tag">&lt;/<span class="name">form</span>&gt;</span></span><br><span class="line">	        <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;<span class="name">div</span> <span class="attr">class</span>=<span class="string">&quot;rg_right&quot;</span>&gt;</span></span><br><span class="line">        <span class="tag">&lt;<span class="name">p</span>&gt;</span>已有账号?<span class="tag">&lt;<span class="name">a</span> <span class="attr">href</span>=<span class="string">&quot;#&quot;</span>&gt;</span>立即登录<span class="tag">&lt;/<span class="name">a</span>&gt;</span><span class="tag">&lt;/<span class="name">p</span>&gt;</span></span><br><span class="line">    <span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">div</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">body</span>&gt;</span></span><br><span class="line">	<span class="tag">&lt;/<span class="name">html</span>&gt;</span></span><br></pre></td></tr></table></figure>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2019/08/26/JavaScript%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0/">
-                javascript基础
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2019-08-26</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/前端" style=color:#00bcd4>
+                前端
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2019/08/26/HTML&CSS课堂笔记/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2019/08/26/JavaScript基础笔记/">
+        <h2>
+            javascript基础
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2019/8/26
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h2 id="JavaScript："><a href="#JavaScript：" class="headerlink" title="JavaScript："></a>JavaScript：</h2><figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br><span class="line">181</span><br><span class="line">182</span><br><span class="line">183</span><br><span class="line">184</span><br><span class="line">185</span><br><span class="line">186</span><br><span class="line">187</span><br><span class="line">188</span><br><span class="line">189</span><br><span class="line">190</span><br><span class="line">191</span><br><span class="line">192</span><br><span class="line">193</span><br><span class="line">194</span><br><span class="line">195</span><br><span class="line">196</span><br><span class="line">197</span><br><span class="line">198</span><br><span class="line">199</span><br><span class="line">200</span><br><span class="line">201</span><br><span class="line">202</span><br><span class="line">203</span><br><span class="line">204</span><br><span class="line">205</span><br><span class="line">206</span><br><span class="line">207</span><br><span class="line">208</span><br><span class="line">209</span><br><span class="line">210</span><br><span class="line">211</span><br><span class="line">212</span><br><span class="line">213</span><br><span class="line">214</span><br><span class="line">215</span><br><span class="line">216</span><br><span class="line">217</span><br><span class="line">218</span><br><span class="line">219</span><br><span class="line">220</span><br><span class="line">221</span><br><span class="line">222</span><br><span class="line">223</span><br><span class="line">224</span><br><span class="line">225</span><br><span class="line">226</span><br><span class="line">227</span><br><span class="line">228</span><br><span class="line">229</span><br><span class="line">230</span><br><span class="line">231</span><br><span class="line">232</span><br><span class="line">233</span><br><span class="line">234</span><br><span class="line">235</span><br><span class="line">236</span><br><span class="line">237</span><br><span class="line">238</span><br><span class="line">239</span><br><span class="line">240</span><br><span class="line">241</span><br><span class="line">242</span><br><span class="line">243</span><br><span class="line">244</span><br><span class="line">245</span><br><span class="line">246</span><br><span class="line">247</span><br><span class="line">248</span><br><span class="line">249</span><br><span class="line">250</span><br><span class="line">251</span><br><span class="line">252</span><br><span class="line">253</span><br><span class="line">254</span><br></pre></td><td class="code"><pre><span class="line">* 概念：	一门客户端脚本语言</span><br><span class="line">	* 运行在客户端浏览器中的。每一个浏览器都有JavaScript的解析引擎</span><br><span class="line">	* 脚本语言：不需要编译，直接就可以被浏览器解析执行了</span><br><span class="line"></span><br><span class="line">* 功能：</span><br><span class="line">	* 可以来增强用户和html页面的交互过程，可以来控制html元素，让页面有一些动态的效果，增强用户的体验。</span><br><span class="line"></span><br><span class="line">* JavaScript发展史：</span><br><span class="line">	<span class="number">1.</span> <span class="number">1992</span>年，Nombase公司，开发出第一门客户端脚本语言，专门用于表单的校验。命名为 ： C--	，后来更名为：ScriptEase</span><br><span class="line">	<span class="number">2.</span> <span class="number">1995</span>年，Netscape(网景)公司，开发了一门客户端脚本语言：LiveScript。后来，请来SUN公司的专家，修改LiveScript，命名为JavaScript</span><br><span class="line">	<span class="number">3.</span> <span class="number">1996</span>年，微软抄袭JavaScript开发出JScript语言</span><br><span class="line">	<span class="number">4.</span> <span class="number">1997</span>年，ECMA(欧洲计算机制造商协会)，制定出客户端脚本语言的标准：ECMAScript，就是统一了所有客户端脚本语言的编码方式。</span><br><span class="line"></span><br><span class="line">	* JavaScript = ECMAScript + JavaScript自己特有的东西(BOM+DOM)</span><br><span class="line"></span><br><span class="line">* ECMAScript：客户端脚本语言的标准</span><br><span class="line">	<span class="number">1.</span> 基本语法：</span><br><span class="line">		<span class="number">1.</span> 与html结合方式</span><br><span class="line">			<span class="number">1.</span> 内部JS：</span><br><span class="line">				* 定义&lt;script&gt;，标签体内容就是js代码</span><br><span class="line">			<span class="number">2.</span> 外部JS：</span><br><span class="line">				* 定义&lt;script&gt;，通过src属性引入外部的js文件</span><br><span class="line"></span><br><span class="line">			* 注意：</span><br><span class="line">				<span class="number">1.</span> &lt;script&gt;可以定义在html页面的任何地方。但是定义的位置会影响执行顺序。</span><br><span class="line">				<span class="number">2.</span> &lt;script&gt;可以定义多个。</span><br><span class="line">		<span class="number">2.</span> 注释</span><br><span class="line">			<span class="number">1.</span> 单行注释：<span class="comment">//注释内容</span></span><br><span class="line">			<span class="number">2.</span> 多行注释：<span class="comment">/*注释内容*/</span></span><br><span class="line">		<span class="number">3.</span> 数据类型：</span><br><span class="line">			<span class="number">1.</span> 原始数据类型(基本数据类型)：</span><br><span class="line">				<span class="number">1.</span> number：数字。 整数/小数/<span class="literal">NaN</span>(not a number 一个不是数字的数字类型)</span><br><span class="line">				<span class="number">2.</span> string：字符串。 字符串  <span class="string">&quot;abc&quot;</span> <span class="string">&quot;a&quot;</span> <span class="string">&#x27;abc&#x27;</span></span><br><span class="line">				<span class="number">3.</span> boolean: <span class="literal">true</span>和<span class="literal">false</span></span><br><span class="line">				<span class="number">4.</span> <span class="literal">null</span>：一个对象为空的占位符</span><br><span class="line">				<span class="number">5.</span> <span class="literal">undefined</span>：未定义。如果一个变量没有给初始化值，则会被默认赋值为<span class="literal">undefined</span></span><br><span class="line">				</span><br><span class="line">			<span class="number">2.</span> 引用数据类型：对象</span><br><span class="line">			</span><br><span class="line">		<span class="number">4.</span> 变量</span><br><span class="line">			* 变量：一小块存储数据的内存空间</span><br><span class="line">			* Java语言是强类型语言，而JavaScript是弱类型语言。</span><br><span class="line">				* 强类型：在开辟变量存储空间时，定义了空间将来存储的数据的数据类型。只能存储固定类型的数据</span><br><span class="line">				* 弱类型：在开辟变量存储空间时，不定义空间将来的存储数据类型，可以存放任意类型的数据。</span><br><span class="line">			* 语法：</span><br><span class="line">				* <span class="keyword">var</span> 变量名 = 初始化值;</span><br><span class="line">			</span><br><span class="line">			* <span class="keyword">typeof</span>运算符：获取变量的类型。</span><br><span class="line">				* 注：<span class="literal">null</span>运算后得到的是object</span><br><span class="line">		<span class="number">5.</span> 运算符</span><br><span class="line">			<span class="number">1.</span> 一元运算符：只有一个运算数的运算符</span><br><span class="line">				++，-- ， +(正号)  </span><br><span class="line">				* ++ --: 自增(自减)</span><br><span class="line">					* ++(--) 在前，先自增(自减)，再运算</span><br><span class="line">					* ++(--) 在后，先运算，再自增(自减)</span><br><span class="line">				* +(-)：正负号</span><br><span class="line">			    * 注意：在JS中，如果运算数不是运算符所要求的类型，那么js引擎会自动的将运算数进行类型转换</span><br><span class="line">                    * 其他类型转number：</span><br><span class="line">                        * string转number：按照字面值转换。如果字面值不是数字，则转为<span class="literal">NaN</span>（不是数字的数字）</span><br><span class="line">                        * boolean转number：<span class="literal">true</span>转为<span class="number">1</span>，<span class="literal">false</span>转为<span class="number">0</span></span><br><span class="line">			<span class="number">2.</span> 算数运算符</span><br><span class="line">				+ - * / % ...</span><br><span class="line"></span><br><span class="line">			<span class="number">3.</span> 赋值运算符</span><br><span class="line">				= += -+....</span><br><span class="line"></span><br><span class="line">			<span class="number">4.</span> 比较运算符</span><br><span class="line">				&gt; &lt; &gt;= &lt;= == ===(全等于)</span><br><span class="line">				* 比较方式</span><br><span class="line">                  <span class="number">1.</span> 类型相同：直接比较</span><br><span class="line">                      * 字符串：按照字典顺序比较。按位逐一比较，直到得出大小为止。</span><br><span class="line">                  <span class="number">2.</span> 类型不同：先进行类型转换，再比较</span><br><span class="line">                      * ===：全等于。在比较之前，先判断类型，如果类型不一样，则直接返回<span class="literal">false</span></span><br><span class="line">			<span class="number">5.</span> 逻辑运算符</span><br><span class="line">				&amp;&amp; || !</span><br><span class="line">				* 其他类型转boolean：</span><br><span class="line">                   <span class="number">1.</span> number：<span class="number">0</span>或<span class="literal">NaN</span>为假，其他为真</span><br><span class="line">                   <span class="number">2.</span> string：除了空字符串(<span class="string">&quot;&quot;</span>)，其他都是<span class="literal">true</span></span><br><span class="line">                   <span class="number">3.</span> <span class="literal">null</span>&amp;<span class="literal">undefined</span>:都是<span class="literal">false</span></span><br><span class="line">                   <span class="number">4.</span> 对象：所有对象都为<span class="literal">true</span></span><br><span class="line">			</span><br><span class="line">			<span class="number">6.</span> 三元运算符</span><br><span class="line">				? : 表达式</span><br><span class="line">				<span class="keyword">var</span> a = <span class="number">3</span>;</span><br><span class="line">		        <span class="keyword">var</span> b = <span class="number">4</span>;</span><br><span class="line">		</span><br><span class="line">		        <span class="keyword">var</span> c = a &gt; b ? <span class="number">1</span>:<span class="number">0</span>;</span><br><span class="line">				* 语法：</span><br><span class="line">					* 表达式? 值<span class="number">1</span>:值<span class="number">2</span>;</span><br><span class="line">					* 判断表达式的值，如果是<span class="literal">true</span>则取值<span class="number">1</span>，如果是<span class="literal">false</span>则取值<span class="number">2</span>；</span><br><span class="line">			</span><br><span class="line">		<span class="number">6.</span> 流程控制语句：</span><br><span class="line">			<span class="number">1.</span> <span class="keyword">if</span>...else...</span><br><span class="line">			<span class="number">2.</span> <span class="keyword">switch</span>:</span><br><span class="line">				* 在java中，<span class="keyword">switch</span>语句可以接受的数据类型： byte int shor char,枚举(<span class="number">1.5</span>) ,<span class="built_in">String</span>(<span class="number">1.7</span>)</span><br><span class="line">					* <span class="keyword">switch</span>(变量):</span><br><span class="line">						<span class="keyword">case</span> 值:</span><br><span class="line">				* 在JS中,<span class="keyword">switch</span>语句可以接受任意的原始数据类型</span><br><span class="line">			<span class="number">3.</span> <span class="keyword">while</span></span><br><span class="line">			<span class="number">4.</span> <span class="keyword">do</span>...while</span><br><span class="line">			<span class="number">5.</span> <span class="keyword">for</span></span><br><span class="line">		<span class="number">7.</span> JS特殊语法：</span><br><span class="line">			<span class="number">1.</span> 语句以;结尾，如果一行只有一条语句则 ;可以省略 (不建议)</span><br><span class="line">			<span class="number">2.</span> 变量的定义使用<span class="keyword">var</span>关键字，也可以不使用</span><br><span class="line">        		* 用： 定义的变量是局部变量</span><br><span class="line">                * 不用：定义的变量是全局变量(不建议)</span><br><span class="line"></span><br><span class="line">		<span class="number">8.</span> 练习：<span class="number">99</span>乘法表</span><br><span class="line">		&lt;!DOCTYPE html&gt;</span><br><span class="line">		&lt;html lang=<span class="string">&quot;en&quot;</span>&gt;</span><br><span class="line">		&lt;head&gt;</span><br><span class="line">		    &lt;meta charset=<span class="string">&quot;UTF-8&quot;</span>&gt;</span><br><span class="line">		    &lt;title&gt;<span class="number">99</span>乘法表&lt;/title&gt;</span><br><span class="line">		    &lt;style&gt;</span><br><span class="line">		        td&#123;</span><br><span class="line">		            border: 1px solid;</span><br><span class="line">		        &#125;</span><br><span class="line">		</span><br><span class="line">		    &lt;/style&gt;</span><br><span class="line">		</span><br><span class="line">		    &lt;script&gt;</span><br><span class="line">		</span><br><span class="line">		        <span class="built_in">document</span>.write(<span class="string">&quot;&lt;table  align=&#x27;center&#x27;&gt;&quot;</span>);</span><br><span class="line"></span><br><span class="line">		        <span class="comment">//1.完成基本的for循环嵌套，展示乘法表</span></span><br><span class="line">		        <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">1</span>; i &lt;= <span class="number">9</span> ; i++) &#123;</span><br><span class="line">		            <span class="built_in">document</span>.write(<span class="string">&quot;&lt;tr&gt;&quot;</span>);</span><br><span class="line">		            <span class="keyword">for</span> (<span class="keyword">var</span> j = <span class="number">1</span>; j &lt;=i ; j++) &#123;</span><br><span class="line">		                <span class="built_in">document</span>.write(<span class="string">&quot;&lt;td&gt;&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		                <span class="comment">//输出  1 * 1 = 1</span></span><br><span class="line">		                <span class="built_in">document</span>.write(i + <span class="string">&quot; * &quot;</span> + j + <span class="string">&quot; = &quot;</span> + ( i*j) +<span class="string">&quot;&amp;nbsp;&amp;nbsp;&amp;nbsp;&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		                <span class="built_in">document</span>.write(<span class="string">&quot;&lt;/td&gt;&quot;</span>);</span><br><span class="line">		            &#125;</span><br><span class="line">		            <span class="comment">/*//输出换行</span></span><br><span class="line"><span class="comment">		            document.write(&quot;&lt;br&gt;&quot;);*/</span></span><br><span class="line">		</span><br><span class="line">		            <span class="built_in">document</span>.write(<span class="string">&quot;&lt;/tr&gt;&quot;</span>);</span><br><span class="line">		        &#125;</span><br><span class="line">		</span><br><span class="line">		        <span class="comment">//2.完成表格嵌套</span></span><br><span class="line">		        <span class="built_in">document</span>.write(<span class="string">&quot;&lt;/table&gt;&quot;</span>);</span><br><span class="line">		</span><br><span class="line">		    &lt;/script&gt;</span><br><span class="line">		&lt;/head&gt;</span><br><span class="line">		&lt;body&gt;</span><br><span class="line">		</span><br><span class="line">		&lt;/body&gt;</span><br><span class="line">		&lt;/html&gt;</span><br><span class="line"></span><br><span class="line">	<span class="number">2.</span> 基本对象：</span><br><span class="line">		<span class="number">1.</span> <span class="built_in">Function</span>：函数(方法)对象</span><br><span class="line">            <span class="number">1.</span> 创建：</span><br><span class="line">                <span class="number">1.</span> <span class="keyword">var</span> fun = <span class="keyword">new</span> <span class="built_in">Function</span>(形式参数列表,方法体);  <span class="comment">//忘掉吧</span></span><br><span class="line">                <span class="number">2.</span> </span><br><span class="line">                    <span class="function"><span class="keyword">function</span> 方法名称(<span class="params">形式参数列表</span>)</span>&#123;</span><br><span class="line">                        方法体</span><br><span class="line">                    &#125;</span><br><span class="line"></span><br><span class="line">                <span class="number">3.</span> </span><br><span class="line">                   <span class="keyword">var</span> 方法名 = <span class="function"><span class="keyword">function</span>(<span class="params">形式参数列表</span>)</span>&#123;</span><br><span class="line">                        方法体</span><br><span class="line">                   &#125;</span><br><span class="line">            <span class="number">2.</span> 方法：</span><br><span class="line"></span><br><span class="line">            <span class="number">3.</span> 属性：</span><br><span class="line">                length:代表形参的个数</span><br><span class="line">            <span class="number">4.</span> 特点：</span><br><span class="line">                <span class="number">1.</span> 方法定义是，形参的类型不用写,返回值类型也不写。</span><br><span class="line">                <span class="number">2.</span> 方法是一个对象，如果定义名称相同的方法，会覆盖</span><br><span class="line">                <span class="number">3.</span> 在JS中，方法的调用只与方法的名称有关，和参数列表无关</span><br><span class="line">                <span class="number">4.</span> 在方法声明中有一个隐藏的内置对象（数组），<span class="built_in">arguments</span>,封装所有的实际参数</span><br><span class="line">            <span class="number">5.</span> 调用：</span><br><span class="line">                方法名称(实际参数列表);</span><br><span class="line">		</span><br><span class="line">		<span class="number">2.</span> <span class="built_in">Array</span>:数组对象</span><br><span class="line">            <span class="number">1.</span> 创建：</span><br><span class="line">                <span class="number">1.</span> <span class="keyword">var</span> arr = <span class="keyword">new</span> <span class="built_in">Array</span>(元素列表);</span><br><span class="line">                <span class="number">2.</span> <span class="keyword">var</span> arr = <span class="keyword">new</span> <span class="built_in">Array</span>(默认长度);</span><br><span class="line">                <span class="number">3.</span> <span class="keyword">var</span> arr = [元素列表];</span><br><span class="line">            <span class="number">2.</span> 方法</span><br><span class="line">                join(参数):将数组中的元素按照指定的分隔符拼接为字符串</span><br><span class="line">                push()	向数组的末尾添加一个或更多元素，并返回新的长度。</span><br><span class="line">            <span class="number">3.</span> 属性</span><br><span class="line">                length:数组的长度</span><br><span class="line">            <span class="number">4.</span> 特点：</span><br><span class="line">                <span class="number">1.</span> JS中，数组元素的类型可变的。</span><br><span class="line">                <span class="number">2.</span> JS中，数组长度可变的。</span><br><span class="line">		<span class="number">3.</span> <span class="built_in">Boolean</span></span><br><span class="line">		<span class="number">4.</span> <span class="built_in">Date</span>：日期对象</span><br><span class="line">            <span class="number">1.</span> 创建：</span><br><span class="line">                <span class="keyword">var</span> date = <span class="keyword">new</span> <span class="built_in">Date</span>();</span><br><span class="line"></span><br><span class="line">            <span class="number">2.</span> 方法：</span><br><span class="line">                toLocaleString()：返回当前date对象对应的时间本地字符串格式</span><br><span class="line">                getTime():获取毫秒值。返回当前如期对象描述的时间到<span class="number">1970</span>年<span class="number">1</span>月<span class="number">1</span>日零点的毫秒值差</span><br><span class="line">		<span class="number">5.</span> <span class="built_in">Math</span>：数学对象</span><br><span class="line">            <span class="number">1.</span> 创建：</span><br><span class="line">                * 特点：<span class="built_in">Math</span>对象不用创建，直接使用。  <span class="built_in">Math</span>.方法名();</span><br><span class="line"></span><br><span class="line">            <span class="number">2.</span> 方法：</span><br><span class="line">                random():返回 <span class="number">0</span> ~ <span class="number">1</span> 之间的随机数。 含<span class="number">0</span>不含<span class="number">1</span></span><br><span class="line">                ceil(x)：对数进行上舍入。</span><br><span class="line">                floor(x)：对数进行下舍入。</span><br><span class="line">                round(x)：把数四舍五入为最接近的整数。</span><br><span class="line">            <span class="number">3.</span> 属性：</span><br><span class="line">                PI</span><br><span class="line">		<span class="number">6.</span> <span class="built_in">Number</span></span><br><span class="line">		<span class="number">7.</span> <span class="built_in">String</span></span><br><span class="line">		<span class="number">8.</span> <span class="built_in">RegExp</span>：正则表达式对象</span><br><span class="line">			<span class="number">1.</span> 正则表达式：定义字符串的组成规则。</span><br><span class="line">				<span class="number">1.</span> 单个字符:[]</span><br><span class="line">					如： [a] [ab] [a-zA-Z0-9_]</span><br><span class="line">					* 特殊符号代表特殊含义的单个字符:</span><br><span class="line">						\d:单个数字字符 [<span class="number">0</span>-<span class="number">9</span>]</span><br><span class="line">						\w:单个单词字符[a-zA-Z0-9_]</span><br><span class="line">				<span class="number">2.</span> 量词符号：</span><br><span class="line">					?：表示出现<span class="number">0</span>次或<span class="number">1</span>次</span><br><span class="line">					*：表示出现<span class="number">0</span>次或多次</span><br><span class="line">					+：出现<span class="number">1</span>次或多次</span><br><span class="line">					&#123;m,n&#125;:表示 m&lt;= 数量 &lt;= n</span><br><span class="line">						* m如果缺省： &#123;,n&#125;:最多n次</span><br><span class="line">						* n如果缺省：&#123;m,&#125; 最少m次</span><br><span class="line">				<span class="number">3.</span> 开始结束符号</span><br><span class="line">					* ^:开始</span><br><span class="line">					* $:结束</span><br><span class="line">			<span class="number">2.</span> 正则对象：</span><br><span class="line">				<span class="number">1.</span> 创建</span><br><span class="line">					<span class="number">1.</span> <span class="keyword">var</span> reg = <span class="keyword">new</span> <span class="built_in">RegExp</span>(<span class="string">&quot;正则表达式&quot;</span>);</span><br><span class="line">					<span class="number">2.</span> <span class="keyword">var</span> reg = <span class="regexp">/正则表达式/</span>;</span><br><span class="line">				<span class="number">2.</span> 方法	</span><br><span class="line">					<span class="number">1.</span> test(参数):验证指定的字符串是否符合正则定义的规范	</span><br><span class="line">		<span class="number">9.</span> Global</span><br><span class="line">			<span class="number">1.</span> 特点：全局对象，这个Global中封装的方法不需要对象就可以直接调用。  方法名();</span><br><span class="line">			<span class="number">2.</span> 方法：</span><br><span class="line">			    <span class="built_in">encodeURI</span>():url编码</span><br><span class="line">			    <span class="built_in">decodeURI</span>():url解码</span><br><span class="line"></span><br><span class="line">			    <span class="built_in">encodeURIComponent</span>():url编码,编码的字符更多</span><br><span class="line">			    <span class="built_in">decodeURIComponent</span>():url解码</span><br><span class="line"></span><br><span class="line">			    <span class="built_in">parseInt</span>():将字符串转为数字</span><br><span class="line">			        * 逐一判断每一个字符是否是数字，直到不是数字为止，将前边数字部分转为number</span><br><span class="line">			    <span class="built_in">isNaN</span>():判断一个值是否是<span class="literal">NaN</span></span><br><span class="line">			        * <span class="literal">NaN</span>六亲不认，连自己都不认。<span class="literal">NaN</span>参与的==比较全部问<span class="literal">false</span></span><br><span class="line"></span><br><span class="line">			    <span class="built_in">eval</span>():讲 JavaScript 字符串，并把它作为脚本代码来执行。</span><br><span class="line">            <span class="number">3.</span> URL编码</span><br><span class="line">               传智播客 =  %E4%BC%A0%E6%<span class="number">99</span>%BA%E6%<span class="number">92</span>%AD%E5%AE%A2</span><br><span class="line"></span><br><span class="line">* BOM</span><br><span class="line"></span><br><span class="line">* DOM</span><br></pre></td></tr></table></figure>
 
 
@@ -1260,31 +1427,56 @@
 
 <p>​    </p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/12/03/Java%E9%AB%98%E7%BA%A7/">
-                Java高级
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-12-03</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/前端" style=color:#879cff>
+                前端
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2019/08/26/JavaScript基础笔记/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2018/12/03/Java高级/">
+        <h2>
+            Java高级
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2018/12/3
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="标准类制作"><a href="#标准类制作" class="headerlink" title="标准类制作"></a>标准类制作</h1><ol>
 <li><p>成员变量</p>
 <ul>
@@ -1842,31 +2034,56 @@
 </li>
 </ul>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/09/21/java%E5%9F%BA%E7%A1%80/">
-                java基础
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-09-21</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/java" style=color:#879cff>
+                java
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2018/12/03/Java高级/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2018/09/21/java基础/">
+        <h2>
+            java基础
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2018/9/21
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="Java概述"><a href="#Java概述" class="headerlink" title="Java概述"></a>Java概述</h1><p><strong>Java的跨平台性实现原理</strong>：通过jvm（Java virtual machine）作翻译。</p>
 <p><strong>jre和jdk：</strong></p>
 <p>jre是Java的运行环境，包括jvm和运行时所需要的核心类库。如果是运行一个已有Java程序，则只需要安装jre即可。</p>
@@ -1993,31 +2210,56 @@
 <li>多个方法的参数不相同，类型不同或者数量不同</li>
 </ul>
 <h1 id="Debug（调试）"><a href="#Debug（调试）" class="headerlink" title="Debug（调试）"></a>Debug（调试）</h1>
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/05/15/day08_html&css/11_%E6%A1%88%E4%BE%8B-%E6%B3%A8%E5%86%8C%E9%A1%B5%E9%9D%A2(css)/">
-                Untitled
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-05-15</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/java" style=color:#1bccbc>
+                java
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2018/09/21/java基础/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2018/05/15/day08_html&css/11_案例-注册页面(css)/">
+        <h2>
+            
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2018/5/15
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2198,31 +2440,45 @@
 
 </body>
 </html>
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2018/05/15/day08_html&css/10_CSS%E5%B1%9E%E6%80%A7_%E7%9B%92%E5%AD%90%E6%A8%A1%E5%9E%8B/">
-                Untitled
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2018-05-15</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2018/05/15/day08_html&css/11_案例-注册页面(css)/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2018/05/15/day08_html&css/10_CSS属性_盒子模型/">
+        <h2>
+            
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2018/5/15
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -2278,211 +2534,217 @@
     <div class="div5">cccc</div>
 </body>
 </html>
+            
         </div>
+    </div>
+
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2018/05/15/day08_html&css/10_CSS属性_盒子模型/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+
+             
+<div class="page-current">
+
+    <div class="prev">
+        
+        <a href="/">
+            <span class="page-num">
+                <a-icon type="caret-left" theme="filled" />
+            </span>
+        </a>
+        
+    </div>
+
+    <div class="page-index">
+
+        
+        <span>
+
+            
+
+            
+            <a href="/">
+                <span class="page-num">
+                    1
+                </span>
+            </a>
+        </span>
+        
+
+        <span class="current">
+            2
+        </span>
+
+        
+        <span>
+            <a href="/page/3/">
+                <span class="page-num">
+                    3
+                </span>
+            </a>
+            
+            <a href="/page/4">
+                <span class="page-num">
+                    4
+                </span>
+            </a>
+            
+
+            
+
+        </span>
+        
+
+    </div>
+
+    <div class="next">
+        
+        <a href="/page/3/ ">
+            <span class="page-num">
+                <a-icon type="caret-right" theme="filled" />
+            </span>
+        </a>
+        
+    </div>
+
+</div>
+
+        </div>
+    </div>
     
-
-</div>
+    <div id="home-card">
+        <a-affix :offset-top="card_top">
+    <a-card class="card-style" style="width: 300px">
+        <div class="avatar">
+            <img src="images/avatar.png " alt="头像">
+        </div>
+        <div class="name">
+            phenix-fledgling
+        </div>
+        <div class="descriptions">
             
-        </section>
-    </div>
-</div>
+            <div class="description">
+                正しさなんてもの
+            </div>
+            
+            <div class="description">
+                人のモノサシによって変わる
+            </div>
+            
+        </div>
+        <div class="icon-links">
+            
+            <span class="icon-link">
+                <a target="_blank" rel="noopener" href="https://github.com/korilin">
 
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="wrap-pagination">
-                <a class="" href="/">
-                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    
+                    <a-icon type="github"
+                        theme="filled" />
+                    
                 </a>
-                <a class="" href="/page/3/">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </span>
+            
+            <span class="icon-link">
+                <a target="_blank" rel="noopener" href="https://twitter.com/korilin_dev">
+
+                    
+                    <a-icon type="twitter"
+                        theme="" />
+                    
+                </a>
+            </span>
+            
+        </div>
+        <div class="friend-links">
+            
+            <div class="friend-link">
+                <a target="_blank" rel="noopener" href="https://en.korilin.com">
+                    英文技术博客
                 </a>
             </div>
+            
+            <div class="friend-link">
+                <a target="_blank" rel="noopener" href="https://jp.korilin.com">
+                    日语记录博客
+                </a>
+            </div>
+            
         </div>
+    </a-card>
+</a-affix>
     </div>
-
-
-
-
+    
 </div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This theme was developed by <a target="_blank" rel="noopener" href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/08/%E9%9B%B6%E6%98%9F%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%AC/">零星的问题们</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/02/mysql%E8%B0%83%E4%BC%98/">mysql调优</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/02/jvm%E8%B0%83%E4%BC%98/">jvm调优</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/02/tomcat%E8%B0%83%E4%BC%98/">Untitled</a>
-            </li>
-            
-        </ul>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 Hexo
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @phenix-fledgling
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
     </div>
 
-
-
-            
-<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
-    <h2>Categories</h2>
-    <ul>
-        
-        <li>
-            <a class="footer-post" href="/categories/categories/">categories</a>
-        </li>
-        
-    </ul>
-</div>
-
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://github.com/klugjo/hexo-theme-alpha-dust">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://twitter.com/?lang=en">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-twitter"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://www.facebook.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-facebook"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://www.instagram.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-instagram"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://dribbble.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-dribbble"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://telegram.org/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-telegram"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://www.behance.net/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-behance"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://500px.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-500px"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:test@example.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="\#">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-rss"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Design & Hexo <a target="_blank" rel="noopener" href="http://www.codeblocq.com/">Jonathan Klughertz</a>
-                </div>
-            </div>
-        </div>
-    </div>
 </footer>
 
-<!-- After footer scripts -->
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
 
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- Custom JavaScript -->
-
-<script src="/js/main.js"></script>
-
-
-<!-- Disqus Comments -->
-
-
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
 
 </body>
 

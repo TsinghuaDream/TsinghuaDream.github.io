@@ -1,172 +1,225 @@
+
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en ">
 
-<!-- Head tag -->
 <head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-
-    <!--Description-->
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hexo || </title>
+    <meta name="author" content="phenix-fledgling">
+    <meta name="description" content=" ">
+    <meta name="keywords" content=" ">
+    <link rel="icon" href="/images/avatar.png">
+    <link rel="stylesheet" href="/css/antd.min.css">
     
-
-    <!--Author-->
+    <link rel="stylesheet" href="/css/maiden-theme.css">
     
-        <meta name="author" content="John Doe">
-    
-
-    <!--Open Graph Title-->
-    
-        <meta property="og:title" content="Hexo"/>
-    
-
-    <!--Open Graph Description-->
-    
-
-    <!--Open Graph Site Name-->
-    <meta property="og:site_name" content="Hexo"/>
-
-    <!--Type page-->
-    
-        <meta property="og:type" content="website" />
-    
-
-    <!--Page Cover-->
-    
-
-    
-        <meta name="twitter:card" content="summary" />
-    
-    
-    
-
-    <!-- Title -->
-    
-    <title>Hexo</title>
-
-    <!-- Bootstrap Core CSS -->
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" integrity="sha384-y3tfxAZXuh4HwSYylfB+J125MxIs6mR5FOHamPBG064zB+AFeWH94NdvaCBm8qnd" crossorigin="anonymous">
-
-    <!-- Custom Fonts -->
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="//oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="//oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
-
-    <!-- Gallery -->
-    <link href="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.css" type="text/css" rel="stylesheet" />
-
-    <!-- Custom CSS -->
-    
-<link rel="stylesheet" href="/css/style.css">
-
-
-    <!-- Google Analytics -->
-    
-
-
+    <script src="/js/vue.js"></script>
+    <script src="/js/antd.min.js"></script>
 <meta name="generator" content="Hexo 5.4.0"></head>
-
 
 <body>
 
-<div class="bg-gradient"></div>
-<div class="bg-pattern"></div>
-
-<!-- Menu -->
-<!--Menu Links and Overlay-->
-<div class="menu-bg">
-    <div class="menu-container">
-        <ul>
-            
-            <li class="menu-item">
-                <a href="/">
-                    Home
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/archives">
-                    Archives
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/about.html">
-                    About
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/tags">
-                    Tags
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/categories">
-                    Categories
-                </a>
-            </li>
-            
-            <li class="menu-item">
-                <a href="/contact.html">
-                    Contact
-                </a>
-            </li>
-            
-        </ul>
-    </div>
-</div>
-
-<!--Hamburger Icon-->
-<nav>
-    <a href="#menu"></a>
-</nav>
-
-<div class="container">
-
-    <!-- Main Content -->
-    <div class="row">
-    <div class="col-sm-12">
-
-        <!--Title and Logo-->
-        <header>
-    <div class="logo">
-        <a href="/"><i class="logo-icon fa fa-cube" aria-hidden="true"></i></a>
-        
-            <h1 id="main-title" class="title">Hexo</h1>
-        
-    </div>
-</header>
-
-        <section class="main">
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/08/%E9%9B%B6%E6%98%9F%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%AC/">
-                零星的问题们
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-08</span>
-            
-            
-            
+    <div id="loading"
+        style="height: 100vh; width: 100%; position: fixed;display: flex;z-index: 200; justify-content: space-between;">
+        <div id="loadleft" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div id="loadright" style="width: 50%;background-color: #ffffff;transition: width 0.6s ease-out;"></div>
+        <div
+            style="position: fixed; height: 100vh; width: 100%;display: flex;justify-content: center;align-items: center;">
+            <div id="loadcontent"
+                style="width:400px;height:400px;padding:50px;border-radius:50%;display:flex;justify-content:center;align-items:center;border:solid 10px#a3ddfb; text-align:center;opacity:1;transition:opacity 0.3s ease-out;">
+                <div>
+                    <h2>LOADING...</h2>
+                    <p>加载过慢请开启缓存(浏览器默认开启)</p>
+                    <div>
+                        <img src="/dancingkitty.gif" alt="loading">
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    
-        <div class="content">
+    <div id="layout">
+        <transition name="into">
+            <div v-show="show_page" style="display: none;">
+                <div id="menu_show">
+                     
+<nav id="menu">
+    <div class="desktop-menu">
+        <a href="/">
+            <span class="title">Hexo</span>
+        </a>
+        
+        <a href="/">
+            <span>
+                <a-icon type="home" theme="filled" />
+            </span>
+            <span>home</span>
+        </a>
+        
+        <a href="/about">
+            <span>
+                <a-icon type="idcard" theme="filled" />
+            </span>
+            <span>about</span>
+        </a>
+        
+        <a href="/archives">
+            <span>
+                <a-icon type="folder" theme="filled" />
+            </span>
+            <span>archives</span>
+        </a>
+        
+        <a href="/like/categories">
+            <span>
+                <a-icon type="book" theme="filled" />
+            </span>
+            <span>categories</span>
+        </a>
+        
+        <a href="/like/tags">
+            <span>
+                <a-icon type="tags" theme="filled" />
+            </span>
+            <span>tags</span>
+        </a>
+        
+        <a target="_blank" rel="noopener" href="https://en.korilin.com">
+            <span>
+                <a-icon type="compass" theme="filled" />
+            </span>
+            <span>英文博客</span>
+        </a>
+        
+    </div>
+
+    <div :class="'phone-menu ' + menu_show" id="phone-menu">
+        <div :class="'title'" @click="menu_show=!menu_show">
+            <span style="margin-right: 10px;">
+                <a-icon type="appstore" theme="filled" />
+            </span>
+            <span>Hexo</span>
+        </div>
+        <div class="items" v-show="menu_show">
+            
+            <a href="/">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="home" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">home</div>
+                </div>
+            </a>
+            
+            <a href="/about">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="idcard" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">about</div>
+                </div>
+            </a>
+            
+            <a href="/archives">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="folder" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">archives</div>
+                </div>
+            </a>
+            
+            <a href="/like/categories">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="book" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">categories</div>
+                </div>
+            </a>
+            
+            <a href="/like/tags">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="tags" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">tags</div>
+                </div>
+            </a>
+            
+            <a target="_blank" rel="noopener" href="https://en.korilin.com">
+                <div class="item">
+                    <div style="min-width:20px; max-width:50px; width: 10%">
+                        <a-icon type="compass" theme="filled" />
+                    </div>
+                    <div style="min-width:100px;max-width: 150%;width: 20%;">英文博客</div>
+                </div>
+            </a>
+            
+        </div>
+        <div class="curtain" v-show="menu_show"></div>
+    </div>
+
+</nav>
+                </div>
+
+                <div id="main">
+                    <div id="home-head" style=background-image:url('home.jpg')>
+    <script>
+        var menu = document.getElementById("menu")
+        menu.className += " menu-color"
+    </script>
+     
+    <div id="home-info" class="home-info" @click="home_click">
+        <span class="loop"></span>
+        <span class="loop"></span>
+        <span class="loop"></span>
+        <span class="loop"></span>
+        <span class="info">
+            <div class="wrap">
+                <h1>Hexo</h1>
+                <h3></h3>
+                <h5></h5>
+            </div>
+        </span>
+    </div>
+     
+</div>
+
+
+
+<div id="home-posts-wrap" class=>
+    <div id="home-posts">
+
+        <div id="posts">
+            
+
+<div class="post">
+
+    <a href="/2021/04/08/零星的问题们/">
+        <h2>
+            零星的问题们
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/8
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="堆内存什么时候被释放？"><a href="#堆内存什么时候被释放？" class="headerlink" title="堆内存什么时候被释放？"></a>堆内存什么时候被释放？</h1><h1 id="怎么调用父类的私有方法呢？（super）"><a href="#怎么调用父类的私有方法呢？（super）" class="headerlink" title="怎么调用父类的私有方法呢？（super）"></a>怎么调用父类的私有方法呢？（super）</h1><h1 id="怎么调用自己的方法呢？（this）"><a href="#怎么调用自己的方法呢？（this）" class="headerlink" title="怎么调用自己的方法呢？（this）"></a>怎么调用自己的方法呢？（this）</h1><h1 id="局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！"><a href="#局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！" class="headerlink" title="局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！"></a>局部变量指是在局部改一下，存于栈内存，不会对全局变量产生影响！</h1><h1 id="递归求阶乘"><a href="#递归求阶乘" class="headerlink" title="递归求阶乘"></a>递归求阶乘</h1><p>需求：用递归求5的阶乘，并把结果在控制台输出</p>
 <p><strong>分析</strong>：</p>
 <p>①阶乘：一个正整数的阶乘是所有小于及等于该数的正整数的积，自然数n的阶乘写作n!</p>
@@ -184,31 +237,45 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DiGuiDemo01</span> </span>&#123;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">int</span> result = jc(<span class="number">5</span>);</span><br><span class="line">    System.out.println(<span class="string">&quot;5的阶乘是：&quot;</span>+ result);</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">int</span> <span class="title">jc</span><span class="params">(<span class="keyword">int</span> n)</span> </span>&#123;</span><br><span class="line">    <span class="keyword">if</span> (n == <span class="number">1</span>) &#123;</span><br><span class="line">      <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">      <span class="keyword">return</span> n * jc(n - <span class="number">1</span>);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/02/mysql%E8%B0%83%E4%BC%98/">
-                mysql调优
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-02</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2021/04/08/零星的问题们/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/04/02/mysql调优/">
+        <h2>
+            mysql调优
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/2
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="MySQL数据库优化的八种方式-经典必看"><a href="#MySQL数据库优化的八种方式-经典必看" class="headerlink" title="MySQL数据库优化的八种方式(经典必看)"></a>MySQL数据库优化的八种方式(经典必看)</h1><h1 id="引言："><a href="#引言：" class="headerlink" title="引言："></a>引言：</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1. 关于数据库优化，网上有不少资料和方法，但是不少质量参差不齐，有些总结的不够到位，内容冗杂</span><br><span class="line">2. 偶尔发现了这篇文章，总结得很经典，文章流量也很大，所以拿到自己的总结文集中，积累优质文章，提升个人能力，希望对大家今后开发中也有帮助</span><br></pre></td></tr></table></figure>
 
 <p>1、选取最适用的字段属性</p>
@@ -624,31 +691,56 @@
 <p> I/O极限：IOPS（r/s+w/s）,一般RAID0/10在1200左右。（IOPS，每秒进行读写（I/O）操作次数）</p>
 <p> I/O带宽：在顺序读写模式下SAS硬盘理论值在300M/s左右，SSD硬盘理论值在600M/s左右。</p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/02/jvm%E8%B0%83%E4%BC%98/">
-                jvm调优
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-02</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/mysql调优" style=color:#00bcd4>
+                mysql调优
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/04/02/mysql调优/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/04/02/jvm调优/">
+        <h2>
+            jvm调优
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/2
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h2 id="一、JVM内存调优"><a href="#一、JVM内存调优" class="headerlink" title="一、JVM内存调优"></a><strong>一、JVM内存调优</strong></h2><p><img src="https://pic2.zhimg.com/80/v2-c256a1d88bd0a626a4583778d2c13bc9_720w.jpg" alt="img"></p>
 <p><strong>对JVM内存的系统级的调优主要的目的是减少GC的频率和Full GC的次数。</strong></p>
 <p><strong>1.Full GC</strong></p>
@@ -712,31 +804,56 @@
 <p><strong>5.线程堆栈的设置</strong>：每个线程默认会开启1M的堆栈，用于存放栈帧、调用参数、局部变量等，对大多数应用而言这个默认值太了，一般256K就足用。</p>
 <p>理论上，在内存不变的情况下，减少每个线程的堆栈，可以产生更多的线程，但这实际上还受限于操作系统。</p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/02/tomcat%E8%B0%83%E4%BC%98/">
-                Untitled
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-02</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/jvm调优" style=color:#ffa2c4>
+                jvm调优
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/04/02/jvm调优/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/04/02/tomcat调优/">
+        <h2>
+            
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/2
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h2 id="title-tomcat调优"><a href="#title-tomcat调优" class="headerlink" title="title: tomcat调优"></a>title: tomcat调优</h2><p>date: 2021-04-02 16:46:34<br>tags: tomcat调优</p>
 <h1 id="一、描述"><a href="#一、描述" class="headerlink" title="一、描述"></a><strong>一、描述</strong></h1><p>最近，在补充自己的短板，刚好整理到<a target="_blank" rel="noopener" href="http://mp.weixin.qq.com/s?__biz=MzU5NTAzNjM0Mw==&mid=2247485487&idx=2&sn=614b2cbce66acfd2361c7024f521cf35&chksm=fe7959f7c90ed0e14f8037f3ff3f132aa4c9097d5656f9ae9a8cacefae2d8b09d16d90820482&scene=21#wechat_redirect"> Tomcat 调优</a>这块，基本上面试必问，于是就花了点时间去搜集一下 Tomcat 调优都调了些什么，先记录一下调优手段，更多详细的原理和实现以后用到时候再来补充记录，下面就来介绍一下，Tomcat 调优大致分为两大类。</p>
 <h2 id="1、Tomcat的自身调优"><a href="#1、Tomcat的自身调优" class="headerlink" title="1、Tomcat的自身调优"></a><strong>1、Tomcat的自身调优</strong></h2><p>采用动静分离节约 Tomcat 的性能</p>
@@ -793,31 +910,45 @@
 <p><a target="_blank" rel="noopener" href="https://tomcat.apache.org/tomcat-8.0-doc/config/executor.html">https://tomcat.apache.org/tomcat-8.0-doc/config/executor.html</a></p>
 <p><a target="_blank" rel="noopener" href="https://tomcat.apache.org/tomcat-8.0-doc/config/index.html">https://tomcat.apache.org/tomcat-8.0-doc/config/index.html</a></p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/02/Linux%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/">
-                Linux性能调优
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-02</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2021/04/02/tomcat调优/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/04/02/Linux性能调优/">
+        <h2>
+            Linux性能调优
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/2
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="一、前提"><a href="#一、前提" class="headerlink" title="一、前提"></a>一、前提</h1><p>我们可以在文章的开始就列出一个列表，列出可能影响Linux操作系统性能的一些调优参数，但这样做其实并没有什么价值。因为性能调优是一个非常困难的任务，它要求对硬件、操作系统、和应用都有着相当深入的了解。如果性能调优非常简单的话，那些我们要列出的调优参数早就写入硬件的微码或者操作系统中了，我们就没有必要再继续读这篇文章了。正如下图所示，服务器的性能受到很多因素的影响。</p>
 <p><img src="https://mmbiz.qpic.cn/mmbiz_png/SeWfibBcBT0EuxfhHv3gxaMWjfngI7kMAkYRPibWD4k8q7EXhnHAOEhiczcjBMTXA7Zx1cTWib36WdTic82l4ZRqQiaw/640?wx_fmt=gif&tp=webp&wxfrom=5&wx_lazy=1&wx_co=1" alt="图片"></p>
 <p>当面对一个使用单独IDE硬盘的，有20000用户的数据库服务器时，即使我们使用数周时间去调整I/O子系统也是徒劳无功的，通常一个新的驱动或者应用程序的一个更新（如SQL优化）却可以使这个服务器的性能得到明显的提升。正如我们前面提到的，不要忘记系统的性能是受多方面因素影响的。理解操作系统管理系统资源的方法将帮助我们在面对问题时更好的判断应该对哪个子系统进行调整。</p>
@@ -915,31 +1046,56 @@
 <p>・Kilobytes per second read/write</p>
 <p>按照kb为单位表示读写块设备的实际数据的数量。</p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/01/%E6%B7%B1%E5%85%A5%E6%B5%85%E5%87%BAspringboot2%E6%9C%89%E6%84%9F/">
-                Untitled
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-01</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/Linux" style=color:#ff7d73>
+                Linux
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/04/02/Linux性能调优/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/04/01/深入浅出springboot2有感/">
+        <h2>
+            
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/1
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="全注解下的spring-ioc"><a href="#全注解下的spring-ioc" class="headerlink" title="全注解下的spring ioc"></a>全注解下的spring ioc</h1><p>spring最成功的便是其提出的两个理念 （ IOC和AOP) 控制反转和面向切面编程。</p>
 <p>其中ioc容器思想是spring的核心，而spring是基于注解开发的spring ioc 所以重点分析全注解下的spring ioc。</p>
 <p>IoC是一种通过描述来生成或者获取对象的技术，而这个技术不是Spring甚至不是Java独有的。对于Java初学者更多的时候所熟悉的是使用new关键字来创建对象，而在Spring中则不是，它是<strong>通过描述来创建对象</strong>。只是Spring Boot并不建议使用XML，而是通过注解的描述生成对象。</p>
@@ -964,31 +1120,56 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ApplicationContext ctx = <span class="keyword">new</span> AnnotationConfigApplicationContext(AppConfig.class);</span><br><span class="line">User user = ctx.getBean(User.class);</span><br><span class="line">log.info(user.getId());</span><br></pre></td></tr></table></figure>
 
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/04/01/servlet/">
-                servlet
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-04-01</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/spring-boot" style=color:#ff7d73>
+                spring boot
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/04/01/深入浅出springboot2有感/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/04/01/servlet/">
+        <h2>
+            servlet
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/4/1
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="古老的技术Servlet"><a href="#古老的技术Servlet" class="headerlink" title="古老的技术Servlet"></a>古老的技术Servlet</h1><h2 id="tomcat"><a href="#tomcat" class="headerlink" title="tomcat"></a>tomcat</h2><p>tomcat是一个web服务器（<strong>同时也是servlet容器</strong>），通过它我们可以很方便地接收和返回到请求（如果不用tomcat，那我们需要自己写socket来接收和返回请求）。</p>
 <p>各个目录的含义：</p>
 <p>bin：存放启动和关闭tomcat的脚本文件</p>
@@ -1004,31 +1185,56 @@
 <p>​                                                                               –&gt;classes目录–&gt;类的包目录–&gt;各种class文件标签处理类</p>
 <p>​                                                    –&gt;lib目录（web应用需要的jar包）</p>
 <h3 id="servlet案例"><a href="#servlet案例" class="headerlink" title="servlet案例"></a>servlet案例</h3>
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/29/HTML%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0/">
-                Untitled
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-29</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/java" style=color:#00bcd4>
+                java
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/04/01/servlet/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/03/29/HTML课堂笔记/">
+        <h2>
+            
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/29
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="今日内容"><a href="#今日内容" class="headerlink" title="今日内容"></a>今日内容</h1><pre><code>1. web概念概述
 2. HTML
 </code></pre>
@@ -1460,31 +1666,45 @@
 </code></pre>
 <p>​<br>        </body><br>        </html></p>
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/23/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
-                设计模式
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-23</span>
-            
-            
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        
+    </div>
+
+    <a href="/2021/03/29/HTML课堂笔记/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/03/23/设计模式/">
+        <h2>
+            设计模式
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/23
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="设计模式概述"><a href="#设计模式概述" class="headerlink" title="设计模式概述"></a>设计模式概述</h1><p>设计模式代表了最佳的实践，通常被有经验的面相对象的软件开发人员所采用。</p>
 <p>设计模式是软件开发人员在软件开发过程中面临的一般问题的解决方案。这些解决方案是众多</p>
 <p>软件开大人员经过相当长的一段时间的试验和错误总结出来的。</p>
@@ -1595,35 +1815,64 @@
 <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">Inside Circle::draw() method.</span><br><span class="line">Inside Rectangle::draw() method.</span><br><span class="line">Inside Square::draw() method.</span><br><span class="line">Inside Red::fill() method.</span><br><span class="line">Inside Green::fill() method.</span><br><span class="line">Inside Blue::fill() method.</span><br></pre></td></tr></table></figure>
 
 
-        </div>
-    
-
-</div>
-            
-                
-<div class="post">
-
-    <div class="post-header index">
-        <h1 class="title">
-            <a href="/2021/03/23/%E7%81%B0%E5%BA%A6%E5%8F%91%E5%B8%83/">
-                灰度发布
-            </a>
-        </h1>
-        <div class="post-info">
-            
-                <span class="date">2021-03-23</span>
-            
-            
-            
-                <span class="category">
-                    <a href="/categories/categories/">categories</a>
-                </span>
             
         </div>
     </div>
 
-    
-        <div class="content">
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/To-be God" style=color:#ff7d73>
+                To be God
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/03/23/设计模式/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+<div class="post">
+
+    <a href="/2021/03/23/灰度发布/">
+        <h2>
+            灰度发布
+        </h2>
+    </a>
+
+    <div class="category-and-date">
+
+        
+        <span class="category">
+            <a href="/categories/categories">
+                <span class="icon">
+                    <a-icon type="book" theme="filled" /></span>
+                categories
+            </a>
+        </span>
+        
+
+        <span class="date">
+            <span class="icon">
+                <a-icon type="calendar" theme="filled" />
+            </span>
+            2021/3/23
+        </span>
+
+    </div>
+
+    <div class="excerpt">
+        <div class="content" v-pre>
+            
+            
             <h1 id="1-什么是灰度发布"><a href="#1-什么是灰度发布" class="headerlink" title="1.什么是灰度发布"></a>1.什么是灰度发布</h1><p>​        灰度发布是指A/B testing,即让一部分用户继续用产品特性a，一部分开始用产品特性b,如果用户对b没有什么反对意见，那么逐步扩大范围，把所有用户都迁移到b上面。</p>
 <h1 id="2-灰度发布流程"><a href="#2-灰度发布流程" class="headerlink" title="2.灰度发布流程"></a>2.灰度发布流程</h1><p>![image-20210323154759087](/Users/kingboom/Library/Application Support/typora-user-images/image-20210323154759087.png)</p>
 <p>相关解释：</p>
@@ -1644,211 +1893,217 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">DiscoveryManager.getInstance().shutdownComponent();</span><br><span class="line"><span class="meta">@RestController</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">HelloController</span> </span>&#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> DiscoveryClient client;</span><br><span class="line"> </span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/hello&quot;, method = RequestMethod.GET)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> String <span class="title">index</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        java.util.List&lt;ServiceInstance&gt; instances = client.getInstances(<span class="string">&quot;hello-service&quot;</span>);       </span><br><span class="line">        <span class="keyword">return</span> <span class="string">&quot;Hello World&quot;</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="meta">@RequestMapping(value = &quot;/offline&quot;, method = RequestMethod.GET)</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">offLine</span><span class="params">()</span></span>&#123;</span><br><span class="line">    	DiscoveryManager.getInstance().shutdownComponent();</span><br><span class="line">    &#125;   </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></li>
 </ol>
 
+            
         </div>
+    </div>
+
+    <div class="post-tags">
+        
+        <span class="icon">
+            <a-icon type="tags" theme="filled" />
+        </span>
+        
+        
+        <span class="tag">
+            
+            <a href="/tags/linux运维" style=color:#00bcd4>
+                linux运维
+            </a>
+        </span>
+        
+    </div>
+
+    <a href="/2021/03/23/灰度发布/ " class="go-post">
+        阅读全文
+    </a>
+</div>
+
+
+             
+<div class="page-current">
+
+    <div class="prev">
+        
+    </div>
+
+    <div class="page-index">
+
+        
+
+        <span class="current">
+            1
+        </span>
+
+        
+        <span>
+            <a href="/page/2/">
+                <span class="page-num">
+                    2
+                </span>
+            </a>
+            
+            <a href="/page/3">
+                <span class="page-num">
+                    3
+                </span>
+            </a>
+            
+
+            
+            <span class="page-omit">...</span>
+            <a href="/page/4">
+                <span class="page-num">
+                    4
+                </span>
+            </a>
+            
+
+        </span>
+        
+
+    </div>
+
+    <div class="next">
+        
+        <a href="/page/2/ ">
+            <span class="page-num">
+                <a-icon type="caret-right" theme="filled" />
+            </span>
+        </a>
+        
+    </div>
+
+</div>
+
+        </div>
+    </div>
     
-
-</div>
+    <div id="home-card">
+        <a-affix :offset-top="card_top">
+    <a-card class="card-style" style="width: 300px">
+        <div class="avatar">
+            <img src="images/avatar.png " alt="头像">
+        </div>
+        <div class="name">
+            phenix-fledgling
+        </div>
+        <div class="descriptions">
             
-        </section>
-    </div>
-</div>
+            <div class="description">
+                正しさなんてもの
+            </div>
+            
+            <div class="description">
+                人のモノサシによって変わる
+            </div>
+            
+        </div>
+        <div class="icon-links">
+            
+            <span class="icon-link">
+                <a target="_blank" rel="noopener" href="https://github.com/korilin">
 
-
-
-    <div class="row">
-        <div class="col-sm-12">
-            <div class="wrap-pagination">
-                <a class="disabled" href="/">
-                    <i class="fa fa-chevron-left" aria-hidden="true"></i>
+                    
+                    <a-icon type="github"
+                        theme="filled" />
+                    
                 </a>
-                <a class="" href="/page/2/">
-                    <i class="fa fa-chevron-right" aria-hidden="true"></i>
+            </span>
+            
+            <span class="icon-link">
+                <a target="_blank" rel="noopener" href="https://twitter.com/korilin_dev">
+
+                    
+                    <a-icon type="twitter"
+                        theme="" />
+                    
+                </a>
+            </span>
+            
+        </div>
+        <div class="friend-links">
+            
+            <div class="friend-link">
+                <a target="_blank" rel="noopener" href="https://en.korilin.com">
+                    英文技术博客
                 </a>
             </div>
+            
+            <div class="friend-link">
+                <a target="_blank" rel="noopener" href="https://jp.korilin.com">
+                    日语记录博客
+                </a>
+            </div>
+            
         </div>
+    </a-card>
+</a-affix>
     </div>
-
-
-
-
+    
 </div>
-
-<!-- Footer -->
-<div class="push"></div>
-
-<footer class="footer-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 footer-about">
-                <h2>About</h2>
-                <p>
-                    This theme was developed by <a target="_blank" rel="noopener" href="https://github.com/klugjo">Jonathan Klughertz</a>. The source code is available on Github. Create Websites. Make Magic.
-                </p>
-            </div>
-            
-    <div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 recent-posts">
-        <h2>Recent Posts</h2>
-        <ul>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/08/%E9%9B%B6%E6%98%9F%E7%9A%84%E9%97%AE%E9%A2%98%E4%BB%AC/">零星的问题们</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/02/mysql%E8%B0%83%E4%BC%98/">mysql调优</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/02/jvm%E8%B0%83%E4%BC%98/">jvm调优</a>
-            </li>
-            
-            <li>
-                <a class="footer-post" href="/2021/04/02/tomcat%E8%B0%83%E4%BC%98/">Untitled</a>
-            </li>
-            
-        </ul>
+                     
+<footer id="footer">
+    <div class="footer-wrap">
+        <div>
+            © 2018 - 2021 Hexo
+            <span class="footer-icon">
+                <a-icon type="flag" theme="filled" /></span>
+            @phenix-fledgling
+        </div>
+        <div></div>
+        <div>Based on the <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo Engine</a> & <a
+                target="_blank" rel="noopener" href="https://github.com/korilin/hexo-theme-particle">Particle Theme</a></div>
+        
     </div>
 
-
-
-            
-<div class="col-xs-6 col-sm-6 col-md-3 col-lg-3 footer-categories">
-    <h2>Categories</h2>
-    <ul>
-        
-        <li>
-            <a class="footer-post" href="/categories/categories/">categories</a>
-        </li>
-        
-    </ul>
-</div>
-
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <ul class="list-inline footer-social-icons">
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://github.com/klugjo/hexo-theme-alpha-dust">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-github"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://twitter.com/?lang=en">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-twitter"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://www.facebook.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-facebook"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://www.instagram.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-instagram"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://dribbble.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-dribbble"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://telegram.org/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-telegram"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://www.behance.net/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-behance"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a target="_blank" rel="noopener" href="https://500px.com/">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-500px"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="mailto:test@example.com">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-envelope-o"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                    
-                    <li class="list-inline-item">
-                        <a href="\#">
-                            <span class="footer-icon-container">
-                                <i class="fa fa-rss"></i>
-                            </span>
-                        </a>
-                    </li>
-                    
-                </ul>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
-                <div class="footer-copyright">
-                    @Untitled. All right reserved | Design & Hexo <a target="_blank" rel="noopener" href="http://www.codeblocq.com/">Jonathan Klughertz</a>
-                </div>
-            </div>
-        </div>
-    </div>
 </footer>
 
-<!-- After footer scripts -->
+<script src="/js/highlight.min.js"></script>
+<script src="/js/particle.js"></script>
+                </div>
+            </div>
+        </transition>
+    </div>
 
-<!-- jQuery -->
-<script src="//code.jquery.com/jquery-2.1.4.min.js"></script>
-
-<!-- Tween Max -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/gsap/1.18.5/TweenMax.min.js"></script>
-
-<!-- Gallery -->
-<script src="//cdnjs.cloudflare.com/ajax/libs/featherlight/1.3.5/featherlight.min.js" type="text/javascript" charset="utf-8"></script>
-
-<!-- Custom JavaScript -->
-
-<script src="/js/main.js"></script>
-
-
-<!-- Disqus Comments -->
-
-
+    <script>
+    new Vue({
+        el: "#layout",
+        data: {
+            show_page: false,
+            onload_menu: false,
+            menu_show: false,
+            card_top: 100
+        },
+        created: function () {
+            var that = this
+            window.onload = function () {
+                that.show_page = true
+                document.getElementById("loadcontent").style.opacity = 0
+                setTimeout(function () {
+                    document.getElementById("loadleft").style.width = 0
+                    document.getElementById("loadright").style.width = 0
+                }, 300)
+                setTimeout(function () {
+                    document.getElementById("loading").style = "display:none"
+                }, 600)
+            }
+        },
+        mounted: function () {
+            var that = this
+            window.addEventListener('scroll', function (e) {
+                that.menu_show = false
+            })
+        },
+        methods: {
+            home_click: function () {
+                window.scrollTo({
+                    top: window.innerHeight - 80,
+                    behavior: "smooth",
+                });
+            }
+        }
+    })
+</script>
 
 </body>
 
