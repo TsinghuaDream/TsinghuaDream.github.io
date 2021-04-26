@@ -206,8 +206,8 @@
             
             <span class="tag">
                 
-                <a href="/tags/java" style=color:#ffa2c4>
-                    java
+                <a href="/tags/Java" style=color:#1bccbc>
+                    Java
                 </a>
             </span>
             
@@ -287,8 +287,15 @@
 </tbody></table>
 <p><strong>集合类的特点</strong>：提供一种存储空间可变的存储模型，存储的数据容量可以发生改变。</p>
 <p><strong>泛型：可以改变存储的数据类型，使代码更加灵活</strong></p>
-<h2 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h2><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="title">ArrayList</span><span class="params">()</span></span>;<span class="comment">//创建一个空的集合对象</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">add</span><span class="params">(E e)</span></span>;<span class="comment">//将指定的元素追加到此集合到末尾</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">add</span><span class="params">(<span class="keyword">int</span> index,E element)</span></span>;<span class="comment">//在此集合中的指定位置插入指定的元素</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">boolean</span> <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span></span>;<span class="comment">//删除指定索引处的元素，返回被删除的元素</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">remove</span><span class="params">(<span class="keyword">int</span> index)</span></span>;<span class="comment">//删除指定索引处的元素，返回被删除的元素</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">set</span><span class="params">(<span class="keyword">int</span> index,E element)</span></span>;<span class="comment">//修改指定索引处的元素，返回被修改的元素</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> E <span class="title">get</span><span class="params">(<span class="keyword">int</span> index)</span></span>;<span class="comment">//返回指定索引处的元素</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">int</span> <span class="title">size</span><span class="params">()</span></span>;<span class="comment">//返回集合中的元素的个数</span></span><br></pre></td></tr></table></figure>
-
+<h2 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h2><pre><code class="java">public ArrayList();//创建一个空的集合对象
+public boolean add(E e);//将指定的元素追加到此集合到末尾
+public void add(int index,E element);//在此集合中的指定位置插入指定的元素
+public boolean remove(int index);//删除指定索引处的元素，返回被删除的元素
+public E remove(int index);//删除指定索引处的元素，返回被删除的元素
+public E set(int index,E element);//修改指定索引处的元素，返回被修改的元素
+public E get(int index);//返回指定索引处的元素
+public int size();//返回集合中的元素的个数
+</code></pre>
 <h1 id="修饰符-权限修饰符-状态修饰符"><a href="#修饰符-权限修饰符-状态修饰符" class="headerlink" title="修饰符(权限修饰符/状态修饰符)"></a>修饰符(权限修饰符/状态修饰符)</h1><p>private：同一类中 </p>
 <p>默认 ：同一包中</p>
 <p>protected ：不同包的子类</p>
@@ -346,8 +353,37 @@
 <p><strong>设计理念区别</strong> </p>
 <p>​    抽象类     对类抽象，包括属性、行为 </p>
 <p>​    接口         对行为抽象，主要是行为</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">/*案例*/</span></span><br><span class="line"><span class="comment">//抽象类</span></span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Door</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//接口  </span></span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Door</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">open</span><span class="params">()</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//例子</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">interface</span> <span class="title">Alram</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">void</span> <span class="title">alarm</span><span class="params">()</span></span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="keyword">abstract</span> <span class="class"><span class="keyword">class</span> <span class="title">Door</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">open</span><span class="params">()</span></span>;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">abstract</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span></span>;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">AlarmDoor</span> <span class="keyword">extends</span> <span class="title">Door</span> <span class="keyword">implements</span> <span class="title">Alarm</span> </span>&#123;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">oepn</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">     &#125;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">close</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">     &#125;</span><br><span class="line">     <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">alarm</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">//....</span></span><br><span class="line">     &#125;</span><br><span class="line">  &#125;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="java">/*案例*/
+//抽象类
+  public abstract class Door &#123;
+     public abstract void open();
+     public abstract void close();
+  &#125;
+//接口  
+  public interface Door &#123;
+     void open();
+     void close();
+  &#125;
+//例子
+public interface Alram &#123;
+     void alarm();
+  &#125;
+  public abstract class Door &#123;
+     public abstract void open();
+     public abstract void close();
+  &#125;
+  public class AlarmDoor extends Door implements Alarm &#123;
+     public void oepn() &#123;
+        //....
+     &#125;
+     public void close() &#123;
+        //....
+     &#125;
+     public void alarm() &#123;
+        //....
+     &#125;
+  &#125;
+</code></pre>
 <h1 id="形参和返回值注意事项"><a href="#形参和返回值注意事项" class="headerlink" title="形参和返回值注意事项"></a>形参和返回值注意事项</h1><ul>
 <li>类名作为形参和返回值<ul>
 <li>方法的形参是类名，其实需要的是该类的对象 </li>
@@ -365,14 +401,19 @@
 </ul>
 </li>
 </ul>
-<h1 id="Some-question内部类（就是在一个类中定义一个类。）"><a href="#Some-question内部类（就是在一个类中定义一个类。）" class="headerlink" title="Some question内部类（就是在一个类中定义一个类。）"></a>Some question内部类（就是在一个类中定义一个类。）</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Outer</span> </span>&#123;</span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Inner</span> </span>&#123;</span><br><span class="line">  </span><br><span class="line">      &#125; 	</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
+<h1 id="Some-question内部类（就是在一个类中定义一个类。）"><a href="#Some-question内部类（就是在一个类中定义一个类。）" class="headerlink" title="Some question内部类（就是在一个类中定义一个类。）"></a>Some question内部类（就是在一个类中定义一个类。）</h1><pre><code class="java">public class Outer &#123;
+public class Inner &#123;
+  
+      &#125;     
+&#125;
+</code></pre>
 <p><strong>内部类的访问特点</strong>:内部类可以直接访问外部类的成员，包括私有;外部类要访问内部类的成员，必须创建对象</p>
 <p><strong>内部类的分类：</strong></p>
 <p><strong>成员内部类；局部内部类；匿名内部类。</strong></p>
 <p>在类的成员位置：成员内部类，外界创建对象使用成员内部类：</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//外部类名.内部类名 对象名 = 外部类对象.内部类对象;</span></span><br><span class="line">Outer.Inner oi = <span class="keyword">new</span> Outer().<span class="function">new <span class="title">Inner</span><span class="params">()</span></span>;</span><br></pre></td></tr></table></figure>
-
+<pre><code class="java">//外部类名.内部类名 对象名 = 外部类对象.内部类对象;
+Outer.Inner oi = new Outer().new Inner();
+</code></pre>
 <p>在类的局部位置：局部内部类 ;</p>
 <p>局部内部类是在方法中定义的类，所以外界是无法直接使用，需要在方法内部创建对象并使用 该类可以直接访问外部类的成员，也可以访问方法内的局部变量。</p>
 <p>匿名</p>
@@ -514,8 +555,9 @@
 <p><strong>自动装箱和拆箱</strong></p>
 <p>装箱：把基本数据类型转换为对应的包装类类型 </p>
 <p>拆箱：把包装类类型转换为对应的基本数据类型</p>
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">Integer i = <span class="number">100</span>;  <span class="comment">// 自动装箱</span></span><br><span class="line">i += <span class="number">200</span>;         <span class="comment">// i = i + 200;  i + 200 自动拆箱；i = i + 200; 是自动装箱</span></span><br></pre></td></tr></table></figure>
-
+<pre><code class="java">Integer i = 100;  // 自动装箱
+i += 200;         // i = i + 200;  i + 200 自动拆箱；i = i + 200; 是自动装箱
+</code></pre>
 <p><strong>注意</strong>：在使用包装类类型的时候，如果做操作，最好先判断是否为 null          </p>
 <p>我们推荐的是，只要是对象，在使用前就必须进行不为 null 的判断</p>
 <h2 id="日期类（Date）"><a href="#日期类（Date）" class="headerlink" title="日期类（Date）"></a>日期类（Date）</h2><p>Date 代表了一个特定的时间，精确到毫秒</p>
@@ -608,12 +650,23 @@
 <td>把异常的错误信息输出在控制台</td>
 </tr>
 </tbody></table>
-<h2 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">当Java内置的异常都不能明确的说明异常情况的时候，需要创建自己的异常</span><br><span class="line">需要注意的是，唯一有用的就是类型名这个信息，所以我们不需要在异常类的设计上花费太多精力</span><br><span class="line">一个类要想成为异常类的一员，要么继承Exception，要么继承RuntimeException</span><br><span class="line">通常情况下，会直接继承自Exception类，给出无参和带参构造方法即可</span><br></pre></td></tr></table></figure>
-
-
-
-<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> 异常类名 <span class="keyword">extends</span> <span class="title">Exception</span> </span>&#123;</span><br><span class="line">	<span class="comment">//无参构造</span></span><br><span class="line">	<span class="comment">//带参构造</span></span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//demo</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ScoreException</span> <span class="keyword">extends</span> <span class="title">Exception</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ScoreException</span><span class="params">()</span> </span>&#123;&#125;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="title">ScoreException</span><span class="params">(String message)</span> </span>&#123;</span><br><span class="line">	     <span class="keyword">super</span>(message);</span><br><span class="line">	&#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
-
+<h2 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h2><pre><code>当Java内置的异常都不能明确的说明异常情况的时候，需要创建自己的异常
+需要注意的是，唯一有用的就是类型名这个信息，所以我们不需要在异常类的设计上花费太多精力
+一个类要想成为异常类的一员，要么继承Exception，要么继承RuntimeException
+通常情况下，会直接继承自Exception类，给出无参和带参构造方法即可
+</code></pre>
+<pre><code class="java">public class 异常类名 extends Exception &#123;
+    //无参构造
+    //带参构造
+&#125;
+//demo
+public class ScoreException extends Exception &#123;
+    public ScoreException() &#123;&#125;
+    public ScoreException(String message) &#123;
+         super(message);
+    &#125;
+&#125; 
+</code></pre>
 <h2 id="throws-和-throw-的区别"><a href="#throws-和-throw-的区别" class="headerlink" title="throws 和 throw 的区别"></a>throws 和 throw 的区别</h2><p>throws </p>
 <ul>
 <li><p>用在方法声明后面，跟的是异常类名 </p>
@@ -772,7 +825,39 @@
 <p>否则使用字节流。<strong>如果你不知道该使用哪种类型的流，就使用字节流</strong></p>
 </li>
 </ul>
-
+<h1 id="内存划分（伊甸园区，旧生代区，永久区）"><a href="#内存划分（伊甸园区，旧生代区，永久区）" class="headerlink" title="内存划分（伊甸园区，旧生代区，永久区）"></a>内存划分（伊甸园区，旧生代区，永久区）</h1><p>内存的优良划分是系统优化很关键的一环，主要考察内存优化和GC机制</p>
+<p>Runtime类：</p>
+<pre><code class="java">public class MemoryT &#123;
+    public static void main(String[] args) &#123;
+        Runtime run=Runtime.getRuntime();//取得Runtime对象
+//        Runtime rund = new Runtime();//这个不行，因为Runtime类采用单例设计模式 它的构造方法Runtime()是私有的；
+        System.out.println(&quot;内存1&quot;+run.maxMemory());
+        
+        System.out.println(&quot;内存3&quot;+run.totalMemory());//返回值都为long类型 就是一子节 1byte；
+      
+           System.out.println(&quot;内存2&quot;+run.freeMemory());
+    &#125;
+&#125;
+</code></pre>
+<p>伊甸园区：新生的对象都存在这里，但不是所有对象都永久存在，伴随着内存的不足会进行gc处理空出空间给新生的对象；</p>
+<p>旧生代区：长期使用的对象存在这里，当伊甸园区进行了gc处理仍然空间不足时，该区进行gc处理；</p>
+<p>永久区：永不清理的内存空间；</p>
+<p>调整内存大小：xms-初始内存大小  默认为物理内存1/64但小于1g；</p>
+<p>​                           xmx-最大内存大小 默认为物理内存的1/4但小于1g ；</p>
+<p>​                           xmn-伊甸园区堆内存大小； 因为默认值实在太小了，我们实际服务器基本就16g以上，所以需要手动调整优化性能；</p>
+<h1 id="加载器"><a href="#加载器" class="headerlink" title="加载器"></a>加载器</h1><pre><code class="java">class dmp&#123;&#125;
+public class LoaderT &#123;
+    class demo&#123;&#125;
+    public static void main(String[] args) throws ClassNotFoundException &#123;
+        Class&lt;?&gt; cls = Class.forName(&quot;dmp&quot;);
+        System.out.println(cls.getClassLoader());//AppClassLoade sun.misc.Launcher$AppClassLoader@18b4aac2
+        System.out.println(cls.getClassLoader().getParent());//ExtClassLoade
+        System.out.println(cls.getClassLoader().getParent().getParent());//三层加载器
+    &#125;
+&#125;
+</code></pre>
+<p>类加载器可自定义，Java中采用双亲加载方式，加载系统类时调用另一套加载器。</p>
+<h1 id><a href="#" class="headerlink" title></a></h1>
     </div>
 
     
