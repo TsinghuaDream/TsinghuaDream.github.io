@@ -1,1 +1,663 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="icon" href="/favicon.ico"><link href="/static/css/chunk-libs.eebac533.css" rel="stylesheet"><link href="/static/css/app.ef05802f.css" rel="stylesheet"><meta name="generator" content="Hexo 5.4.0"></head><body id="body-container"><noscript><strong>We're sorry but Aurora Blog doesn't work properly without JavaScript enabled. Please enable it to continue.</strong></noscript><div id="app"></div><script>(function(e){function t(t){for(var n,o,u=t[0],i=t[1],c=t[2],l=0,f=[];l<u.length;l++)o=u[l],Object.prototype.hasOwnProperty.call(a,o)&&a[o]&&f.push(a[o][0]),a[o]=0;for(n in i)Object.prototype.hasOwnProperty.call(i,n)&&(e[n]=i[n]);p&&p(t);while(f.length)f.shift()();return s.push.apply(s,c||[]),r()}function r(){for(var e,t=0;t<s.length;t++){for(var r=s[t],n=!0,o=1;o<r.length;o++){var u=r[o];0!==a[u]&&(n=!1)}n&&(s.splice(t--,1),e=i(i.s=r[0]))}return e}var n={},o={runtime:0},a={runtime:0},s=[];function u(e){return i.p+"static/js/"+({404:"404",about:"about",archives:"archives",categories:"categories",page:"page",post:"post",result:"result",tags:"tags"}[e]||e)+"."+{404:"7d1e319c",about:"05f5177a",archives:"f8376ea5",categories:"cd195d1b",page:"58f43599",post:"10796a8c",result:"83a84bff",tags:"393261f6"}[e]+".js"}function i(t){if(n[t])return n[t].exports;var r=n[t]={i:t,l:!1,exports:{}};return e[t].call(r.exports,r,r.exports,i),r.l=!0,r.exports}i.e=function(e){var t=[],r={404:1,about:1,archives:1,categories:1,page:1,post:1,result:1,tags:1};o[e]?t.push(o[e]):0!==o[e]&&r[e]&&t.push(o[e]=new Promise((function(t,r){for(var n="static/css/"+({404:"404",about:"about",archives:"archives",categories:"categories",page:"page",post:"post",result:"result",tags:"tags"}[e]||e)+"."+{404:"1a6cd5bd",about:"c06cd5c9",archives:"b41c8192",categories:"10e2be12",page:"7b21beee",post:"9f951a60",result:"10e2be12",tags:"10e2be12"}[e]+".css",a=i.p+n,s=document.getElementsByTagName("link"),u=0;u<s.length;u++){var c=s[u],l=c.getAttribute("data-href")||c.getAttribute("href");if("stylesheet"===c.rel&&(l===n||l===a))return t()}var f=document.getElementsByTagName("style");for(u=0;u<f.length;u++){c=f[u],l=c.getAttribute("data-href");if(l===n||l===a)return t()}var p=document.createElement("link");p.rel="stylesheet",p.type="text/css",p.onload=t,p.onerror=function(t){var n=t&&t.target&&t.target.src||a,s=new Error("Loading CSS chunk "+e+" failed.\n("+n+")");s.code="CSS_CHUNK_LOAD_FAILED",s.request=n,delete o[e],p.parentNode.removeChild(p),r(s)},p.href=a;var d=document.getElementsByTagName("head")[0];d.appendChild(p)})).then((function(){o[e]=0})));var n=a[e];if(0!==n)if(n)t.push(n[2]);else{var s=new Promise((function(t,r){n=a[e]=[t,r]}));t.push(n[2]=s);var c,l=document.createElement("script");l.charset="utf-8",l.timeout=120,i.nc&&l.setAttribute("nonce",i.nc),l.src=u(e);var f=new Error;c=function(t){l.onerror=l.onload=null,clearTimeout(p);var r=a[e];if(0!==r){if(r){var n=t&&("load"===t.type?"missing":t.type),o=t&&t.target&&t.target.src;f.message="Loading chunk "+e+" failed.\n("+n+": "+o+")",f.name="ChunkLoadError",f.type=n,f.request=o,r[1](f)}a[e]=void 0}};var p=setTimeout((function(){c({type:"timeout",target:l})}),12e4);l.onerror=l.onload=c,document.head.appendChild(l)}return Promise.all(t)},i.m=e,i.c=n,i.d=function(e,t,r){i.o(e,t)||Object.defineProperty(e,t,{enumerable:!0,get:r})},i.r=function(e){"undefined"!==typeof Symbol&&Symbol.toStringTag&&Object.defineProperty(e,Symbol.toStringTag,{value:"Module"}),Object.defineProperty(e,"__esModule",{value:!0})},i.t=function(e,t){if(1&t&&(e=i(e)),8&t)return e;if(4&t&&"object"===typeof e&&e&&e.__esModule)return e;var r=Object.create(null);if(i.r(r),Object.defineProperty(r,"default",{enumerable:!0,value:e}),2&t&&"string"!=typeof e)for(var n in e)i.d(r,n,function(t){return e[t]}.bind(null,n));return r},i.n=function(e){var t=e&&e.__esModule?function(){return e["default"]}:function(){return e};return i.d(t,"a",t),t},i.o=function(e,t){return Object.prototype.hasOwnProperty.call(e,t)},i.p="/",i.oe=function(e){throw console.error(e),e};var c=window["webpackJsonp"]=window["webpackJsonp"]||[],l=c.push.bind(c);c.push=t,c=c.slice();for(var f=0;f<c.length;f++)t(c[f]);var p=l;r()})([]);</script><script src="/static/js/chunk-libs.9b3ced64.js"></script><script src="/static/js/app.17c5223b.js"></script></body></html>
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="theme-color" content="#0078E7"><meta name="author" content="phenix-fledgling"><meta name="copyright" content="phenix-fledgling"><meta name="generator" content="Hexo 5.4.0"><meta name="theme" content="hexo-theme-yun"><title>Java高级 | 菲尼克斯blog</title><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@900&amp;display=swap" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/star-markdown-css@0.1.24/dist/yun/yun-markdown.min.css"><script src="//at.alicdn.com/t/font_1140697_ed8vp4atwoj.js" async></script><script src="https://cdn.jsdelivr.net/npm/scrollreveal/dist/scrollreveal.min.js" defer></script><script>document.addEventListener("DOMContentLoaded", () => {
+  [".post-card",".post-content img"].forEach((target)=> {
+    ScrollReveal().reveal(target);
+  })
+});
+</script><link id="light-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism.css" media="(prefers-color-scheme: light)"><link id="dark-prism-css" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs@latest/themes/prism-tomorrow.css" media="(prefers-color-scheme: dark)"><link rel="shortcut icon" type="image/svg+xml" href="/yun.svg"><link rel="mask-icon" href="/yun.svg" color="#0078E7"><link rel="alternate icon" href="/yun.ico"><link rel="preload" href="/css/hexo-theme-yun.css" as="style"><link rel="preload" href="/js/utils.js" as="script"><link rel="preload" href="/js/hexo-theme-yun.js" as="script"><link rel="prefetch" href="/js/sidebar.js" as="script"><link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin><script id="yun-config">
+    const Yun = window.Yun || {};
+    window.CONFIG = {"hostname":"example.com","root":"/","title":"云游君的小站","version":"1.5.2","mode":"auto","copycode":true,"page":{"isPost":true},"i18n":{"placeholder":"Searching...","empty":"We didn't find any results for the search: ${query}.","hits":"${hits} results found","hits_time":"${hits} results found in ${time} ms"},"anonymous_image":"https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/avatar/none.jpg","say":{"api":"https://v1.hitokoto.cn","hitokoto":true},"fireworks":{"colors":["102, 167, 221","62, 131, 225","33, 78, 194"]}};
+  </script><link rel="stylesheet" href="/css/hexo-theme-yun.css"><script src="/js/utils.js"></script><script src="/js/hexo-theme-yun.js"></script><meta name="description" content="标准类制作 成员变量  ​    使用private修饰   构造方法  提供一个无参构造方法 提供一个带多个参数的构造方法   成员方法  提供每一个成员变量对应的setXxx( )&#x2F;getXxx( ) 提供一个显示对象信息的show（）   创建对象并对其成员变量赋值的两种方式t  无参构造方法创建对象后使用setXxx( )赋值 使用带参构造方法直接创建带有属性值的对象        集合编">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java高级">
+<meta property="og:url" content="http://example.com/post/Java%E9%AB%98%E7%BA%A7.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="标准类制作 成员变量  ​    使用private修饰   构造方法  提供一个无参构造方法 提供一个带多个参数的构造方法   成员方法  提供每一个成员变量对应的setXxx( )&#x2F;getXxx( ) 提供一个显示对象信息的show（）   创建对象并对其成员变量赋值的两种方式t  无参构造方法创建对象后使用setXxx( )赋值 使用带参构造方法直接创建带有属性值的对象        集合编">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2018-12-03T02:03:26.000Z">
+<meta property="article:modified_time" content="2021-04-26T02:25:08.190Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="Java">
+<meta name="twitter:card" content="summary"><script src="/js/ui/mode.js"></script></head><body><script defer src="https://cdn.jsdelivr.net/npm/animejs@latest"></script><script defer src="/js/ui/fireworks.js"></script><canvas class="fireworks"></canvas><div class="container"><a class="sidebar-toggle hty-icon-button" id="menu-btn"><div class="hamburger hamburger--spin" type="button"><span class="hamburger-box"><span class="hamburger-inner"></span></span></div></a><div class="sidebar-toggle sidebar-overlay"></div><aside class="sidebar"><script src="/js/sidebar.js"></script><ul class="sidebar-nav"><li class="sidebar-nav-item sidebar-nav-toc hty-icon-button sidebar-nav-active" data-target="post-toc-wrap" title="Table of Contents"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-list-ordered"></use></svg></li><li class="sidebar-nav-item sidebar-nav-overview hty-icon-button" data-target="site-overview-wrap" title="Overview"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-passport-line"></use></svg></li></ul><div class="sidebar-panel" id="site-overview-wrap"><div class="site-info fix-top"><a class="site-author-avatar" href="/about/" title="phenix-fledgling"><img width="96" loading="lazy" src="/Yun.png" alt="phenix-fledgling"></a><div class="site-author-name"><a href="/about/">phenix-fledgling</a></div><span class="site-name">菲尼克斯blog</span><sub class="site-subtitle"></sub><div class="site-desciption">phenix</div></div><nav class="site-state"><a class="site-state-item hty-icon-button icon-home" href="/" title="Home"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-home-4-line"></use></svg></span></a><div class="site-state-item"><a href="/archives/" title="Archives"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-archive-line"></use></svg></span><span class="site-state-item-count">45</span></a></div><div class="site-state-item"><a href="/categories/" title="Categories"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-folder-2-line"></use></svg></span><span class="site-state-item-count">2</span></a></div><div class="site-state-item"><a href="/tags/" title="Tags"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="site-state-item-count">13</span></a></div><a class="site-state-item hty-icon-button" target="_blank" rel="noopener" href="https://yun.yunyoujun.cn" title="文档"><span class="site-state-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-settings-line"></use></svg></span></a></nav><hr style="margin-bottom:0.5rem"><div class="links-of-author"><a class="links-of-author-item hty-icon-button" rel="noopener" href="/atom.xml" title="RSS" target="_blank" style="color:orange"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-rss-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://qm.qq.com/cgi-bin/qm/qr?k=epvxdq1sknJe9JMj6J1LsBw4a6cI_2ln&amp;jump_from=webapi" title="QQ 群 389401003" target="_blank" style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://github.com/YunYouJun" title="GitHub" target="_blank" style="color:#6e5494"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-github-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://weibo.com/jizhideyunyoujun" title="微博" target="_blank" style="color:#E6162D"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-weibo-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.douban.com/people/yunyoujun/" title="豆瓣" target="_blank" style="color:#007722"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-douban-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://music.163.com/#/user/home?id=247102977" title="网易云音乐" target="_blank" style="color:#C20C0C"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-netease-cloud-music-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://www.zhihu.com/people/yunyoujun/" title="知乎" target="_blank" style="color:#0084FF"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-zhihu-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://space.bilibili.com/1579790" title="哔哩哔哩" target="_blank" style="color:#FF8EB3"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-bilibili-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://twitter.com/YunYouJun" title="Twitter" target="_blank" style="color:#1da1f2"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-twitter-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://t.me/elpsycn" title="Telegram Channel" target="_blank" style="color:#0088CC"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-telegram-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="mailto:me@yunyoujun.cn" title="E-Mail" target="_blank" style="color:#8E71C1"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-mail-line"></use></svg></a><a class="links-of-author-item hty-icon-button" rel="noopener" href="https://travellings.now.sh/" title="Travelling" target="_blank" style="color:var(--hty-text-color)"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-send-plane-2-line"></use></svg></a></div><hr style="margin:0.5rem 1rem"><div class="links"><a class="links-item hty-icon-button" href="/links/" title="我的小伙伴们" style="color:dodgerblue"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-genderless-line"></use></svg></a></div><br><a class="links-item hty-icon-button" id="toggle-mode-btn" href="javascript:;" title="Mode" style="color: #f1cb64"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-contrast-2-line"></use></svg></a></div><div class="sidebar-panel sidebar-panel-active" id="post-toc-wrap"><div class="post-toc"><div class="post-toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A0%87%E5%87%86%E7%B1%BB%E5%88%B6%E4%BD%9C"><span class="toc-number">1.</span> <span class="toc-text">标准类制作</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9B%86%E5%90%88"><span class="toc-number">2.</span> <span class="toc-text">集合</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#ArrayList"><span class="toc-number">2.1.</span> <span class="toc-text">ArrayList</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E7%AC%A6-%E6%9D%83%E9%99%90%E4%BF%AE%E9%A5%B0%E7%AC%A6-%E7%8A%B6%E6%80%81%E4%BF%AE%E9%A5%B0%E7%AC%A6"><span class="toc-number">3.</span> <span class="toc-text">修饰符(权限修饰符&#x2F;状态修饰符)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%9A%E6%80%81%EF%BC%88%E5%90%8C%E4%B8%80%E5%AF%B9%E8%B1%A1%EF%BC%8C%E5%9C%A8%E4%B8%8D%E5%90%8C%E6%97%B6%E5%88%BB%E8%A1%A8%E7%8E%B0%E5%87%BA%E6%9D%A5%E7%9A%84%E4%B8%8D%E5%90%8C%E5%BD%A2%E6%80%81%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">多态（同一对象，在不同时刻表现出来的不同形态）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8A%BD%E8%B1%A1%E7%B1%BB%E5%92%8C%E6%8E%A5%E5%8F%A3"><span class="toc-number">5.</span> <span class="toc-text">抽象类和接口</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BD%A2%E5%8F%82%E5%92%8C%E8%BF%94%E5%9B%9E%E5%80%BC%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">6.</span> <span class="toc-text">形参和返回值注意事项</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Some-question%E5%86%85%E9%83%A8%E7%B1%BB%EF%BC%88%E5%B0%B1%E6%98%AF%E5%9C%A8%E4%B8%80%E4%B8%AA%E7%B1%BB%E4%B8%AD%E5%AE%9A%E4%B9%89%E4%B8%80%E4%B8%AA%E7%B1%BB%E3%80%82%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">Some question内部类（就是在一个类中定义一个类。）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8API-Math-System-Object-Arrays-%E5%9F%BA%E6%9C%AC%E7%B1%BB%E5%9E%8B%E5%8C%85%E8%A3%85%E7%B1%BB-%E6%97%A5%E6%9C%9F%E7%B1%BB-%E5%B8%B8%E7%94%A8%E7%9A%84%E5%B7%A5%E5%85%B7%E7%B1%BB%E7%9A%84%E8%AE%BE%E8%AE%A1%E6%80%9D%E6%83%B3%EF%BC%9A%E6%9E%84%E9%80%A0%E6%96%B9%E6%B3%95%E7%A7%81%E6%9C%89%E3%80%82%E6%88%90%E5%91%98%E9%83%BD%E7%94%A8static%E4%BF%AE%E9%A5%B0%E3%80%82"><span class="toc-number">8.</span> <span class="toc-text">常用API (Math System Object Arrays 基本类型包装类 日期类)常用的工具类的设计思想：构造方法私有。成员都用static修饰。</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Math-%E7%B1%BB%E6%A6%82%E8%BF%B0%EF%BC%9A"><span class="toc-number">8.1.</span> <span class="toc-text">Math 类概述：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#System%E7%B1%BB%E6%A6%82%E8%BF%B0%EF%BC%9A"><span class="toc-number">8.2.</span> <span class="toc-text">System类概述：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Object-%E7%B1%BB%E7%9A%84%E6%A6%82%E8%BF%B0%EF%BC%9A"><span class="toc-number">8.3.</span> <span class="toc-text">Object 类的概述：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Arrays%E7%B1%BB%E6%A6%82%E8%BF%B0%EF%BC%9A"><span class="toc-number">8.4.</span> <span class="toc-text">Arrays类概述：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%97%A5%E6%9C%9F%E7%B1%BB%EF%BC%88Date%EF%BC%89"><span class="toc-number">8.5.</span> <span class="toc-text">日期类（Date）</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#SimpleDateFormat-%E7%B1%BB%E6%A6%82%E8%BF%B0%EF%BC%88%E5%85%B7%E4%BD%93%E7%B1%BB%EF%BC%8C%E7%94%A8%E4%BA%8E%E4%BB%A5%E5%8C%BA%E5%9F%9F%E8%AE%BE%E7%BD%AE%E6%95%8F%E6%84%9F%E7%9A%84%E6%96%B9%E5%BC%8F%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%92%8C%E8%A7%A3%E6%9E%90%E6%97%A5%E6%9C%9F%EF%BC%89"><span class="toc-number">8.5.1.</span> <span class="toc-text">SimpleDateFormat 类概述（具体类，用于以区域设置敏感的方式格式化和解析日期）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Calendar%E7%B1%BB%E6%A6%82%E8%BF%B0%EF%BC%88Calendar-%E4%B8%BA%E6%9F%90%E4%B8%80%E6%97%B6%E5%88%BB%E5%92%8C%E4%B8%80%E7%BB%84%E6%97%A5%E5%8E%86%E5%AD%97%E6%AE%B5%E4%B9%8B%E9%97%B4%E7%9A%84%E8%BD%AC%E6%8D%A2%E6%8F%90%E4%BE%9B%E4%BA%86%E4%B8%80%E4%BA%9B%E6%96%B9%E6%B3%95%EF%BC%8C%E5%B9%B6%E4%B8%BA%E6%93%8D%E4%BD%9C%E6%97%A5%E5%8E%86%E5%AD%97%E6%AE%B5%E6%8F%90%E4%BE%9B%E4%BA%86%E4%B8%80%E4%BA%9B%E6%96%B9%E6%B3%95%EF%BC%89"><span class="toc-number">8.5.2.</span> <span class="toc-text">Calendar类概述（Calendar 为某一时刻和一组日历字段之间的转换提供了一些方法，并为操作日历字段提供了一些方法）</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%BC%82%E5%B8%B8Throwable"><span class="toc-number">9.</span> <span class="toc-text">异常Throwable</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E5%BC%82%E5%B8%B8"><span class="toc-number">9.1.</span> <span class="toc-text">自定义异常</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#throws-%E5%92%8C-throw-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">9.2.</span> <span class="toc-text">throws 和 throw 的区别</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#IO%E6%B5%81%E5%A4%84%E7%90%86"><span class="toc-number">10.</span> <span class="toc-text">IO流处理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#File%E7%B1%BB%EF%BC%88%E7%94%A8%E4%BA%8E%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6%E5%92%8C%E7%9B%AE%E5%BD%95%EF%BC%89"><span class="toc-number">10.1.</span> <span class="toc-text">File类（用于操作文件和目录）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#File%E7%B1%BB%E5%A2%9E%E5%88%A0%E5%8A%9F%E8%83%BD"><span class="toc-number">10.2.</span> <span class="toc-text">File类增删功能</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#File%E7%B1%BB%E5%88%A4%E6%96%AD%E5%92%8C%E8%8E%B7%E5%8F%96%E5%8A%9F%E8%83%BD"><span class="toc-number">10.3.</span> <span class="toc-text">File类判断和获取功能</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AD%97%E8%8A%82%E6%B5%81%E5%92%8C%E5%AD%97%E7%AC%A6%E6%B5%81%EF%BC%88%E6%93%8D%E4%BD%9C%E6%96%87%E4%BB%B6%E4%BC%A0%E8%BE%93%EF%BC%89"><span class="toc-number">11.</span> <span class="toc-text">字节流和字符流（操作文件传输）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E5%88%92%E5%88%86%EF%BC%88%E4%BC%8A%E7%94%B8%E5%9B%AD%E5%8C%BA%EF%BC%8C%E6%97%A7%E7%94%9F%E4%BB%A3%E5%8C%BA%EF%BC%8C%E6%B0%B8%E4%B9%85%E5%8C%BA%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">内存划分（伊甸园区，旧生代区，永久区）</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%8A%A0%E8%BD%BD%E5%99%A8"><span class="toc-number">13.</span> <span class="toc-text">加载器</span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number">14.</span> <span class="toc-text"></span></a></li></ol></div></div></div></aside><main class="sidebar-translate" id="content"><div id="post"><article class="hty-card post-block" itemscope itemtype="https://schema.org/Article"><link itemprop="mainEntityOfPage" href="http://example.com/post/Java%E9%AB%98%E7%BA%A7.html"><span hidden itemprop="author" itemscope itemtype="https://schema.org/Person"><meta itemprop="name" content="phenix-fledgling"><meta itemprop="description"></span><span hidden itemprop="publisher" itemscope itemtype="https://schema.org/Organization"><meta itemprop="name" content="菲尼克斯blog"></span><header class="post-header"><h1 class="post-title" itemprop="name headline">Java高级</h1><div class="post-meta"><div class="post-time" style="display:inline-block"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-line"></use></svg></span> <time title="Created: 2018-12-03 10:03:26" itemprop="dateCreated datePublished" datetime="2018-12-03T10:03:26+08:00">2018-12-03</time><span class="post-meta-divider">-</span><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-calendar-2-line"></use></svg></span> <time title="Modified: 2021-04-26 10:25:08" itemprop="dateModified" datetime="2021-04-26T10:25:08+08:00">2021-04-26</time></div><div class="post-classify"><span class="post-tag"><a class="tag" href="/tags/Java/" style="--text-color:var(--hty-text-color)"><span class="post-meta-item-icon"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-price-tag-3-line"></use></svg></span><span class="tag-name">Java</span></a></span></div></div></header><section class="post-body" itemprop="articleBody"><div class="post-content markdown-body" style="--smc-primary:#0078E7;"><h1 id="标准类制作"><a href="#标准类制作" class="headerlink" title="标准类制作"></a>标准类制作</h1><ol>
+<li><p>成员变量</p>
+<ul>
+<li>​    使用private修饰</li>
+</ul>
+</li>
+<li><p>构造方法</p>
+<ul>
+<li>提供一个无参构造方法</li>
+<li>提供一个带多个参数的构造方法</li>
+</ul>
+</li>
+<li><p>成员方法</p>
+<ul>
+<li>提供每一个成员变量对应的setXxx( )/getXxx( )</li>
+<li>提供一个显示对象信息的show（）</li>
+</ul>
+</li>
+<li><p>创建对象并对其成员变量赋值的两种方式t</p>
+<ul>
+<li>无参构造方法创建对象后使用setXxx( )赋值</li>
+<li>使用带参构造方法直接创建带有属性值的对象    </li>
+</ul>
+</li>
+</ol>
+<h1 id="集合"><a href="#集合" class="headerlink" title="集合"></a>集合</h1><p>编程的时候如果要存储多个数据，使用<strong>长度固定的数组存储格式，不一定满足我们的需求</strong>，更适应不了变化的需求。所以集合应运而生！</p>
+<p><strong>集合的接口们：</strong>Collection,List,Set,泛型，Map,Collections;</p>
+<p>集合：<strong>Collection</strong>–&gt; <strong>List</strong>–&gt;ArrayList,LinkedList…</p>
+<p>​                                    <strong>Set</strong>–&gt;HashSet,TreeSet…</p>
+<p>​                <strong>Map</strong>     –&gt;HashMap…</p>
+<p><strong>Collection集合概述</strong> </p>
+<p>​    是单例集合的顶层接口，它表示一组对象，这些对象也称为Collection的元素 </p>
+<p>​    JDK 不提供此接口的任何直接实现，它提供更具体的子接口（如Set和List）实现 </p>
+<p><strong>创建Collection集合的对象</strong> </p>
+<p>​    多态的方式 </p>
+<p>​    具体的实现类ArrayList</p>
+<p>Collection集合常用方法</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>boolean add(E e)</td>
+<td>添加元素</td>
+</tr>
+<tr>
+<td>boolean remove(Object o)</td>
+<td>从集合中移除指定的元素</td>
+</tr>
+<tr>
+<td>void clear()</td>
+<td>清空集合中的元素</td>
+</tr>
+<tr>
+<td>boolean contains(Object o)</td>
+<td>判断集合中是否存在指定的元素</td>
+</tr>
+<tr>
+<td>boolean isEmpty()</td>
+<td>判断集合是否为空</td>
+</tr>
+<tr>
+<td>int size()</td>
+<td>集合的长度，也就是集合中元素的个数</td>
+</tr>
+</tbody></table>
+<p><strong>集合类的特点</strong>：提供一种存储空间可变的存储模型，存储的数据容量可以发生改变。</p>
+<p><strong>泛型：可以改变存储的数据类型，使代码更加灵活</strong></p>
+<h2 id="ArrayList"><a href="#ArrayList" class="headerlink" title="ArrayList"></a>ArrayList</h2><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token class-name">ArrayList</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//创建一个空的集合对象</span>
+<span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token class-name">E</span> e<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//将指定的元素追加到此集合到末尾</span>
+<span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">add</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">,</span><span class="token class-name">E</span> element<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//在此集合中的指定位置插入指定的元素</span>
+<span class="token keyword">public</span> <span class="token keyword">boolean</span> <span class="token function">remove</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//删除指定索引处的元素，返回被删除的元素</span>
+<span class="token keyword">public</span> <span class="token class-name">E</span> <span class="token function">remove</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//删除指定索引处的元素，返回被删除的元素</span>
+<span class="token keyword">public</span> <span class="token class-name">E</span> <span class="token function">set</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">,</span><span class="token class-name">E</span> element<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//修改指定索引处的元素，返回被修改的元素</span>
+<span class="token keyword">public</span> <span class="token class-name">E</span> <span class="token function">get</span><span class="token punctuation">(</span><span class="token keyword">int</span> index<span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//返回指定索引处的元素</span>
+<span class="token keyword">public</span> <span class="token keyword">int</span> <span class="token function">size</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//返回集合中的元素的个数</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="修饰符-权限修饰符-状态修饰符"><a href="#修饰符-权限修饰符-状态修饰符" class="headerlink" title="修饰符(权限修饰符/状态修饰符)"></a>修饰符(权限修饰符/状态修饰符)</h1><p>private：同一类中 </p>
+<p>默认 ：同一包中</p>
+<p>protected ：不同包的子类</p>
+<p>public：公开</p>
+<p>final和static </p>
+<p>final 关键字是最终的意思，可以修饰成员方法，成员变量，类 </p>
+<p>final 修饰的特点</p>
+<p>修饰方法：表明该方法是最终方法，不能被重写 </p>
+<p>修饰变量：表明该变量是常量，不能再次被赋值 </p>
+<p>修饰类：表明该类是最终类，不能被继承</p>
+<p>static关键字表明<strong>被类的所有对象共享</strong>，<strong>可以通过类名调用</strong></p>
+<h1 id="多态（同一对象，在不同时刻表现出来的不同形态）"><a href="#多态（同一对象，在不同时刻表现出来的不同形态）" class="headerlink" title="多态（同一对象，在不同时刻表现出来的不同形态）"></a>多态（同一对象，在不同时刻表现出来的不同形态）</h1><p>举例：猫 </p>
+<p>我们可以说猫是猫：猫 cat = new 猫(); </p>
+<p>我们也可以说猫是动物：动物 animal = new 猫(); </p>
+<p>这里猫在不同的时刻表现出来了不同的形态，这就是多态</p>
+<p><strong>多态的前提：有继承/实现关系 有方法重写 有父类引用指向子类对象</strong></p>
+<p><strong>多态中成员访问特点</strong>：</p>
+<p><u>成员变量：编译看左边，执行看左边</u> </p>
+<p><u>成员方法：编译看左边，执行看右边</u> </p>
+<p>为什么成员变量和成员方法的访问不一样呢？ 因为成员方法有重写，而成员变量没有</p>
+<p><strong>多态的利弊：</strong></p>
+<p>多态的好处：提高了程序的扩展性 具体体现：定义方法的时候，使用父类型作为参数，将来在使用的时候，使用具体的子类型参与操作 多态的弊端：不能使用子类的特有功能</p>
+<p><strong>多态的转型：</strong></p>
+<ul>
+<li>向上转型 从子到父 父类引用指向子类对象 </li>
+<li>向下转型 从父到子 父类引用转为子类对象</li>
+</ul>
+<h1 id="抽象类和接口"><a href="#抽象类和接口" class="headerlink" title="抽象类和接口"></a>抽象类和接口</h1><p>在Java中，<strong>一个没有方法体的方法应该定义为抽象方法</strong>，<strong>而类中如果有抽象方法，该类必须定义为抽象类</strong></p>
+<p><strong>抽象类特点：</strong></p>
+<p><strong><u>抽象类和抽象方法必须使用</u> <u>abstract</u> <u>关键字修饰</u></strong></p>
+<p><strong><u>抽象类中不一定有抽象方法</u>，<u>有抽象方法的类一定是抽象类</u></strong></p>
+<p><strong>抽象类不能实例化 抽象类如何实例化呢？<u>参照多态的方式，通过子类对象实例化，这叫抽象类多态</u></strong></p>
+<p><strong>抽象类的子类 要么重写抽象类中的所有抽象方法 要么是抽象类</strong></p>
+<hr>
+<p>接口就是一种公共的规范标准，只要符合规范标准，大家都可以通用 Java中的接口更多的体现在对行为的抽象</p>
+<p><strong>接口特点：</strong></p>
+<p>接口用关键字interface修饰 </p>
+<p>​    public interface 接口名 {}  </p>
+<p>类实现接口用implements表示 </p>
+<p>​    public class 类名 implements 接口名 {} </p>
+<p>接口不能实例化 </p>
+<p>接口如何实例化呢？参照多态的方式，通过实现类对象实例化，这叫接口多态。 </p>
+<p>多态的形式：具体类多态，抽象类多态，接口多态。  </p>
+<p>多态的前提：有继承或者实现关系；有方法重写；有父(类/接口)引用指向(子/实现)类对象 </p>
+<p><strong><u>接口的子类 要么重写接口中的所有抽象方法 要么是抽象类</u></strong></p>
+<hr>
+<p><strong>抽象类和接口的区别：</strong></p>
+<p><strong>成员区别</strong> </p>
+<p>​    抽象类     变量,常量；有构造方法；有抽象方法,也有非抽象方法 </p>
+<p>​    接口         常量；抽象方法 </p>
+<p><strong>关系区别</strong> </p>
+<p>​    类与类         继承，单继承 </p>
+<p>​    类与接口     实现，可以单实现，也可以多实现 </p>
+<p>​    接口与接口     继承，单继承，多继承 </p>
+<p><strong>设计理念区别</strong> </p>
+<p>​    抽象类     对类抽象，包括属性、行为 </p>
+<p>​    接口         对行为抽象，主要是行为</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">/*案例*/</span>
+<span class="token comment">//抽象类</span>
+  <span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">class</span> <span class="token class-name">Door</span> <span class="token punctuation">&#123;</span>
+     <span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">void</span> <span class="token keyword">open</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token comment">//接口  </span>
+  <span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">Door</span> <span class="token punctuation">&#123;</span>
+     <span class="token keyword">void</span> <span class="token keyword">open</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+<span class="token comment">//例子</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">Alram</span> <span class="token punctuation">&#123;</span>
+     <span class="token keyword">void</span> <span class="token function">alarm</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">class</span> <span class="token class-name">Door</span> <span class="token punctuation">&#123;</span>
+     <span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">void</span> <span class="token keyword">open</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+     <span class="token keyword">public</span> <span class="token keyword">abstract</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">&#125;</span>
+  <span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">AlarmDoor</span> <span class="token keyword">extends</span> <span class="token class-name">Door</span> <span class="token keyword">implements</span> <span class="token class-name">Alarm</span> <span class="token punctuation">&#123;</span>
+     <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">oepn</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">//....</span>
+     <span class="token punctuation">&#125;</span>
+     <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">close</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">//....</span>
+     <span class="token punctuation">&#125;</span>
+     <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">alarm</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token comment">//....</span>
+     <span class="token punctuation">&#125;</span>
+  <span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="形参和返回值注意事项"><a href="#形参和返回值注意事项" class="headerlink" title="形参和返回值注意事项"></a>形参和返回值注意事项</h1><ul>
+<li>类名作为形参和返回值<ul>
+<li>方法的形参是类名，其实需要的是该类的对象 </li>
+<li>方法的返回值是类名，其实返回的是该类的对象</li>
+</ul>
+</li>
+<li>抽象类名作为形参和返回值<ul>
+<li>方法的形参上抽象类名，其实需要的是该抽象类的子类对象</li>
+<li>方法的返回值是抽象类名，其实返回的是该抽象类的子类对象</li>
+</ul>
+</li>
+<li>接口名作为形参和返回值<ul>
+<li>方法的形参是接口名，其实需要的是该接口的实现类对象</li>
+<li>方法的返回值是接口名，其实返回的是该接口的实现类对象</li>
+</ul>
+</li>
+</ul>
+<h1 id="Some-question内部类（就是在一个类中定义一个类。）"><a href="#Some-question内部类（就是在一个类中定义一个类。）" class="headerlink" title="Some question内部类（就是在一个类中定义一个类。）"></a>Some question内部类（就是在一个类中定义一个类。）</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Outer</span> <span class="token punctuation">&#123;</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">Inner</span> <span class="token punctuation">&#123;</span>
+  
+      <span class="token punctuation">&#125;</span> 	
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>内部类的访问特点</strong>:内部类可以直接访问外部类的成员，包括私有;外部类要访问内部类的成员，必须创建对象</p>
+<p><strong>内部类的分类：</strong></p>
+<p><strong>成员内部类；局部内部类；匿名内部类。</strong></p>
+<p>在类的成员位置：成员内部类，外界创建对象使用成员内部类：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">//外部类名.内部类名 对象名 = 外部类对象.内部类对象;</span>
+<span class="token class-name">Outer<span class="token punctuation">.</span>Inner</span> oi <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Outer</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token keyword">new</span> <span class="token class-name">Inner</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p>在类的局部位置：局部内部类 ;</p>
+<p>局部内部类是在方法中定义的类，所以外界是无法直接使用，需要在方法内部创建对象并使用 该类可以直接访问外部类的成员，也可以访问方法内的局部变量。</p>
+<p>匿名</p>
+<h1 id="常用API-Math-System-Object-Arrays-基本类型包装类-日期类-常用的工具类的设计思想：构造方法私有。成员都用static修饰。"><a href="#常用API-Math-System-Object-Arrays-基本类型包装类-日期类-常用的工具类的设计思想：构造方法私有。成员都用static修饰。" class="headerlink" title="常用API (Math System Object Arrays 基本类型包装类 日期类)常用的工具类的设计思想：构造方法私有。成员都用static修饰。"></a>常用API (Math System Object Arrays 基本类型包装类 日期类)常用的工具类的设计思想：构造方法私有。成员都用static修饰。</h1><h2 id="Math-类概述："><a href="#Math-类概述：" class="headerlink" title="Math 类概述："></a><strong>Math 类概述</strong>：</h2><p>Math 包含执行基本数字运算的方法 没有构造方法，如何使用类中的成员呢？ 看类的成员是否都是静态的，如果是，通过类名就可以直接调用</p>
+<p>Math类的常用方法：</p>
+<table>
+<thead>
+<tr>
+<th align="left">方法名</th>
+<th align="left">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left">public static int abs(int a)</td>
+<td align="left">返回参数的绝对值</td>
+</tr>
+<tr>
+<td align="left">public static double ceil(double a)</td>
+<td align="left">返回大于或等于参数的最小double值，等于一个整数</td>
+</tr>
+<tr>
+<td align="left">public static double floor(double a)</td>
+<td align="left">返回小于或等于参数的最大double值，等于一个整数</td>
+</tr>
+<tr>
+<td align="left"><strong>public static int round(float a)</strong></td>
+<td align="left">按照四舍五入返回最接近参数的int</td>
+</tr>
+<tr>
+<td align="left"><strong>public static int max(int a,int b)</strong></td>
+<td align="left">返回两个int值中的较大值</td>
+</tr>
+<tr>
+<td align="left">public static int min(int a,int b)</td>
+<td align="left">返回两个int值中的较小值</td>
+</tr>
+<tr>
+<td align="left">public static double pow(double a,double b)</td>
+<td align="left">返回a的b次幂的值</td>
+</tr>
+<tr>
+<td align="left">public static double random()</td>
+<td align="left">返回值为double的正值，[0.0,1.0)</td>
+</tr>
+</tbody></table>
+<h2 id="System类概述："><a href="#System类概述：" class="headerlink" title="System类概述："></a><strong>System类概述：</strong></h2><p>System包含几个有用的类字段和方法，它不能被实例化</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public static void exit（int status）</td>
+<td>终止当前运行的Java虚拟机，非零表示异常终止</td>
+</tr>
+<tr>
+<td><strong>public static long currentTimeMillis()</strong></td>
+<td><strong>返回当前时间（以毫秒为单位）</strong></td>
+</tr>
+</tbody></table>
+<h2 id="Object-类的概述："><a href="#Object-类的概述：" class="headerlink" title="Object 类的概述："></a><strong>Object 类的概述：</strong></h2><p>Object 是类层次结构的根，每个类都可以将 Object 作为超类。所有类都直接或者间接的继承自该类。</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public String toString()</td>
+<td>返回对象的字符串表示形式。建议所有子类重写该方法，自动生成</td>
+</tr>
+<tr>
+<td>public boolean equals(Object obj)</td>
+<td>比较对象是否相等。默认比较地址，重写可以比较内容，自动生成</td>
+</tr>
+</tbody></table>
+<h2 id="Arrays类概述："><a href="#Arrays类概述：" class="headerlink" title="Arrays类概述："></a><strong>Arrays类概述：</strong></h2><p>Arrays类包含用于操作数组的各种方法</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>public static String toString(int[] a)</strong></td>
+<td>返回指定数组的内容的字符串表示形式</td>
+</tr>
+<tr>
+<td><strong>public static void sort(int[] a)</strong></td>
+<td>按照数字顺序排列指定的数组</td>
+</tr>
+</tbody></table>
+<p><strong>基本类型包装类概述：</strong>将基本数据类型封装成对象的好处在于可以在对象中定义更多的功能方法操作该数据 </p>
+<p>常用的操作之一：用于基本数据类型与字符串之间的转换。</p>
+<table>
+<thead>
+<tr>
+<th>基本数据类型</th>
+<th>包装类</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>byte</td>
+<td>Byte</td>
+</tr>
+<tr>
+<td>short</td>
+<td>Short</td>
+</tr>
+<tr>
+<td>int</td>
+<td>Integer</td>
+</tr>
+<tr>
+<td>long</td>
+<td>Long</td>
+</tr>
+<tr>
+<td>float</td>
+<td>Float</td>
+</tr>
+<tr>
+<td>double</td>
+<td>Double</td>
+</tr>
+<tr>
+<td>char</td>
+<td>Character</td>
+</tr>
+<tr>
+<td>boolean</td>
+<td>Boolean</td>
+</tr>
+</tbody></table>
+<p><strong>自动装箱和拆箱</strong></p>
+<p>装箱：把基本数据类型转换为对应的包装类类型 </p>
+<p>拆箱：把包装类类型转换为对应的基本数据类型</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token class-name">Integer</span> i <span class="token operator">=</span> <span class="token number">100</span><span class="token punctuation">;</span>  <span class="token comment">// 自动装箱</span>
+i <span class="token operator">+=</span> <span class="token number">200</span><span class="token punctuation">;</span>         <span class="token comment">// i = i + 200;  i + 200 自动拆箱；i = i + 200; 是自动装箱</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span></span></code></pre>
+
+<p><strong>注意</strong>：在使用包装类类型的时候，如果做操作，最好先判断是否为 null          </p>
+<p>我们推荐的是，只要是对象，在使用前就必须进行不为 null 的判断</p>
+<h2 id="日期类（Date）"><a href="#日期类（Date）" class="headerlink" title="日期类（Date）"></a>日期类（Date）</h2><p>Date 代表了一个特定的时间，精确到毫秒</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public Date()</td>
+<td>分配一个Date对象，并初始化，以便它代表它被分配到时间，精确到毫秒</td>
+</tr>
+<tr>
+<td>public Date(long date)</td>
+<td>分配一个Date对象，并将其初始化为表示从标准基准时间起指定的毫秒数</td>
+</tr>
+<tr>
+<td><strong>public long getTime()</strong></td>
+<td>获取的是日期对象从1970年1月1日 00:00:00到现在的毫秒值</td>
+</tr>
+<tr>
+<td><strong>public void setTime(long time)</strong></td>
+<td>设置时间，给的是毫秒值</td>
+</tr>
+</tbody></table>
+<h3 id="SimpleDateFormat-类概述（具体类，用于以区域设置敏感的方式格式化和解析日期）"><a href="#SimpleDateFormat-类概述（具体类，用于以区域设置敏感的方式格式化和解析日期）" class="headerlink" title="SimpleDateFormat 类概述（具体类，用于以区域设置敏感的方式格式化和解析日期）"></a>SimpleDateFormat 类概述（具体类，用于以区域设置敏感的方式格式化和解析日期）</h3><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public SimpleDateFormat()</td>
+<td>构造一个SimpleDateFormat，使用默认模式和日期格式</td>
+</tr>
+<tr>
+<td>public SimpleDateFormat(String pattern)</td>
+<td>构造一个SimpleDateFormat使用给定的模式和默认的日期格式</td>
+</tr>
+</tbody></table>
+<h3 id="Calendar类概述（Calendar-为某一时刻和一组日历字段之间的转换提供了一些方法，并为操作日历字段提供了一些方法）"><a href="#Calendar类概述（Calendar-为某一时刻和一组日历字段之间的转换提供了一些方法，并为操作日历字段提供了一些方法）" class="headerlink" title="Calendar类概述（Calendar 为某一时刻和一组日历字段之间的转换提供了一些方法，并为操作日历字段提供了一些方法）"></a>Calendar类概述（Calendar 为某一时刻和一组日历字段之间的转换提供了一些方法，并为操作日历字段提供了一些方法）</h3><p>Calendar 提供了一个类方法 getInstance 用于获取 Calendar 对象，其日历字段已使用当前日期和时间初始化：Calendar rightNow = Calendar.getInstance();</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public int get(int field)</td>
+<td>返回给定日历字段的值</td>
+</tr>
+<tr>
+<td>public abstract void add(int field, int amount)</td>
+<td>根据日历的规则，将指定的时间量添加或减去给定的日历字段</td>
+</tr>
+<tr>
+<td>public final void set(int year,int month,int date)</td>
+<td>设置当前日历的年月日</td>
+</tr>
+</tbody></table>
+<h1 id="异常Throwable"><a href="#异常Throwable" class="headerlink" title="异常Throwable"></a>异常Throwable</h1><p>异常体系：Throwable–&gt;Error &amp; Exception–&gt;RuntimeException&amp;非RuntimeException</p>
+<p>Error：严重问题，不需要处理 </p>
+<p>Exception：称为异常类，它表示程序本身可以处理的问题 </p>
+<p>RuntimeException：在编译期是不检查的，出现问题后，需要我们回来修改代码  </p>
+<p>非 RuntimeException：编译期就必须处理的，否则程序不能通过编译，就更不能正常运行了</p>
+<p><strong>如果程序出现问题，我们没有做任何异常处理，最终jvm会把异常的名称，异常原因及出现位置信息输出在控制台，然后程序停止执行</strong></p>
+<p>抛出异常两种方案：try…catch…  &amp;  throws 异常类名；</p>
+<p>Thtowable的成员方法</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public String getMessage()</td>
+<td>返回此 throwable 的详细消息字符串</td>
+</tr>
+<tr>
+<td>public String toString()</td>
+<td>返回此可抛出的简短描述</td>
+</tr>
+<tr>
+<td>public void printStackTrace()</td>
+<td>把异常的错误信息输出在控制台</td>
+</tr>
+</tbody></table>
+<h2 id="自定义异常"><a href="#自定义异常" class="headerlink" title="自定义异常"></a>自定义异常</h2><pre class="line-numbers language-none"><code class="language-none">当Java内置的异常都不能明确的说明异常情况的时候，需要创建自己的异常
+需要注意的是，唯一有用的就是类型名这个信息，所以我们不需要在异常类的设计上花费太多精力
+一个类要想成为异常类的一员，要么继承Exception，要么继承RuntimeException
+通常情况下，会直接继承自Exception类，给出无参和带参构造方法即可<span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+
+
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> 异常类名 <span class="token keyword">extends</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	<span class="token comment">//无参构造</span>
+	<span class="token comment">//带参构造</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//demo</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">ScoreException</span> <span class="token keyword">extends</span> <span class="token class-name">Exception</span> <span class="token punctuation">&#123;</span>
+	<span class="token keyword">public</span> <span class="token class-name">ScoreException</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+	<span class="token keyword">public</span> <span class="token class-name">ScoreException</span><span class="token punctuation">(</span><span class="token class-name">String</span> message<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+	     <span class="token keyword">super</span><span class="token punctuation">(</span>message<span class="token punctuation">)</span><span class="token punctuation">;</span>
+	<span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span> <span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h2 id="throws-和-throw-的区别"><a href="#throws-和-throw-的区别" class="headerlink" title="throws 和 throw 的区别"></a>throws 和 throw 的区别</h2><p>throws </p>
+<ul>
+<li><p>用在方法声明后面，跟的是异常类名 </p>
+</li>
+<li><p>表示抛出异常，由该方法的调用者来处理 </p>
+</li>
+<li><p>表示出现异常的一种可能性，并不一定会发生这些异常</p>
+</li>
+</ul>
+<p>throw </p>
+<ul>
+<li><p>用在方法体内，跟的是异常对象名 </p>
+</li>
+<li><p>表示抛出异常，由方法体内的语句处理 </p>
+</li>
+<li><p>执行 throw 一定抛出了某种异常</p>
+</li>
+</ul>
+<h1 id="IO流处理"><a href="#IO流处理" class="headerlink" title="IO流处理"></a>IO流处理</h1><h2 id="File类（用于操作文件和目录）"><a href="#File类（用于操作文件和目录）" class="headerlink" title="File类（用于操作文件和目录）"></a>File类（用于操作文件和目录）</h2><p>File：它说文件和目录路径名的抽象表示</p>
+<ul>
+<li><p>文件和目录说可以通过file封装成对象的</p>
+</li>
+<li><p>对于file而言，其封装的并不是一个真正存在的文件，仅仅是一个路径名而已。它可以是存在的，也可以是不存在的。 </p>
+</li>
+<li><p>将来是通过具体的操作把这个路径的内容转换成具体存在</p>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>File(String pathname)</td>
+<td>通过将给定的路径名字符串转换成抽象路径名来创建新的File实例</td>
+</tr>
+<tr>
+<td>File(String parent, String child)</td>
+<td>从父路径名字符串和子路径名字符串创建新的 File实例</td>
+</tr>
+<tr>
+<td>File(File parent, String child)</td>
+<td>从父抽象路径名和子路径名字符串创建新的 File实例</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<h2 id="File类增删功能"><a href="#File类增删功能" class="headerlink" title="File类增删功能"></a>File类增删功能</h2><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public boolean createNewFile()</td>
+<td>当具有该名称的文件不存在时，创建一个由该抽象路径名命名的新空文件</td>
+</tr>
+<tr>
+<td>public boolean mkdir()</td>
+<td>创建由此抽象路径名命名的目录</td>
+</tr>
+<tr>
+<td>public boolean mkdirs()</td>
+<td>创建由此抽象路径名命名的目录，包括任何必需但不存在的父目录</td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public boolean delete()</td>
+<td>删除由此抽象路径名表示的文件或目录</td>
+</tr>
+</tbody></table>
+<p><strong>绝对路径和相对路径的区别</strong></p>
+<p>​    l绝对路径：完整的路径名，不需要任何其他信息就可以定位它所表示的文件。例如：E:\itcast\java.txt</p>
+<p>​    l相对路径：必须使用取自其他路径名的信息进行解释。例如：myFile\java.txt</p>
+<p><strong>删除目录时的注意事项：</strong></p>
+<p>​    l如果一个目录中有内容(目录，文件)，不能直接删除。应该先删除目录中的内容，最后才能删除目录</p>
+<h2 id="File类判断和获取功能"><a href="#File类判断和获取功能" class="headerlink" title="File类判断和获取功能"></a>File类判断和获取功能</h2><table>
+<thead>
+<tr>
+<th>方法名</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>public boolean isDirectory()</td>
+<td>测试此抽象路径名表示的File是否为目录</td>
+</tr>
+<tr>
+<td>public boolean isFile()</td>
+<td>测试此抽象路径名表示的File是否为文件</td>
+</tr>
+<tr>
+<td>public boolean exists()</td>
+<td>测试此抽象路径名表示的File是否存在</td>
+</tr>
+<tr>
+<td>public String getAbsolutePath()</td>
+<td>返回此抽象路径名的绝对路径名字符串</td>
+</tr>
+<tr>
+<td>public String getPath()</td>
+<td>将此抽象路径名转换为路径名字符串</td>
+</tr>
+<tr>
+<td>public String getName()</td>
+<td>返回由此抽象路径名表示的文件或目录的名称</td>
+</tr>
+<tr>
+<td>public String[] list()</td>
+<td>返回此抽象路径名表示的目录中的文件和目录的名称字符串数组</td>
+</tr>
+<tr>
+<td>public File[] listFiles()</td>
+<td>返回此抽象路径名表示的目录中的文件和目录的File对象数组</td>
+</tr>
+</tbody></table>
+<h1 id="字节流和字符流（操作文件传输）"><a href="#字节流和字符流（操作文件传输）" class="headerlink" title="字节流和字符流（操作文件传输）"></a>字节流和字符流（操作文件传输）</h1><p>IO流概述：</p>
+<ul>
+<li><p>IO：输入/输出(Input/Output)</p>
+</li>
+<li><p>流：是一种抽象概念，是对数据传输的总称。也就是说数据在设备间的传输称为流，流的本质是数据传输</p>
+</li>
+<li><p>IO流就是用来处理设备间数据传输问题的</p>
+<p>​    常见的应用：文件复制；文件上传；文件下载</p>
+</li>
+<li><p>IO流分类：</p>
+<ul>
+<li><p>按照数据的流向</p>
+<ul>
+<li><p>输入流：读数据</p>
+<p>输出流：写数据</p>
+</li>
+</ul>
+</li>
+<li><p>按照数据类型来分</p>
+<ul>
+<li><p>字节流</p>
+<p> 字节输入流；字节输出流</p>
+<p>字符流</p>
+<p> 字符输入流；字符输出流</p>
+</li>
+</ul>
+</li>
+</ul>
+<p>一般来说，我们说IO流的分类是按照<strong>数据类型</strong>来分的</p>
+</li>
+<li><p>如果数据通过Window自带的记事本软件打开，我们还可以<strong>读懂里面的内容</strong>，就使用<strong>字符流</strong>，</p>
+<p>否则使用字节流。<strong>如果你不知道该使用哪种类型的流，就使用字节流</strong></p>
+</li>
+</ul>
+<h1 id="内存划分（伊甸园区，旧生代区，永久区）"><a href="#内存划分（伊甸园区，旧生代区，永久区）" class="headerlink" title="内存划分（伊甸园区，旧生代区，永久区）"></a>内存划分（伊甸园区，旧生代区，永久区）</h1><p>内存的优良划分是系统优化很关键的一环，主要考察内存优化和GC机制</p>
+<p>Runtime类：</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MemoryT</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Runtime</span> run<span class="token operator">=</span><span class="token class-name">Runtime</span><span class="token punctuation">.</span><span class="token function">getRuntime</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//取得Runtime对象</span>
+<span class="token comment">//        Runtime rund = new Runtime();//这个不行，因为Runtime类采用单例设计模式 它的构造方法Runtime()是私有的；</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"内存1"</span><span class="token operator">+</span>run<span class="token punctuation">.</span><span class="token function">maxMemory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"内存3"</span><span class="token operator">+</span>run<span class="token punctuation">.</span><span class="token function">totalMemory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//返回值都为long类型 就是一子节 1byte；</span>
+      
+     	  <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span><span class="token string">"内存2"</span><span class="token operator">+</span>run<span class="token punctuation">.</span><span class="token function">freeMemory</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>伊甸园区：新生的对象都存在这里，但不是所有对象都永久存在，伴随着内存的不足会进行gc处理空出空间给新生的对象；</p>
+<p>旧生代区：长期使用的对象存在这里，当伊甸园区进行了gc处理仍然空间不足时，该区进行gc处理；</p>
+<p>永久区：永不清理的内存空间；</p>
+<p>调整内存大小：xms-初始内存大小  默认为物理内存1/64但小于1g；</p>
+<p>​                           xmx-最大内存大小 默认为物理内存的1/4但小于1g ；</p>
+<p>​                           xmn-伊甸园区堆内存大小； 因为默认值实在太小了，我们实际服务器基本就16g以上，所以需要手动调整优化性能；</p>
+<h1 id="加载器"><a href="#加载器" class="headerlink" title="加载器"></a>加载器</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">class</span> dmp<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+<span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">LoaderT</span> <span class="token punctuation">&#123;</span>
+    <span class="token keyword">class</span> demo<span class="token punctuation">&#123;</span><span class="token punctuation">&#125;</span>
+    <span class="token keyword">public</span> <span class="token keyword">static</span> <span class="token keyword">void</span> <span class="token function">main</span><span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">[</span><span class="token punctuation">]</span> args<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">ClassNotFoundException</span> <span class="token punctuation">&#123;</span>
+        <span class="token class-name">Class</span><span class="token generics"><span class="token punctuation">&lt;</span><span class="token operator">?</span><span class="token punctuation">></span></span> cls <span class="token operator">=</span> <span class="token class-name">Class</span><span class="token punctuation">.</span><span class="token function">forName</span><span class="token punctuation">(</span><span class="token string">"dmp"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>cls<span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//AppClassLoade sun.misc.Launcher$AppClassLoader@18b4aac2</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>cls<span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getParent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//ExtClassLoade</span>
+        <span class="token class-name">System</span><span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>cls<span class="token punctuation">.</span><span class="token function">getClassLoader</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getParent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getParent</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span class="token comment">//三层加载器</span>
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>类加载器可自定义，Java中采用双亲加载方式，加载系统类时调用另一套加载器。</p>
+<h1 id><a href="#" class="headerlink" title></a></h1></div><div id="reward-container"><span class="hty-icon-button button-glow" id="reward-button" title="Donate" onclick="var qr = document.getElementById(&quot;qr&quot;); qr.style.display = (qr.style.display === &quot;none&quot;) ? &quot;block&quot; : &quot;none&quot;;"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-hand-coin-line"></use></svg></span><div id="reward-comment">I'm so cute. Please give me money.</div><div id="qr" style="display:none;"><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/donate/alipay-qrcode.jpg"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/donate/alipay-qrcode.jpg" alt="支付宝" title="支付宝"></a><div><span style="color:#00A3EE"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-alipay-line"></use></svg></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/donate/qqpay-qrcode.png"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/donate/qqpay-qrcode.png" alt="QQ 支付" title="QQ 支付"></a><div><span style="color:#12B7F5"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-qq-line"></use></svg></span></div></div><div style="display:inline-block"><a target="_blank" rel="noopener" href="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/donate/wechatpay-qrcode.jpg"><img loading="lazy" src="https://cdn.jsdelivr.net/gh/YunYouJun/cdn/img/donate/wechatpay-qrcode.jpg" alt="微信支付" title="微信支付"></a><div><span style="color:#2DC100"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-wechat-pay-line"></use></svg></span></div></div></div></div><ul class="post-copyright"><li class="post-copyright-author"><strong>Post author: </strong>phenix-fledgling</li><li class="post-copyright-link"><strong>Post link: </strong><a href="http://example.com/post/Java%E9%AB%98%E7%BA%A7.html" title="Java高级">http://example.com/post/Java%E9%AB%98%E7%BA%A7.html</a></li><li class="post-copyright-license"><strong>Copyright Notice: </strong>All articles in this blog are licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/deed.zh" target="_blank" rel="noopener" title="CC BY-NC-SA 4.0 "><svg class="icon"><use xlink:href="#icon-creative-commons-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-by-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-nc-line"></use></svg><svg class="icon"><use xlink:href="#icon-creative-commons-sa-line"></use></svg></a> unless otherwise stated.</li></ul></section></article><div class="post-nav"><div class="post-nav-item"><a class="post-nav-prev" href="/post/JavaScript%E5%9F%BA%E7%A1%80%E7%AC%94%E8%AE%B0.html" rel="prev" title="javascript基础"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-left-s-line"></use></svg><span class="post-nav-text">javascript基础</span></a></div><div class="post-nav-item"><a class="post-nav-next" href="/post/java%E5%9F%BA%E7%A1%80.html" rel="next" title="java基础"><span class="post-nav-text">java基础</span><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-right-s-line"></use></svg></a></div></div></div><div class="hty-card" id="comment"><div class="comment-tooltip text-center"><span>要不要和我说些什么？</span><br></div></div></main><footer class="sidebar-translate" id="footer"><div class="copyright"><span>&copy; 2019 – 2021 </span><span class="with-love" id="animate"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-cloud-line"></use></svg></span><span class="author"> phenix-fledgling</span></div><div class="powered"><span>Powered by <a href="https://hexo.io" target="_blank" rel="noopener">Hexo</a> v5.4.0</span><span class="footer-separator">|</span><span>Theme - <a rel="noopener" href="https://github.com/YunYouJun/hexo-theme-yun" target="_blank"><span>Yun</span></a> v1.5.2</span></div></footer><a class="hty-icon-button" id="goUp" aria-label="back-to-top" href="#"><svg class="icon" aria-hidden="true"><use xlink:href="#icon-arrow-up-s-line"></use></svg><svg class="progress-circle-container" viewBox="0 0 100 100"><circle class="progress-circle" id="progressCircle" cx="50" cy="50" r="48" fill="none" stroke="#0078E7" stroke-width="2" stroke-linecap="round"></circle></svg></a></div></body></html>
