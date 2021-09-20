@@ -1,0 +1,378 @@
+<!DOCTYPE html><html lang="cn" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width,initial-scale=1"><title>shiro详解 | 菲尼克斯blog</title><meta name="keywords" content="shiro"><meta name="author" content="phenix-fledgling"><meta name="copyright" content="phenix-fledgling"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1. shiro功能Authentication：身份认证 &#x2F; 登录，验证用户是不是拥有相应的身份；Authorization：授权，即权限验证，验证某个已认证的用户是否拥有某个权限；即判断用户是否能做事情，常见的如：验证某个用户是否拥有某个角色。或者细粒度的验证某个用户对某个资源是否具有某个权限；Session Manager：会话管理，即用户登录后就是一次会话，在没有退出之前，它的所有信息都在">
+<meta property="og:type" content="article">
+<meta property="og:title" content="shiro详解">
+<meta property="og:url" content="http://example.com/post/shiro%E8%AF%A6%E8%A7%A3.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="1. shiro功能Authentication：身份认证 &#x2F; 登录，验证用户是不是拥有相应的身份；Authorization：授权，即权限验证，验证某个已认证的用户是否拥有某个权限；即判断用户是否能做事情，常见的如：验证某个用户是否拥有某个角色。或者细粒度的验证某个用户对某个资源是否具有某个权限；Session Manager：会话管理，即用户登录后就是一次会话，在没有退出之前，它的所有信息都在">
+<meta property="og:locale">
+<meta property="og:image" content="http://example.com/img/shire.jpeg">
+<meta property="article:published_time" content="2021-06-22T21:49:04.000Z">
+<meta property="article:modified_time" content="2021-06-22T23:50:20.720Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="shiro">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/shire.jpeg"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://example.com/post/shiro%E8%AF%A6%E8%A7%A3"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"prismjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: 'Copy successfully',
+    error: 'Copy error',
+    noSupport: 'The browser does not support'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: 'Just',
+    min: 'minutes ago',
+    hour: 'hours ago',
+    day: 'days ago',
+    month: 'months ago'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    jQuery: 'https://cdn.jsdelivr.net/npm/jquery@latest/dist/jquery.min.js',
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/js/jquery.justifiedGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/justifiedGallery/dist/css/justifiedGallery.min.css'
+    },
+    fancybox: {
+      js: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@latest/dist/jquery.fancybox.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isanchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = { 
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-06-23 07:50:20'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    })(window)</script><meta name="generator" content="Hexo 5.4.0"></head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="author-avatar"><img class="avatar-img" src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="site-data"><div class="data-item is-center"><div class="data-item-link"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">58</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">39</div></a></div></div><div class="data-item is-center"><div class="data-item-link"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">19</div></a></div></div></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/shire.jpeg')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">菲尼克斯blog</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> Home</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fas fa-archive"></i><span> Archives</span></a></div><div class="menus_item"><a class="site-page" href="/tags/"><i class="fa-fw fas fa-tags"></i><span> Tags</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fas fa-folder-open"></i><span> Categories</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> About</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">shiro详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">Created</span><time class="post-meta-date-created" datetime="2021-06-22T21:49:04.000Z" title="Created 2021-06-23 05:49:04">2021-06-23</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">Updated</span><time class="post-meta-date-updated" datetime="2021-06-22T23:50:20.720Z" title="Updated 2021-06-23 07:50:20">2021-06-23</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E6%8A%80%E6%9C%AF%E6%B7%B1%E7%A9%B6/">技术深究</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="shiro详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">Post View:</span><span id="busuanzi_value_page_pv"></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="1-shiro功能"><a href="#1-shiro功能" class="headerlink" title="1. shiro功能"></a>1. shiro功能</h1><p>Authentication：身份认证 / 登录，验证用户是不是拥有相应的身份；<br>Authorization：授权，即权限验证，验证某个已认证的用户是否拥有某个权限；即判断用户是否能做事情，常见的如：验证某个用户是否拥有某个角色。或者细粒度的验证某个用户对某个资源是否具有某个权限；<br>Session Manager：会话管理，即用户登录后就是一次会话，在没有退出之前，它的所有信息都在会话中；会话可以是普通 JavaSE 环境的，也可以是如 Web 环境的；<br>Cryptography：加密，保护数据的安全性，如密码加密存储到数据库，而不是明文存储；<br>Web Support：Web 支持，可以非常容易的集成到 Web 环境；<br>Caching：缓存，比如用户登录后，其用户信息、拥有的角色 / 权限不必每次去查，这样可以提高效率；<br>Concurrency：shiro 支持多线程应用的并发验证，即如在一个线程中开启另一个线程，能把权限自动传播过去；<br>Testing：提供测试支持；<br>Run As：允许一个用户假装为另一个用户（如果他们允许）的身份进行访问；<br>Remember Me：记住我，这个是非常常见的功能，即一次登录后，下次再来的话不用登录了。<br><strong>记住一点，Shiro 不会去维护用户、维护权限；这些需要我们自己去设计 / 提供；然后通过相应的接口注入给 Shiro 即可，最常见方法是构建在role表中</strong></p>
+<p><img src="shiro%E8%AF%A6%E8%A7%A3/image-20210623060129015.png" alt="image-20210623060129015"></p>
+<p>以上是从应用程序层面观察shiro，应用程序提供主体（常见即是用户名和密码），然后进入安全管理器判断主体权限，安全处理器通过查看域获取安全数据（用户，角色，权限等）。</p>
+<p><img src="shiro%E8%AF%A6%E8%A7%A3/image-20210623060347773.png" alt="image-20210623060347773"></p>
+<p>然后是内部的分析：</p>
+<ul>
+<li>Subject：主体，可以看到主体可以是任何可以与应用交互的 “用户”；</li>
+</ul>
+<ul>
+<li>SecurityManager：相当于 SpringMVC 中的 DispatcherServlet 或者 Struts2 中的 FilterDispatcher；是 Shiro 的心脏；所有具体的交互都通过 SecurityManager 进行控制；它管理着所有 Subject、且负责进行认证和授权、及会话、缓存的管理。</li>
+</ul>
+<ul>
+<li>Authenticator：认证器，负责主体认证的，这是一个扩展点，如果用户觉得 Shiro 默认的不好，可以自定义实现；其需要认证策略（Authentication Strategy），即什么情况下算用户认证通过了；</li>
+</ul>
+<ul>
+<li>Authrizer：授权器，或者访问控制器，用来决定主体是否有权限进行相应的操作；即控制着用户能访问应用中的哪些功能；</li>
+</ul>
+<ul>
+<li>Realm：可以有 1 个或多个 Realm，可以认为是安全实体数据源，即用于获取安全实体的；可以是 JDBC 实现，也可以是 LDAP 实现，或者内存实现等等；由用户提供；注意：Shiro 不知道你的用户 / 权限存储在哪及以何种格式存储；所以我们一般在应用中都需要实现自己的 Realm；</li>
+</ul>
+<ul>
+<li>SessionManager：如果写过 Servlet 就应该知道 Session 的概念，Session 呢需要有人去管理它的生命周期，这个组件就是 SessionManager；而 Shiro 并不仅仅可以用在 Web 环境，也可以用在如普通的 JavaSE 环境、EJB 等环境；所有呢，Shiro 就抽象了一个自己的 Session 来管理主体与应用之间交互的数据；这样的话，比如我们在 Web 环境用，刚开始是一台 Web 服务器；接着又上了台 EJB 服务器；这时想把两台服务器的会话数据放到一个地方，这个时候就可以实现自己的分布式会话（如把数据放到 Memcached 服务器）；</li>
+</ul>
+<ul>
+<li>SessionDAO：DAO 大家都用过，数据访问对象，用于会话的 CRUD，比如我们想把 Session 保存到数据库，那么可以实现自己的 SessionDAO，通过如 JDBC 写到数据库；比如想把 Session 放到 Memcached 中，可以实现自己的 Memcached SessionDAO；另外 SessionDAO 中可以使用 Cache 进行缓存，以提高性能；</li>
+</ul>
+<ul>
+<li>CacheManager：缓存控制器，来管理如用户、角色、权限等的缓存的；因为这些数据基本上很少去改变，放到缓存中后可以提高访问的性能</li>
+</ul>
+<ul>
+<li>Cryptography：密码模块，Shiro 提高了一些常见的加密组件用于如密码加密 / 解密的。</li>
+</ul>
+<h1 id="2-身份验证"><a href="#2-身份验证" class="headerlink" title="2. 身份验证"></a>2. 身份验证</h1><p>身份验证，即在应用中谁能证明他就是他本人。一般提供如他们的身份 ID 一些标识信息来表明他就是他本人，如提供身份证，用户名 / 密码来证明。</p>
+<p>在 shiro 中，用户需要提供 principals （身份）和 credentials（证明）给 shiro，从而应用能验证用户身份：</p>
+<p>principals：身份，即主体的标识属性，可以是任何东西，如用户名、邮箱等，唯一即可。一个主体可以有多个 principals，但只有一个 Primary principals，一般是用户名 / 密码 / 手机号。</p>
+<p>credentials：证明 / 凭证，即只有主体知道的安全值，如密码 / 数字证书等。</p>
+<p><img src="shiro%E8%AF%A6%E8%A7%A3/image-20210623060634413.png" alt="image-20210623060634413"></p>
+<p>上图便是身份验证的流程图：</p>
+<ol>
+<li><p>首先调用 Subject.login(token) 进行登录，其会自动委托给 Security Manager，调用之前必须通过 SecurityUtils.setSecurityManager() 设置；</p>
+</li>
+<li><p><strong>SecurityManager 负责真正的身份验证逻辑</strong>；它会委托给 Authenticator 进行身份验证；</p>
+</li>
+<li><p><strong>Authenticator 才是真正的身份验证者</strong>，Shiro API 中核心的身份认证入口点，此处可以自定义插入自己的实现；</p>
+</li>
+<li><p><strong>Authenticator 可能会委托给相应的 AuthenticationStrategy 进行多 Realm 身份验证，默认 ModularRealmAuthenticator 会调用 AuthenticationStrategy 进行多 Realm 身份验证；</strong></p>
+</li>
+<li><p><strong>Authenticator 会把相应的 token 传入 Realm，从 Realm 获取身份验证信息，如果没有返回 / 抛出异常表示身份验证失败了</strong>。此处可以配置多个 Realm，将按照相应的顺序及策略进行访问。</p>
+</li>
+</ol>
+<h2 id="2-1-Realm"><a href="#2-1-Realm" class="headerlink" title="2.1 Realm"></a>2.1 Realm</h2><p>Realm：域，Shiro 从从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。</p>
+<p>单Realm的配置：继承AutorizingRealm 重写它的部分方法</p>
+<pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token keyword">public</span> <span class="token keyword">class</span> <span class="token class-name">MyRealm</span> <span class="token keyword">extends</span> <span class="token class-name">AuthorizingRealm</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">/**
+     * 获取角色与权限
+     *doGetAuthorizationInfo执行时机有三个，如下：
+     *  1、subject.hasRole(“admin”) 或 subject.isPermitted(“admin”)：自己去调用这个是否有什么角色或者是否有什么权限的时候；
+     *  2、@RequiresRoles("admin") ：在方法上加注解的时候；
+     *  3、@shiro.hasPermission name = "admin"/@shiro.hasPermission："dustin:test"在页面上加shiro标签的时候，即进这个页面的时候扫描到有这个标签的时候。
+     * @param principals
+     * @return
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token class-name">AuthorizationInfo</span> <span class="token function">doGetAuthorizationInfo</span><span class="token punctuation">(</span><span class="token class-name">PrincipalCollection</span> principals<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">return</span> <span class="token keyword">null</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token comment">/**
+     * 登录信息验证
+     
+     * 1.doGetAuthenticationInfo执行时机如下
+     * 当调用Subject currentUser = SecurityUtils.getSubject();
+     * currentUser.login(token);
+     * @param token
+     * @return
+     * @throws AuthenticationException
+     */</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">protected</span> <span class="token class-name">AuthenticationInfo</span> <span class="token function">doGetAuthenticationInfo</span><span class="token punctuation">(</span><span class="token class-name">AuthenticationToken</span> token<span class="token punctuation">)</span> <span class="token keyword">throws</span> <span class="token class-name">AuthenticationException</span> <span class="token punctuation">&#123;</span>
+
+        <span class="token class-name">String</span> username <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token class-name">String</span><span class="token punctuation">)</span>token<span class="token punctuation">.</span><span class="token function">getPrincipal</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+       <span class="token class-name">String</span> password <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token keyword">char</span><span class="token punctuation">[</span><span class="token punctuation">]</span><span class="token punctuation">)</span>token<span class="token punctuation">.</span><span class="token function">getCredentials</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token string">"zhang"</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>username<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">UnknownAccountException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//如果用户名错误</span>
+        <span class="token punctuation">&#125;</span>
+        <span class="token keyword">if</span><span class="token punctuation">(</span><span class="token operator">!</span><span class="token string">"123"</span><span class="token punctuation">.</span><span class="token function">equals</span><span class="token punctuation">(</span>password<span class="token punctuation">)</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+            <span class="token keyword">throw</span> <span class="token keyword">new</span> <span class="token class-name">IncorrectCredentialsException</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//如果密码错误</span>
+        <span class="token punctuation">&#125;</span>
+
+
+       <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">SimpleAuthenticationInfo</span><span class="token punctuation">(</span>username<span class="token punctuation">,</span> password<span class="token punctuation">,</span> <span class="token function">getName</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+		<span class="token comment">//</span>
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearCachedAuthorizationInfo</span><span class="token punctuation">(</span><span class="token class-name">PrincipalCollection</span> principals<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">clearCachedAuthorizationInfo</span><span class="token punctuation">(</span>principals<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearCachedAuthenticationInfo</span><span class="token punctuation">(</span><span class="token class-name">PrincipalCollection</span> principals<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">clearCachedAuthenticationInfo</span><span class="token punctuation">(</span>principals<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token annotation punctuation">@Override</span>
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearCache</span><span class="token punctuation">(</span><span class="token class-name">PrincipalCollection</span> principals<span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token keyword">super</span><span class="token punctuation">.</span><span class="token function">clearCache</span><span class="token punctuation">(</span>principals<span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearAllCachedAuthorizationInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">getAuthorizationCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearAllCachedAuthenticationInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">getAuthenticationCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">clear</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token punctuation">&#125;</span>
+
+    <span class="token keyword">public</span> <span class="token keyword">void</span> <span class="token function">clearAllCache</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token punctuation">&#123;</span>
+        <span class="token function">clearAllCachedAuthenticationInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+        <span class="token function">clearAllCachedAuthorizationInfo</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token punctuation">&#125;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="3-授权"><a href="#3-授权" class="headerlink" title="3. 授权"></a>3. 授权</h1><pre class="line-numbers language-java" data-language="java"><code class="language-java"><span class="token comment">//@RequiresRoles 通过权限名实现授权</span>
+<span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/delete"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@RequiresRoles</span><span class="token punctuation">(</span><span class="token string">"admin"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">delete</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token string">"delete"</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token comment">//@RequiresPermissions 通过用户权限信息实现授权</span>
+<span class="token annotation punctuation">@GetMapping</span><span class="token punctuation">(</span><span class="token string">"/select"</span><span class="token punctuation">)</span>
+<span class="token annotation punctuation">@RequiresPermissions</span><span class="token punctuation">(</span><span class="token string">"select"</span><span class="token punctuation">)</span>
+<span class="token keyword">public</span> <span class="token class-name">String</span> <span class="token function">select</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">&#123;</span>
+    <span class="token keyword">return</span> <span class="token string">"select"</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<h1 id="4-加密"><a href="#4-加密" class="headerlink" title="4. 加密"></a>4. 加密</h1><p>在涉及到密码存储问题上，应该加密或者生成密码摘要存储，而不是存储明文密码。为避免数据泄露对用户造成很大的损失，应该加密或者生成不可逆的摘要方式存储。</p>
+<p>Shiro 提供了base64 和 16 进制字符串编码、 解码的 API 支持，方便一些编码解码操作。Shiro 内部的一些数据的存储表示都使用了 base64 和 16 进制字符串。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">String str <span class="token operator">=</span> <span class="token string">"likang"</span><span class="token punctuation">;</span>
+String base64Encoded <span class="token operator">=</span> Base64<span class="token punctuation">.</span><span class="token function">encodeToString</span><span class="token punctuation">(</span>str<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+String str2 <span class="token operator">=</span> Base64<span class="token punctuation">.</span><span class="token function">decodeToString</span><span class="token punctuation">(</span>base64Encoded<span class="token punctuation">)</span><span class="token punctuation">;</span>
+Assert<span class="token punctuation">.</span><span class="token function">assertEquals</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> str2<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>通过如上方式可以进行 base64 编码 / 解码操作，更多 API 请参考其 Javadoc。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">String str3 <span class="token operator">=</span> <span class="token string">"likang"</span><span class="token punctuation">;</span>
+String base64Encoded2 <span class="token operator">=</span> Hex<span class="token punctuation">.</span><span class="token function">encodeToString</span><span class="token punctuation">(</span>str3<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+String str4 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>Hex<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>base64Encoded2<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Assert<span class="token punctuation">.</span><span class="token function">assertEquals</span><span class="token punctuation">(</span>str3<span class="token punctuation">,</span> str4<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>通过如上方式可以进行 16 进制字符串编码 / 解码操作，更多 API 请参考其 Javadoc。</p>
+<p><strong>5.2 散列算法</strong></p>
+<p>散列算法：一般用于生成数据的摘要信息，是一种不可逆的算法，一般适合存储密码之类的数据，<strong>常见的散列算法如 MD5、SHA 等</strong>。一般进行散列时最好提供一个 salt（盐），比如加密密码 “admin”，产生的散列值是 “21232f297a57a5a743894a0e4a801fc3”，可以到一些 md5 解密网站很容易的通过散列值得到密码 “admin”，即如果直接对密码进行散列相对来说破解更容易，此时我们可以加一些只有系统知道的干扰数据，如用户名和 ID（即盐）；这样散列的对象是 “密码 + 用户名 +ID”，这样生成的散列值相对来说更难破解。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">String str <span class="token operator">=</span> <span class="token string">"likang"</span><span class="token punctuation">;</span>
+String salt <span class="token operator">=</span> <span class="token string">"123"</span><span class="token punctuation">;</span>
+<span class="token comment">//还可以转换为 toBase64()/toHex()</span>
+String md5 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Md5Hash</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> salt<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+System<span class="token punctuation">.</span>out<span class="token punctuation">.</span><span class="token function">println</span><span class="token punctuation">(</span>md5<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>如上代码通过盐 “123”MD5 散列 “likang”。另外散列时还可以指定散列次数，如 2 次表示：md5(md5(str))：“new Md5Hash(str, salt, 2).toString()”。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">String str <span class="token operator">=</span> <span class="token string">"likang"</span><span class="token punctuation">;</span>
+String salt <span class="token operator">=</span> <span class="token string">"123"</span><span class="token punctuation">;</span>
+String sha1 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">Sha256Hash</span><span class="token punctuation">(</span>str<span class="token punctuation">,</span> salt<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+<p>使用 SHA256 算法生成相应的散列数据，另外还有如 SHA1、SHA512 算法。</p>
+<p><strong>Shiro 还提供了通用的散列支持:</strong></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">String str <span class="token operator">=</span> <span class="token string">"likang"</span><span class="token punctuation">;</span>
+String salt <span class="token operator">=</span> <span class="token string">"123"</span><span class="token punctuation">;</span>
+<span class="token comment">//内部使用MessageDigest</span>
+String simpleHash <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SimpleHash</span><span class="token punctuation">(</span><span class="token string">"SHA-1"</span><span class="token punctuation">,</span> str<span class="token punctuation">,</span> salt<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toString</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>通过调用 SimpleHash 时指定散列算法，其内部使用了 Java 的    MessageDigest 实现。</p>
+<p>为了方便使用，Shiro 提供了 HashService，默认提供了DefaultHashService 实现。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token comment">//默认算法SHA-512</span>
+DefaultHashService hashService <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">DefaultHashService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+hashService<span class="token punctuation">.</span><span class="token function">setHashAlgorithmName</span><span class="token punctuation">(</span><span class="token string">"SHA-512"</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//私盐，默认无</span>
+hashService<span class="token punctuation">.</span><span class="token function">setPrivateSalt</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SimpleByteSource</span><span class="token punctuation">(</span><span class="token string">"123"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+<span class="token comment">//是否生成公盐，默认false</span>
+hashService<span class="token punctuation">.</span><span class="token function">setGeneratePublicSalt</span><span class="token punctuation">(</span><span class="token boolean">true</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//用于生成公盐。默认就这个</span>
+hashService<span class="token punctuation">.</span><span class="token function">setRandomNumberGenerator</span><span class="token punctuation">(</span><span class="token keyword">new</span> <span class="token class-name">SecureRandomNumberGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//生成Hash值的迭代次数</span>
+hashService<span class="token punctuation">.</span><span class="token function">setHashIterations</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+HashRequest request <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">HashRequest<span class="token punctuation">.</span>Builder</span><span class="token punctuation">(</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">setAlgorithmName</span><span class="token punctuation">(</span><span class="token string">"MD5"</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setSource</span><span class="token punctuation">(</span>ByteSource<span class="token punctuation">.</span>Util<span class="token punctuation">.</span><span class="token function">bytes</span><span class="token punctuation">(</span><span class="token string">"liakng"</span><span class="token punctuation">)</span><span class="token punctuation">)</span>
+        <span class="token punctuation">.</span><span class="token function">setSalt</span><span class="token punctuation">(</span>ByteSource<span class="token punctuation">.</span>Util<span class="token punctuation">.</span><span class="token function">bytes</span><span class="token punctuation">(</span><span class="token string">"123"</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">setIterations</span><span class="token punctuation">(</span><span class="token number">2</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">build</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+String hex <span class="token operator">=</span> hashService<span class="token punctuation">.</span><span class="token function">computeHash</span><span class="token punctuation">(</span>request<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toHex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>说明：</strong></p>
+<ul>
+<li>首先创建一个 DefaultHashService，默认使用 SHA-512 算法；</li>
+<li>以通过 hashAlgorithmName 属性修改算法；</li>
+<li>可以通过 privateSalt 设置一个私盐，其在散列时自动与用户传入的公盐混合产生一个新盐；</li>
+<li>可以通过 generatePublicSalt 属性在用户没有传入公盐的情况下是否生成公盐；</li>
+<li>可以设置 randomNumberGenerator 用于生成公盐；</li>
+<li>可以设置 hashIterations 属性来修改默认加密迭代次数；</li>
+<li>需要构建一个 HashRequest，传入算法、数据、公盐、迭代次数。</li>
+</ul>
+<p>SecureRandomNumberGenerator 用于生成一个随机数：</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">SecureRandomNumberGenerator randomNumberGenerator <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">SecureRandomNumberGenerator</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+randomNumberGenerator<span class="token punctuation">.</span><span class="token function">setSeed</span><span class="token punctuation">(</span><span class="token string">"123"</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+String hex <span class="token operator">=</span> randomNumberGenerator<span class="token punctuation">.</span><span class="token function">nextBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toHex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span></span></code></pre>
+
+
+
+<p><strong>5.3 加密、解密</strong></p>
+<p>Shiro 还提供对称式加密 和 解密算法的支持，如 AES、Blowfish 等；</p>
+<p><strong>AES 算法实现：</strong></p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript">AesCipherService aesCipherService <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">AesCipherService</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//设置key长度</span>
+aesCipherService<span class="token punctuation">.</span><span class="token function">setKeySize</span><span class="token punctuation">(</span><span class="token number">128</span><span class="token punctuation">)</span><span class="token punctuation">;</span> 
+<span class="token comment">//生成key</span>
+Key key <span class="token operator">=</span> aesCipherService<span class="token punctuation">.</span><span class="token function">generateNewKey</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+String text <span class="token operator">=</span> <span class="token string">"likang"</span><span class="token punctuation">;</span>
+<span class="token comment">//加密</span>
+String encrptText <span class="token operator">=</span> aesCipherService<span class="token punctuation">.</span><span class="token function">encrypt</span><span class="token punctuation">(</span>text<span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">,</span> key<span class="token punctuation">.</span><span class="token function">getEncoded</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toHex</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">//解密</span>
+String text2 <span class="token operator">=</span> <span class="token keyword">new</span> <span class="token class-name">String</span><span class="token punctuation">(</span>aesCipherService<span class="token punctuation">.</span><span class="token function">decrypt</span><span class="token punctuation">(</span>Hex<span class="token punctuation">.</span><span class="token function">decode</span><span class="token punctuation">(</span>encrptText<span class="token punctuation">)</span><span class="token punctuation">,</span> key<span class="token punctuation">.</span><span class="token function">getEncoded</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">getBytes</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+Assert<span class="token punctuation">.</span><span class="token function">assertEquals</span><span class="token punctuation">(</span>text<span class="token punctuation">,</span> text2<span class="token punctuation">)</span><span class="token punctuation">;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p><strong>PasswordService和CredentialsMatcher</strong></p>
+<p>Shiro 提供了 PasswordService 及 CredentialsMatcher 用于提供加密密码及验证密码服务。</p>
+<pre class="line-numbers language-javascript" data-language="javascript"><code class="language-javascript"><span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">PasswordService</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">//输入明文密码得到密文密码</span>
+    String <span class="token function">encryptPassword</span><span class="token punctuation">(</span>Object var1<span class="token punctuation">)</span> throws IllegalArgumentException<span class="token punctuation">;</span>
+    <span class="token comment">//明文密码和密文是否匹配</span>
+    boolean <span class="token function">passwordsMatch</span><span class="token punctuation">(</span>Object var1<span class="token punctuation">,</span> String var2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span>
+<span class="token keyword">public</span> <span class="token keyword">interface</span> <span class="token class-name">CredentialsMatcher</span> <span class="token punctuation">&#123;</span>
+    <span class="token comment">////匹配用户输入的token的凭证（未加密）与系统提供的凭证（已加密）</span>
+    boolean <span class="token function">doCredentialsMatch</span><span class="token punctuation">(</span>AuthenticationToken var1<span class="token punctuation">,</span> AuthenticationInfo var2<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">&#125;</span><span aria-hidden="true" class="line-numbers-rows"><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span></span></code></pre>
+
+<p>Shiro 默认提供了 PasswordService 实现 DefaultPasswordService；CredentialsMatcher 实现 PasswordMatcher 及 HashedCredentialsMatcher。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">Author: </span><span class="post-copyright-info"><a href="mailto:undefined">phenix-fledgling</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">Link: </span><span class="post-copyright-info"><a href="http://example.com/post/shiro%E8%AF%A6%E8%A7%A3.html">http://example.com/post/shiro%E8%AF%A6%E8%A7%A3.html</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">Copyright Notice: </span><span class="post-copyright-info">All articles in this blog are licensed under <a target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a> unless stating additionally.</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/shiro/">shiro</a></div><div class="post_share"><div class="social-share" data-image="/img/shire.jpeg" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/social-share.js/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/social-share.js/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/post/springsercurity%E8%AF%A6%E8%A7%A3.html"><img class="prev-cover" src="/img/springsercurity.jpeg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">Previous Post</div><div class="prev_info">springsercurity详解</div></div></a></div><div class="next-post pull-right"><a href="/post/%E5%BE%AE%E6%9C%8D%E5%8A%A1%E9%A1%B9%E7%9B%AE.html"><img class="next-cover" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">Next Post</div><div class="next_info">微服务项目</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="card-info-avatar is-center"><img class="avatar-img" src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/><div class="author-info__name">phenix-fledgling</div><div class="author-info__description">phenix</div></div><div class="card-info-data"><div class="card-info-data-item is-center"><a href="/archives/"><div class="headline">Articles</div><div class="length-num">58</div></a></div><div class="card-info-data-item is-center"><a href="/tags/"><div class="headline">Tags</div><div class="length-num">39</div></a></div><div class="card-info-data-item is-center"><a href="/categories/"><div class="headline">Categories</div><div class="length-num">19</div></a></div></div><a class="button--animated" id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/tsinghuadream"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn card-announcement-animation"></i><span>Announcement</span></div><div class="announcement_content">横空出世，莽昆仑，阅尽人间春色。飞起玉龙三百万，搅得周天寒彻。夏日消溶，江河横溢，人或为鱼鳖。千秋功罪，谁人曾与评说？而今我谓昆仑：不要这高，不要这多雪。安得倚天抽宝剑，把汝裁为三截？一截遗欧，一截赠美，一截还东国。太平世界，环球同此凉热。</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>Catalog</span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#1-shiro%E5%8A%9F%E8%83%BD"><span class="toc-number">1.</span> <span class="toc-text">1. shiro功能</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#2-%E8%BA%AB%E4%BB%BD%E9%AA%8C%E8%AF%81"><span class="toc-number">2.</span> <span class="toc-text">2. 身份验证</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#2-1-Realm"><span class="toc-number">2.1.</span> <span class="toc-text">2.1 Realm</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#3-%E6%8E%88%E6%9D%83"><span class="toc-number">3.</span> <span class="toc-text">3. 授权</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#4-%E5%8A%A0%E5%AF%86"><span class="toc-number">4.</span> <span class="toc-text">4. 加密</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>Recent Post</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/post/HTML%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0.html" title="No title"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="No title"/></a><div class="content"><a class="title" href="/post/HTML%E8%AF%BE%E5%A0%82%E7%AC%94%E8%AE%B0.html" title="No title">No title</a><time datetime="2021-09-20T20:13:06.661Z" title="Created 2021-09-21 04:13:06">2021-09-21</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/hexo%E5%8D%9A%E5%AE%A2%E5%90%8C%E6%AD%A5.html" title="hexo博客同步"><img src="https://cdn.jsdelivr.net/npm/butterfly-extsrc@1/img/default.jpg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="hexo博客同步"/></a><div class="content"><a class="title" href="/post/hexo%E5%8D%9A%E5%AE%A2%E5%90%8C%E6%AD%A5.html" title="hexo博客同步">hexo博客同步</a><time datetime="2021-08-14T13:48:15.000Z" title="Created 2021-08-14 21:48:15">2021-08-14</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/RocketMQ.html" title="RocketMQ"><img src="/img/RocketMQ.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="RocketMQ"/></a><div class="content"><a class="title" href="/post/RocketMQ.html" title="RocketMQ">RocketMQ</a><time datetime="2021-08-12T13:44:10.000Z" title="Created 2021-08-12 21:44:10">2021-08-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/egg%E6%A1%86%E6%9E%B6.html" title="egg框架"><img src="/img/egg." onerror="this.onerror=null;this.src='/img/404.jpg'" alt="egg框架"/></a><div class="content"><a class="title" href="/post/egg%E6%A1%86%E6%9E%B6.html" title="egg框架">egg框架</a><time datetime="2021-08-09T13:21:44.000Z" title="Created 2021-08-09 21:21:44">2021-08-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/post/nodejs%E6%A6%82%E8%BF%B0.html" title="nodejs概述"><img src="/img/nodejs.jpeg" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="nodejs概述"/></a><div class="content"><a class="title" href="/post/nodejs%E6%A6%82%E8%BF%B0.html" title="nodejs概述">nodejs概述</a><time datetime="2021-08-08T10:10:20.000Z" title="Created 2021-08-08 18:10:20">2021-08-08</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2021 By phenix-fledgling</div><div class="framework-info"><span>Framework </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>Theme </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="Read Mode"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="Toggle Between Light And Dark Mode"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="Toggle between single-column and double-column"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="Setting"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="Table Of Contents"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="Back To Top"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
