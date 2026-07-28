@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="AI Agent, Java, 架构">
+    
+    
+    <meta name="author" content="phenix-fledgling">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://tsinghuadream.github.io/post/springsercurity详解.html"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="springsercurity详解">
+<meta property="og:url" content="https://tsinghuadream.github.io/post/springsercurity%E8%AF%A6%E8%A7%A3.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://tsinghuadream.github.io/images/redefine-og.webp">
+<meta property="article:published_time" content="2021-06-22T23:49:49.000Z">
+<meta property="article:modified_time" content="2026-07-28T18:35:18.685Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="spring">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://tsinghuadream.github.io/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            springsercurity详解 | 菲尼克斯blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"tsinghuadream.github.io","root":"/","language":"zh-CN"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"菲尼克斯blog","subtitle":{"text":["从 Java 到 AI Agent 的工程手记","拆解 Harness Agent，亲手造一个个人 Agent"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-box-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder-open"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":{"enable":true,"launch_time":"2020-04-01 00:00:00"},"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2022/8/17 11:45:14","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2022/8/17 11:45:14","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.i18n = {"search":"站内搜索您需要的内容...","toc":"目录","prev":"上一页","next":"下一页","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 页","recent_posts":"最新文章","share":"分享","powered_by":"由 %s 驱动","theme":"主题","rss_feed":"RSS Feed","category":"分类","categories":"分类","tag":"标签","tags":"标签","post":"文章","posts":"文章","tagcloud":"标签云","comment":"评论","comments":"评论","top":"置顶","sticky":"置顶","go-back-home":"回到首页","masonry_loading":"照片加载中...","image_viewer":"图片查看器","close":"关闭","exif":{"title":"EXIF","cards":{"camera":"相机","lens":"镜头","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"机型","date_taken":"拍摄时间","lens_model":"镜头","focal_length":"焦距","focus_mode":"对焦模式","shutter":"快门","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光补偿","metering_mode":"测光模式","flash":"闪光灯","white_balance":"白平衡","latitude":"纬度","longitude":"经度","altitude":"海拔"},"status":{"loading":"加载中...","no_exif":"无 EXIF 信息","library_missing":"EXIF 库未加载","image_source_missing":"图片地址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻止或缺少元数据）","flag_unavailable":"EXIF 不可用"}},"home":"首页","archive":"归档","archives":"归档","about":"关于","links":"链接","link":"链接","friends":"友情链接","friend":"友情链接","timeline":"时间轴","shuoshuo":"说说","bookmarks":"书签","site_uv":"访问人数","site_pv":"总访问量","read_more":"阅读全文","wordcount":"字","min2read":"分钟","changelog":"更新日志","status":"状态","runtime":"博客已运行","days":"天","hours":"小时","minutes":"分钟","seconds":"秒","optimized_by":"并由 Evan 进行优化","rights":"版权所有","site_posts":"共撰写了 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"title":"标题","author":"作者","link":"链接","create_time":"创建于","update_time":"更新于","license_title":"版权声明","license_content":"本文章采用 %s 进行许可。","all_rights_reserved":"版权所有 &#169 %s，禁止转载。","public_domain":"本文为公有领域作品，可自由转载、引用。"},"ago":{"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"},"create_time":"创建","update_time":"更新","expired":"这篇文章最后更新于 %s 天前，内容可能已经过时。"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                菲尼克斯blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-box-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    标签
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder-open fa-fw"></i>
+                                    分类
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-box-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                标签
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                分类
+                            </span>
+                            
+                                <i class="fa-regular fa-folder-open fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">57</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">21</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">65</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			
+			
+			<img src="/img/springsercurity.jpeg" alt="springsercurity详解" class="w-full h-60 sm:h-72 md:h-80 object-cover sm:rounded-t-large dark:brightness-75" />
+			
+			<div class="w-full flex items-center absolute bottom-0 justify-start">
+				<h1 class="article-title-cover text-center mx-6 my-6 text-second-text-color bg-background-color-transparent px-4 py-3 text-3xl sm:text-4xl md:text-5xl font-semibold backdrop-blur-lg rounded-xl border border-border-color ">springsercurity详解</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="https://github.com/TsinghuaDream.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">phenix-fledgling</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv5</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2021-06-23 07:49:49</span>
+        <span class="mobile">2021-06-23 07:49:49</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-07-29 02:35:18</span>
+            <span class="mobile">2026-07-29 02:35:18</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/spring/">spring</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/spring/">spring</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<h1 id="1-介绍"><a href="#1-介绍" class="headerlink" title="1. 介绍"></a>1. 介绍</h1><p>springsecurity底层实现为一条过滤器链，就是用户请求进来，判断有没有请求的权限，抛出异常，重定向跳转。</p>
+<p>在Java Web工程中，一般使用Servlet过滤器（Filter）对请求进行拦截，然后在Filter中通过自己的验证逻辑来决定是否放行请求。同样地，Spring Security也是基于这个原理，在进入到DispatcherServlet前就可以对Spring MVC的请求进行拦截，然后通过一定的验证，从而决定是否放行请求访问系统。为了对请求进行拦截，<strong>Spring Security提供了过滤器DelegatingFilterProxy类给予开发者配置</strong>。在传统的Web工程中，可以使用web.xml进行配置，但是因为Spring Boot推荐的是全注解的方式，所以这里不再介绍使用web.xml的方式。在传统的Spring全注解的方式下，只需要加入@EnableWebSecurity就可以驱动Spring Sercurity了。</p>
+<h1 id="2-原理"><a href="#2-原理" class="headerlink" title="2. 原理"></a>2. 原理</h1><p>一旦启用了Spring Security，SpringIoC容器就会为你创建一个名称为springSecurityFilterChain的Spring Bean。它的类型为FilterChainProxy，事实上它也实现了Filter接口，只是它是一个特殊的拦截器。在Spring Security操作的过程中它会提供Servlet过滤器DelegatingFilterProxy，这个过滤器会通过Spring Web IoC容器去获取Spring Security所自动创建的FilterChainProxy对象，这个对象上存在一个拦截器列表（List），列表上存在用户验证的拦截器、跨站点请求伪造等拦截器，这样它就可以提供多种拦截功能。于是焦点又落到了FilterChainProxy对象上，通过它还可以注册Filter，也就是允许注册自定义的Filter来实现对应的拦截逻辑，以满足不同的需要。当然，Spring Security也实现了大部分常用的安全功能，并提供了相应的机制来简化开发者的工作，所以大部分情况下并不需要自定义开发，使用它提供的机制即可。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/528977-20190321125335949-1934836347.png"
+                      alt="img"
+                ></p>
+<h2 id="1-2-Spring-Boot对Spring-Security支持的配置项"><a href="#1-2-Spring-Boot对Spring-Security支持的配置项" class="headerlink" title="1.2 Spring Boot对Spring Security支持的配置项"></a>1.2 Spring Boot对Spring Security支持的配置项</h2><div class="code-container" data-rel="Properties"><figure class="iseeu highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># SECURITY (SecurityProperties)</span></span><br><span class="line"><span class="comment"># Spring Security过滤器排序</span></span><br><span class="line"><span class="attr">spring.security.filter.order</span>=<span class="string">-100</span></span><br><span class="line"><span class="comment">#安全过滤器责任链拦截的分发类型</span></span><br><span class="line"><span class="attr">spring.security.filter.dispatcher-types</span>=<span class="string">async,error,request</span></span><br><span class="line"><span class="comment">#用户名，默认值为user</span></span><br><span class="line"><span class="attr">spring.security.user.name</span>=<span class="string">user</span></span><br><span class="line"><span class="comment">#用户密码</span></span><br><span class="line"><span class="attr">spring.security.user.password</span>=<span class="string"></span></span><br><span class="line"><span class="comment">#用户角色</span></span><br><span class="line"><span class="attr">spring.security.user.roles</span>=<span class="string"></span></span><br><span class="line"><span class="comment"></span></span><br><span class="line"><span class="comment"># SECURITY OAUTH2 CLIENT (OAuth2ClientProperties)</span></span><br><span class="line"><span class="comment"># Oauth提供者详细配置信息</span></span><br><span class="line"><span class="attr">spring.security.oauth2.client.provider.*</span>= <span class="string">#</span></span><br><span class="line"><span class="comment"># Oauth客户端登记信息</span></span><br><span class="line"><span class="attr">spring.security.oauth2.client.registration.*</span>=<span class="string"></span></span><br></pre></td></tr></table></figure></div>
+
+<h2 id="1-3-使用WebSecurityConfigurerAdapter自定义"><a href="#1-3-使用WebSecurityConfigurerAdapter自定义" class="headerlink" title="1.3 使用WebSecurityConfigurerAdapter自定义"></a>1.3 使用WebSecurityConfigurerAdapter自定义</h2><p>为了给FilterChainProxy对象加入自定义的初始化，SpringSecurity提供了SecurityConfigurer接口，通过它就能够实现对Spring Security的配置。只是有了这个接口还不太方便，因为它只是能够提供接口定义的功能，为了更方便，Spring对Web工程还提供了专门的接口WebSecurityConfigurer，并且在这个接口的定义上提供了一个<strong>抽象类WebSecurityConfigurer Adapter</strong>。<strong>开发者通过继承它就能得到Spring Security默认的安全功能。也可以通过覆盖它提供的方法，来自定义自己的安全拦截方案。</strong></p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">  <span class="comment">//用来配置用户签名服务，主要是user-details机制，还可以给予用户赋予角色</span></span><br><span class="line"><span class="comment">//@param auth 签名管理构造器,用于构建用户具体权限控制</span></span><br><span class="line">  <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(AuthenticationManagerBuilder auth)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">      <span class="built_in">this</span>.disableLocalConfigureAuthenticationBldr = <span class="literal">true</span>;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//用于配置Filtet链</span></span><br><span class="line"><span class="comment">//@param web spring web security对象</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(WebSecurity web)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">  &#125;</span><br><span class="line"><span class="comment">//用于配置拦截保护的请求，比如什么请求放行，什么请求需要验证</span></span><br><span class="line"><span class="comment">//@param http http安全请求对象</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity http)</span> <span class="keyword">throw</span> Exception;</span><br></pre></td></tr></table></figure></div>
+
+<p>对于使用<strong>WebSecurity参数的方法主要是配置Filter链的内容</strong>，可以配置Filter链忽略哪些内容。WebSecurityConfigurerAdapter提供的是空实现，也就是没有任何的配置。而对于<strong>AuthenticationManager Builder参数的方法，则是定义用户（user）、密码（password）和角色（role）</strong>，在默认的情况下Spring不会为你创建任何的用户和密码，也就是有登录页面而没有可登录的用户。对于<strong>HttpSecurity参数的方法，则是指定用户和角色与对应URL的访问权限</strong>，也就是开发者可以通过覆盖这个方法来指定用户或者角色的访问权限。<strong>在WebSecurityConfigurerAdapter提供的验证方式下满足通过用户验证或者HTTP基本验证的任何请求，Spring Security都会放行。</strong></p>
+<h1 id="3-自定义用户服务信息"><a href="#3-自定义用户服务信息" class="headerlink" title="3. 自定义用户服务信息"></a>3. 自定义用户服务信息</h1><p>主要包含使用内存签名服务、数据库签名服务和自定义签名服务。</p>
+<h2 id="3-1-使用内存用户"><a href="#3-1-使用内存用户" class="headerlink" title="3.1 使用内存用户"></a>3.1 使用内存用户</h2><div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Override</span></span><br><span class="line"><span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(AuthenticationManagerBuilder auth)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">    <span class="comment">//密码编辑器</span></span><br><span class="line">    <span class="type">PasswordEncoder</span> <span class="variable">passwordEncoder</span> <span class="operator">=</span> <span class="keyword">new</span> <span class="title class_">BCryptPasswordEncoder</span>();</span><br><span class="line">    <span class="comment">//使用内存存储</span></span><br><span class="line">    auth.inMemoryAuthentication()</span><br><span class="line">            <span class="comment">//设置密码编辑器</span></span><br><span class="line">            .passwordEncoder(passwordEncoder)</span><br><span class="line">            <span class="comment">//注册用户admin，密码为abc，并赋予user和admin的角色权限</span></span><br><span class="line">            .withUser(<span class="string">&quot;admin&quot;</span>)</span><br><span class="line">                .password(<span class="string">&quot;123&quot;</span>)</span><br><span class="line">                .roles(<span class="string">&quot;USER&quot;</span>,<span class="string">&quot;ADMIN&quot;</span>)</span><br><span class="line">            <span class="comment">//连接方法and</span></span><br><span class="line">            .and()</span><br><span class="line">            <span class="comment">//注册用户myuser，密码为123，并赋予user的角色权限</span></span><br><span class="line">            .withUser(<span class="string">&quot;myser&quot;</span>)</span><br><span class="line">                .password(<span class="string">&quot;123&quot;</span>)</span><br><span class="line">                .roles(<span class="string">&quot;USER&quot;</span>);</span><br><span class="line">&#125;</span><br><span class="line"><span class="comment">//当然也可以自定义，只要AuthenticationManagerBuilder“把角色吃进去就行了”</span></span><br><span class="line">    <span class="comment">//根据用户名密码实现登录</span></span><br><span class="line"><span class="meta">@Autowired</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureGlobal</span><span class="params">(AuthenticationManagerBuilder authenticationManagerBuilder)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">    <span class="comment">//内存存储用户，写死</span></span><br><span class="line">    authenticationManagerBuilder</span><br><span class="line">            .inMemoryAuthentication()</span><br><span class="line">            <span class="comment">//.passwordEncoder(new BCryptPasswordEncoder())</span></span><br><span class="line">            .withUser(<span class="string">&quot;test&quot;</span>).password(<span class="string">&quot;123&quot;</span>).roles(<span class="string">&quot;USER&quot;</span>)</span><br><span class="line">            .and()</span><br><span class="line">            .withUser(<span class="string">&quot;admin&quot;</span>).password(<span class="string">&quot;123&quot;</span>).roles(<span class="string">&quot;ADMIN&quot;</span>,<span class="string">&quot;USER&quot;</span>);</span><br><span class="line">    <span class="comment">//动态加载用户</span></span><br><span class="line">    authenticationManagerBuilder.userDetailsService(myUserDetailsService);</span><br><span class="line">&#125;</span><br><span class="line">   </span><br></pre></td></tr></table></figure></div>
+
+<p>在Spring 5的<strong>Security中都要求使用密码编码器</strong>，否则会发生异常，所以代码中首先创建了一个BCryptPasswordEncoder实例，这个类实现了PasswordEncoder接口，它采用的是单向不可逆的密码加密方式。这里的<strong>AuthenticationManagerBuilder是关注的焦点</strong>，其中<strong>inMemoryAuthentication方法将返回内存保存用户信息的管理器配置（InMemoryUserDetailsManagerConfigurer），这样启用内存缓存的机制保存用户信息</strong>。首先通过<strong>passwordEncoder方法，设置了密码编码器</strong>，这里的<strong>withUser方法是注册用户名称，返回用户详情构造器（UserDetailsBuilder）对象</strong>，这样就能够去配置用户的信息了；<strong>password方法是设置密码</strong>，采用的是通过BCrypt加密方式加密后的密码字符串，于是用户登录就需要这个密码了；<strong>roles方法赋予角色类型</strong>，将来就可以通过这个角色名称赋予权限了。**只是这个roles方法还有内涵，它实际是另外一个方法的简写，这个方法是authorities，使用它可以注册角色名称，而代码中roles方法给的角色名称实际上Spring Security会加入前缀“ROLE_”；**and方法则是一个连接方法，也就是开启另外一个用户的注册。通过configure(AuthenticationManagerBuilder auth)方法，可以注册两个用户：一个是admin用户，其密码为abc，它拥有ROLE_USER和ROLE_ADMIN两个角色；另一个是myuser用户，其密码为123456，它只拥有ROLE_USER一个角色。</p>
+<h3 id="3-1-1-UserDetailsBuilder方法简介"><a href="#3-1-1-UserDetailsBuilder方法简介" class="headerlink" title="3.1.1 UserDetailsBuilder方法简介"></a>3.1.1 UserDetailsBuilder方法简介</h3><div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">UserDetailsBuilder</span> &#123;</span><br><span class="line">  			<span class="comment">//用户详细信息</span></span><br><span class="line">        <span class="keyword">private</span> UserBuilder user;</span><br><span class="line">        <span class="keyword">private</span> <span class="keyword">final</span> C builder;</span><br><span class="line">				<span class="comment">//构造方法</span></span><br><span class="line">        <span class="keyword">private</span> <span class="title function_">UserDetailsBuilder</span><span class="params">(C builder)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.builder = builder;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//连接</span></span><br><span class="line">        <span class="keyword">public</span> C <span class="title function_">and</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>.builder;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//用户名</span></span><br><span class="line">        <span class="keyword">private</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">username</span><span class="params">(String username)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user = User.withUsername(username);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//密码</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">password</span><span class="params">(String password)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.password(password);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//赋予角色，会自动加入前缀“ROLE_”</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">roles</span><span class="params">(String... roles)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.roles(roles);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//赋予一个“或”权限</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">authorities</span><span class="params">(GrantedAuthority... authorities)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.authorities(authorities);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//使用列表赋予权限</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">authorities</span><span class="params">(List&lt;? extends GrantedAuthority&gt; authorities)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.authorities(authorities);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//赋予权限名</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">authorities</span><span class="params">(String... authorities)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.authorities(authorities);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//设置账号是否过期</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">accountExpired</span><span class="params">(<span class="type">boolean</span> accountExpired)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.accountExpired(accountExpired);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//是否锁定账号</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">accountLocked</span><span class="params">(<span class="type">boolean</span> accountLocked)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.accountLocked(accountLocked);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//定义凭证是否过期</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">credentialsExpired</span><span class="params">(<span class="type">boolean</span> credentialsExpired)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.credentialsExpired(credentialsExpired);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//是否禁用用户</span></span><br><span class="line">        <span class="keyword">public</span> UserDetailsManagerConfigurer&lt;B, C&gt;.UserDetailsBuilder <span class="title function_">disabled</span><span class="params">(<span class="type">boolean</span> disabled)</span> &#123;</span><br><span class="line">            <span class="built_in">this</span>.user.disabled(disabled);</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>;</span><br><span class="line">        &#125;</span><br><span class="line">				<span class="comment">//返回用户解码后密码</span></span><br><span class="line">        UserDetails <span class="title function_">build</span><span class="params">()</span> &#123;</span><br><span class="line">            <span class="keyword">return</span> <span class="built_in">this</span>.user.build();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure></div>
+
+<h2 id="3-2-使用数据库定义用户认证服务"><a href="#3-2-使用数据库定义用户认证服务" class="headerlink" title="3.2 使用数据库定义用户认证服务"></a>3.2 使用数据库定义用户认证服务</h2><p>在大部分的情况下，用户的信息会存放在数据库，为此Spring Security提供了对数据库的查询方法来满足开发者的需要。JdbcUserDetailsManagerConfigurer是一个Spring Security对于数据库配置的支持，并且它也提供了默认的SQL。只是在大部分的情况下，不会采用它默认提供的SQL，基于实用的原则，这里就不再深入讨论默认的SQL了。既然涉及了数据库，就需要准备好数据库（MySQL）的表和数据。</p>
+<h3 id="3-2-1-自定义登录页-与-UserDetailsService-用户名密码校验"><a href="#3-2-1-自定义登录页-与-UserDetailsService-用户名密码校验" class="headerlink" title="3.2.1 自定义登录页 与 UserDetailsService 用户名密码校验"></a>3.2.1 自定义登录页 与 UserDetailsService 用户名密码校验</h3><div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.springboot.entity.Menu;</span><br><span class="line"><span class="keyword">import</span> com.springboot.entity.Role;</span><br><span class="line"><span class="keyword">import</span> com.springboot.repository.RoleRepository;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.context.annotation.Bean;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.config.annotation.web.builders.HttpSecurity;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.crypto.password.NoOpPasswordEncoder;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@EnableWebSecurity</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">SecurityConfig</span> <span class="keyword">extends</span> <span class="title class_">WebSecurityConfigurerAdapter</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> RoleRepository roleRepository;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span> MyUserDetailsService myUserDetailsService;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">protected</span> <span class="keyword">void</span> <span class="title function_">configure</span><span class="params">(HttpSecurity httpSecurity)</span> <span class="keyword">throws</span> Exception&#123;</span><br><span class="line">        <span class="comment">//配置资源文件 其中/css/**，/index可以任意访问，/select需要USER权限，/delete需要ADMIN权限</span></span><br><span class="line">        httpSecurity</span><br><span class="line">                .authorizeRequests()</span><br><span class="line">                .antMatchers(<span class="string">&quot;/css/**&quot;</span>, <span class="string">&quot;/index&quot;</span>).permitAll()</span><br><span class="line">                .antMatchers(<span class="string">&quot;/select&quot;</span>).hasRole(<span class="string">&quot;USER&quot;</span>)</span><br><span class="line">                .antMatchers(<span class="string">&quot;/delete&quot;</span>).hasRole(<span class="string">&quot;ADMIN&quot;</span>);</span><br><span class="line">        <span class="comment">//动态加载数据库中角色权限</span></span><br><span class="line">        List&lt;Role&gt; roleList = roleRepository.findAll();</span><br><span class="line">        <span class="keyword">for</span>(Role role : roleList)&#123;</span><br><span class="line">            List&lt;Menu&gt; menuList = role.getMenuList();</span><br><span class="line">            <span class="keyword">for</span> (Menu menu : menuList)&#123;</span><br><span class="line">                <span class="comment">//在SpringSecurity校验权限的时候，会自动将权限前面加ROLE_，所以我们需要 将我们数据库中配置的ROLE_截取掉。</span></span><br><span class="line">                <span class="type">String</span> <span class="variable">roleName</span> <span class="operator">=</span> role.getRoleName().replace(<span class="string">&quot;ROLE_&quot;</span>,<span class="string">&quot;&quot;</span>);</span><br><span class="line">                <span class="type">String</span> <span class="variable">menuName</span> <span class="operator">=</span> <span class="string">&quot;/&quot;</span> + menu.getMenuName();</span><br><span class="line">                httpSecurity</span><br><span class="line">                        .authorizeRequests()</span><br><span class="line">                        .antMatchers(menuName)</span><br><span class="line">                        .hasRole(roleName);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//配置登录请求/login 登录失败请求/login_error 登录成功请求/</span></span><br><span class="line">        httpSecurity</span><br><span class="line">                .formLogin()</span><br><span class="line">                .loginPage(<span class="string">&quot;/login&quot;</span>)</span><br><span class="line">                .failureUrl(<span class="string">&quot;/login_error&quot;</span>)</span><br><span class="line">                .successForwardUrl(<span class="string">&quot;/&quot;</span>);</span><br><span class="line">        <span class="comment">//登录异常，如权限不符合 请求/401</span></span><br><span class="line">        httpSecurity</span><br><span class="line">                .exceptionHandling().accessDeniedPage(<span class="string">&quot;/401&quot;</span>);</span><br><span class="line">        <span class="comment">//注销登录 请求/logout</span></span><br><span class="line">        httpSecurity</span><br><span class="line">                .logout()</span><br><span class="line">                .logoutSuccessUrl(<span class="string">&quot;/logout&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Bean</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">static</span> NoOpPasswordEncoder <span class="title function_">passwordEncoder</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> (NoOpPasswordEncoder) NoOpPasswordEncoder.getInstance();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment">//根据用户名密码实现登录</span></span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">configureGlobal</span><span class="params">(AuthenticationManagerBuilder authenticationManagerBuilder)</span> <span class="keyword">throws</span> Exception &#123;</span><br><span class="line">        authenticationManagerBuilder</span><br><span class="line">                .inMemoryAuthentication()</span><br><span class="line">                <span class="comment">//.passwordEncoder(new BCryptPasswordEncoder())</span></span><br><span class="line">                .withUser(<span class="string">&quot;test&quot;</span>).password(<span class="string">&quot;123&quot;</span>).roles(<span class="string">&quot;USER&quot;</span>)</span><br><span class="line">                .and()</span><br><span class="line">                .withUser(<span class="string">&quot;admin&quot;</span>).password(<span class="string">&quot;123&quot;</span>).roles(<span class="string">&quot;ADMIN&quot;</span>,<span class="string">&quot;USER&quot;</span>);</span><br><span class="line">        authenticationManagerBuilder.userDetailsService(myUserDetailsService);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+
+
+<p>然后实现UserDetailsService接口进行用户姓名密码校验 (由于springboot2.x中security是5.x版本的，所以这里的密码是默认做了BCrypt加密的，就需要bean一个BCrypt),首先设置用户权限的方式，对于Spring Security提供了一个UserDetailsService接口，通过它可以获取用户信息，而这个接口只有一个loadUserByUsername方法需要实现，这个方法定义返回UserDetails接口对象</p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.springboot.entity.Role;</span><br><span class="line"><span class="keyword">import</span> com.springboot.entity.User;</span><br><span class="line"><span class="keyword">import</span> com.springboot.repository.UserRepository;</span><br><span class="line"><span class="keyword">import</span> org.springframework.beans.factory.annotation.Autowired;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.authority.SimpleGrantedAuthority;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetails;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UserDetailsService;</span><br><span class="line"><span class="keyword">import</span> org.springframework.security.core.userdetails.UsernameNotFoundException;</span><br><span class="line"><span class="keyword">import</span> org.springframework.stereotype.Service;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Service</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">MyUserDetailsService</span> <span class="keyword">implements</span> <span class="title class_">UserDetailsService</span> &#123;</span><br><span class="line">    <span class="meta">@Autowired</span></span><br><span class="line">    <span class="keyword">private</span>  UserRepository userRepository;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="keyword">public</span> UserDetails <span class="title function_">loadUserByUsername</span><span class="params">(String username)</span> <span class="keyword">throws</span> UsernameNotFoundException &#123;</span><br><span class="line">        <span class="type">User</span> <span class="variable">user</span> <span class="operator">=</span> userRepository.findByUserName(username);</span><br><span class="line">        <span class="keyword">if</span> (user == <span class="literal">null</span>)&#123;</span><br><span class="line">            <span class="keyword">throw</span> <span class="keyword">new</span> <span class="title class_">UsernameNotFoundException</span>(<span class="string">&quot;用户不存在！&quot;</span>);</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">//获取权限列表</span></span><br><span class="line">        List&lt;SimpleGrantedAuthority&gt; simpleGrantedAuthorities = <span class="keyword">new</span> <span class="title class_">ArrayList</span>&lt;&gt;();</span><br><span class="line">        <span class="keyword">for</span> (Role role : user.getRoleList()) &#123;</span><br><span class="line">            simpleGrantedAuthorities.add(<span class="keyword">new</span> <span class="title class_">SimpleGrantedAuthority</span>(role.getRoleName()));</span><br><span class="line">        &#125;</span><br><span class="line">      	<span class="comment">//返回一个UserDetailes对象</span></span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">new</span> <span class="title class_">org</span>.springframework.security.core.userdetails.User(user.getUserName(), user.getPassWord(), simpleGrantedAuthorities);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>实体类们：</p>
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">User</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer userId;</span><br><span class="line">    <span class="keyword">private</span> String userName;</span><br><span class="line">    <span class="keyword">private</span> String passWord;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ManyToMany(fetch= FetchType.EAGER)</span></span><br><span class="line">    <span class="meta">@JoinTable(name = &quot;UserRole&quot;, joinColumns = &#123; @JoinColumn(name = &quot;userId&quot;) &#125;,</span></span><br><span class="line"><span class="meta">            inverseJoinColumns =&#123;@JoinColumn(name = &quot;roleId&quot;) &#125;)</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Role&gt; roleList;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getUserId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserId</span><span class="params">(Integer userId)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userId = userId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getUserName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserName</span><span class="params">(String userName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userName = userName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getPassWord</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> passWord;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setPassWord</span><span class="params">(String passWord)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.passWord = passWord;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;Role&gt; <span class="title function_">getRoleList</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> roleList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRoleList</span><span class="params">(List&lt;Role&gt; roleList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.roleList = roleList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">User</span><span class="params">(String userName, String passWord, List&lt;Role&gt; roleList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userName = userName;</span><br><span class="line">        <span class="built_in">this</span>.passWord = passWord;</span><br><span class="line">        <span class="built_in">this</span>.roleList = roleList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="title function_">User</span><span class="params">()</span> &#123;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Menu</span>  <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer menuId;</span><br><span class="line">    <span class="keyword">private</span> String menuName;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ManyToMany</span></span><br><span class="line">    <span class="meta">@JoinTable(name=&quot;RoleMenu&quot;,joinColumns=&#123;@JoinColumn(name=&quot;menuId&quot;)&#125;,inverseJoinColumns=&#123;@JoinColumn(name=&quot;roleId&quot;)&#125;)</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Role&gt; roleList;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getMenuId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> menuId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMenuId</span><span class="params">(Integer menuId)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.menuId = menuId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getMenuName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> menuName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMenuName</span><span class="params">(String menuName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.menuName = menuName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;Role&gt; <span class="title function_">getRoleList</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> roleList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRoleList</span><span class="params">(List&lt;Role&gt; roleList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.roleList = roleList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<div class="code-container" data-rel="Java"><figure class="iseeu highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@Entity</span></span><br><span class="line"><span class="keyword">public</span> <span class="keyword">class</span> <span class="title class_">Role</span> <span class="keyword">implements</span> <span class="title class_">Serializable</span> &#123;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@Id</span></span><br><span class="line">    <span class="meta">@GeneratedValue</span></span><br><span class="line">    <span class="keyword">private</span> Integer roleId;</span><br><span class="line">    <span class="keyword">private</span> String roleName;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="meta">@ManyToMany(fetch= FetchType.EAGER)</span></span><br><span class="line">    <span class="meta">@JoinTable(name=&quot;RoleMenu&quot;,joinColumns=&#123;@JoinColumn(name=&quot;roleId&quot;)&#125;,inverseJoinColumns=&#123;@JoinColumn(name=&quot;menuId&quot;)&#125;)</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;Menu&gt; menuList;</span><br><span class="line"></span><br><span class="line">    <span class="meta">@ManyToMany</span></span><br><span class="line">    <span class="meta">@JoinTable(name=&quot;UserRole&quot;,joinColumns=&#123;@JoinColumn(name=&quot;roleId&quot;)&#125;,inverseJoinColumns=&#123;@JoinColumn(name=&quot;userId&quot;)&#125;)</span></span><br><span class="line">    <span class="keyword">private</span> List&lt;User&gt; userList;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> Integer <span class="title function_">getRoleId</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> roleId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRoleId</span><span class="params">(Integer roleId)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.roleId = roleId;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> String <span class="title function_">getRoleName</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> roleName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setRoleName</span><span class="params">(String roleName)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.roleName = roleName;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;Menu&gt; <span class="title function_">getMenuList</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> menuList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setMenuList</span><span class="params">(List&lt;Menu&gt; menuList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.menuList = menuList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> List&lt;User&gt; <span class="title function_">getUserList</span><span class="params">()</span> &#123;</span><br><span class="line">        <span class="keyword">return</span> userList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">public</span> <span class="keyword">void</span> <span class="title function_">setUserList</span><span class="params">(List&lt;User&gt; userList)</span> &#123;</span><br><span class="line">        <span class="built_in">this</span>.userList = userList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="Spring-Security-OAuth2"><a href="#Spring-Security-OAuth2" class="headerlink" title="Spring Security OAuth2"></a>Spring Security OAuth2</h1><h2 id="1-应用场景"><a href="#1-应用场景" class="headerlink" title="1.应用场景"></a>1.应用场景</h2><p>为了理解OAuth的适用场合，让我举一个假设的例子。</p>
+<p>有一个”云冲印”的网站，可以将用户储存在Google的照片，冲印出来。用户为了使用该服务，必须让”云冲印”读取自己储存在Google上的照片。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/bg2014051202.png"
+                      alt="云冲印"
+                ></p>
+<p>问题是只有得到用户的授权，Google才会同意”云冲印”读取这些照片。那么，”云冲印”怎样获得用户的授权呢？</p>
+<p><strong>传统方法是，用户将自己的Google用户名和密码，告诉”云冲印”</strong>，后者就可以读取用户的照片了。这样的做法有以下几个严重的缺点。</p>
+<blockquote>
+<p>（1）”云冲印”为了后续的服务，会保存用户的密码，这样很不安全。</p>
+<p>（2）Google不得不部署密码登录，而我们知道，单纯的密码登录并不安全。</p>
+<p>（3）”云冲印”拥有了获取用户储存在Google所有资料的权力，用户没法限制”云冲印”获得授权的范围和有效期。</p>
+<p>（4）用户只有修改密码，才能收回赋予”云冲印”的权力。但是这样做，会使得其他所有获得用户授权的第三方应用程序全部失效。</p>
+<p>（5）只要有一个第三方应用程序被破解，就会导致用户密码泄漏，以及所有被密码保护的数据泄漏。</p>
+</blockquote>
+<p>OAuth就是为了解决上面这些问题而诞生的，它可以让Google不赋予云冲印密码实现读取。</p>
+<h2 id="2-名词定义"><a href="#2-名词定义" class="headerlink" title="2.名词定义"></a>2.名词定义</h2><p>（1） <strong>Third-party application</strong>：第三方应用程序，本文中又称”客户端”（client），即上一节例子中的”云冲印”。</p>
+<p>（2）<strong>HTTP service</strong>：HTTP服务提供商，本文中简称”服务提供商”，即上一节例子中的Google。</p>
+<p>（3）<strong>Resource Owner</strong>：资源所有者，本文中又称”用户”（user）。</p>
+<p>（4）<strong>User Agent</strong>：用户代理，本文中就是指浏览器。</p>
+<p>（5）<strong>Authorization server</strong>：认证服务器，即服务提供商专门用来处理认证的服务器。</p>
+<p>（6）<strong>Resource server</strong>：资源服务器，即服务提供商存放用户生成的资源的服务器。它与认证服务器，可以是同一台服务器，也可以是不同的服务器。</p>
+<h2 id="3-Oauth的思路"><a href="#3-Oauth的思路" class="headerlink" title="3.Oauth的思路"></a>3.Oauth的思路</h2><p>OAuth在”客户端”与”服务提供商”之间，<strong>设置了一个授权层（authorization layer）</strong>。<strong>“客户端”不能直接登录”服务提供商”，只能登录授权层，以此将用户与客户端区分开来。”客户端”登录授权层所用的令牌（token），与用户的密码不同。用户可以在登录的时候，指定授权层令牌的权限范围和有效期。</strong></p>
+<p>“客户端”登录授权层以后，”服务提供商”根据令牌的权限范围和有效期，向”客户端”开放用户储存的资料。</p>
+<h2 id="4-运行流程"><a href="#4-运行流程" class="headerlink" title="4. 运行流程"></a>4. 运行流程</h2><p>OAuth 2.0的运行流程如下图，摘自RFC 6749。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/bg2014051203.png"
+                      alt="OAuth运行流程"
+                ></p>
+<blockquote>
+<p>（A）用户打开客户端以后，客户端要求用户给予授权。</p>
+<p>（B）用户同意给予客户端授权。</p>
+<p>（C）客户端使用上一步获得的授权，向认证服务器申请令牌。</p>
+<p>（D）认证服务器对客户端进行认证以后，确认无误，同意发放令牌。</p>
+<p>（E）客户端使用令牌，向资源服务器申请获取资源。</p>
+<p>（F）资源服务器确认令牌无误，同意向客户端开放资源。</p>
+</blockquote>
+<p>不难看出来，上面六个步骤之中，B是关键，即用户怎样才能给于客户端授权。有了这个授权以后，客户端就可以获取令牌，进而凭令牌获取资源。</p>
+<p>下面一一讲解客户端获取授权的四种模式。</p>
+<h2 id="5-客户端的授权模式"><a href="#5-客户端的授权模式" class="headerlink" title="5.客户端的授权模式"></a>5.客户端的授权模式</h2><p>流程AB中客户端必须得到用户的授权（authorization grant），才能获得令牌（access token）。OAuth 2.0定义了四种授权方式。</p>
+<ul>
+<li>授权码模式（authorization code）</li>
+<li>简化模式（implicit）</li>
+<li>密码模式（resource owner password credentials）</li>
+<li>客户端模式（client credentials）</li>
+</ul>
+<h2 id="6-授权码模式（🌟）"><a href="#6-授权码模式（🌟）" class="headerlink" title="6.授权码模式（🌟）"></a>6.授权码模式（🌟）</h2><p>授权码模式（authorization code）是功能最完整、流程最严密的授权模式。它的特点就是通过客户端的后台服务器，与”服务提供商”的认证服务器进行互动。</p>
+<p><strong>主要用于需要第三方登录的程序中</strong>。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/bg2014051204.png"
+                      alt="授权码模式"
+                ></p>
+<p>它的步骤如下：</p>
+<blockquote>
+<p>（A）用户访问客户端，后者将前者导向认证服务器。</p>
+<p>（B）用户选择是否给予客户端授权。</p>
+<p>（C）假设用户给予授权，认证服务器将用户导向客户端事先指定的”重定向URI”（redirection URI），同时附上一个授权码。</p>
+<p>（D）客户端收到授权码，附上早先的”重定向URI”，向认证服务器申请令牌。这一步是在客户端的后台的服务器上完成的，对用户不可见。</p>
+<p>（E）认证服务器核对了授权码和重定向URI，确认无误后，向客户端发送访问令牌（access token）和更新令牌（refresh token）。</p>
+</blockquote>
+<p>下面是上面这些步骤所需要的参数。</p>
+<p>A步骤中，客户端申请认证的URI，包含以下参数：</p>
+<ul>
+<li>response_type：表示授权类型，必选项，此处的值固定为”code”</li>
+<li>client_id：表示客户端的ID，必选项</li>
+<li>redirect_uri：表示重定向URI，可选项</li>
+<li>scope：表示申请的权限范围，可选项</li>
+<li>state：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</li>
+</ul>
+<p>下面是一个请求参数例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GET /authorize?response_type=code&amp;client_id=s6BhdRkqt3&amp;state=xyz</span><br><span class="line">        &amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br></pre></td></tr></table></figure></div></blockquote>
+<p>C步骤中，服务器回应客户端的URI，包含以下参数：</p>
+<ul>
+<li>code：表示授权码，必选项。该码的有效期应该很短，通常设为10分钟，客户端只能使用该码一次，否则会被授权服务器拒绝。该码与客户端ID和重定向URI，是一一对应关系。</li>
+<li>state：如果客户端的请求中包含这个参数，认证服务器的回应也必须一模一样包含这个参数。</li>
+</ul>
+<p>下面是一个回应参数例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">302</span> Found</span><br><span class="line"><span class="attribute">Location</span><span class="punctuation">: </span>https://client.example.com/cb?code=SplxlOBeZQQYbYS6WxSbIA</span><br><span class="line">          &amp;state=xyz</span><br></pre></td></tr></table></figure></div></blockquote>
+<p>D步骤中，客户端向认证服务器申请令牌的HTTP请求，包含以下参数：</p>
+<ul>
+<li>grant_type：表示使用的授权模式，必选项，此处的值固定为”authorization_code”。</li>
+<li>code：表示上一步获得的授权码，必选项。</li>
+<li>redirect_uri：表示重定向URI，必选项，且必须与A步骤中的该参数值保持一致。</li>
+<li>client_id：表示客户端ID，必选项。</li>
+</ul>
+<p>这是一个请求参数例子。</p>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-llvm">grant_type<span class="operator">=</span>authorization_code&amp;code<span class="operator">=</span>SplxlOBeZQQYbYS<span class="number">6</span>WxSbIA</span></span><br><span class="line"><span class="language-llvm">&amp;redirect_uri<span class="operator">=</span>https<span class="variable">%3</span>A<span class="variable">%2</span>F<span class="variable">%2</span>Fclient<span class="variable">%2</span>Eexample<span class="variable">%2</span>Ecom<span class="variable">%2</span>Fcb</span></span><br></pre></td></tr></table></figure></div>
+
+<p>E步骤中，认证服务器发送的HTTP回复，包含以下参数：</p>
+<ul>
+<li>access_token：表示访问令牌，必选项。</li>
+<li>token_type：表示令牌类型，该值大小写不敏感，必选项，可以是bearer类型或mac类型。</li>
+<li>expires_in：表示过期时间，单位为秒。如果省略该参数，必须其他方式设置过期时间。</li>
+<li>refresh_token：表示更新令牌，用来获取下一次的访问令牌，可选项。</li>
+<li>scope：表示权限范围，如果与客户端申请的范围一致，此项可省略。</li>
+</ul>
+<p>下面是一个例子。</p>
+ <div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-store</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"> </span><br><span class="line">&#123;</span><br><span class="line">  &quot;access_token&quot;:&quot;2YotnFZFEjr1zCsicMWpAA&quot;,</span><br><span class="line">  &quot;token_type&quot;:&quot;example&quot;,</span><br><span class="line">  &quot;expires_in&quot;:3600,</span><br><span class="line">  &quot;refresh_token&quot;:&quot;tGzv3JOkF0XG5Qx2TlKWIA&quot;,</span><br><span class="line">  &quot;example_parameter&quot;:&quot;example_value&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p>从上面代码可以看到，相关参数使用JSON格式发送（Content-Type: application&#x2F;json）。此外，HTTP头信息中明确指定不得缓存。</p>
+<h2 id="7-简化模式"><a href="#7-简化模式" class="headerlink" title="7.简化模式"></a>7.简化模式</h2><p>简化模式（implicit grant type）<strong>不通过第三方应用程序的服务器，直接在浏览器中向认证服务器申请令牌，跳过了”授权码”这个步骤</strong>，因此得名。所有步骤在浏览器中完成，令牌对访问者是可见的，且客户端不需要认证。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/bg2014051205.png"
+                      alt="简化模式"
+                ></p>
+<p>它的步骤如下：</p>
+<blockquote>
+<p>（A）客户端将用户导向认证服务器。</p>
+<p>（B）用户决定是否给于客户端授权。</p>
+<p>（C）假设用户给予授权，认证服务器将用户导向客户端指定的”重定向URI”，并在URI的Hash部分包含了访问令牌。</p>
+<p>（D）浏览器向资源服务器发出请求，其中不包括上一步收到的Hash值。</p>
+<p>（E）资源服务器返回一个网页，其中包含的代码可以获取Hash值中的令牌。</p>
+<p>（F）浏览器执行上一步获得的脚本，提取出令牌。</p>
+<p>（G）浏览器将令牌发给客户端。</p>
+</blockquote>
+<p>下面是上面这些步骤所需要的参数。</p>
+<p>A步骤中，客户端发出的HTTP请求，包含以下参数：</p>
+<ul>
+<li>response_type：表示授权类型，此处的值固定为”token”，必选项。</li>
+<li>client_id：表示客户端的ID，必选项。</li>
+<li>redirect_uri：表示重定向的URI，可选项。</li>
+<li>scope：表示权限范围，可选项。</li>
+<li>state：表示客户端的当前状态，可以指定任意值，认证服务器会原封不动地返回这个值。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">GET /authorize?response_type=token&amp;client_id=s6BhdRkqt3&amp;state=xyz</span><br><span class="line">    &amp;redirect_uri=https%3A%2F%2Fclient%2Eexample%2Ecom%2Fcb HTTP/1.1</span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br></pre></td></tr></table></figure></div></blockquote>
+<p>C步骤中，认证服务器回应客户端的URI，包含以下参数：</p>
+<ul>
+<li>access_token：表示访问令牌，必选项。</li>
+<li>token_type：表示令牌类型，该值大小写不敏感，必选项。</li>
+<li>expires_in：表示过期时间，单位为秒。如果省略该参数，必须其他方式设置过期时间。</li>
+<li>scope：表示权限范围，如果与客户端申请的范围一致，此项可省略。</li>
+<li>state：如果客户端的请求中包含这个参数，认证服务器的回应也必须一模一样包含这个参数。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">302</span> Found</span><br><span class="line"><span class="attribute">Location</span><span class="punctuation">: </span>http://example.com/cb#access_token=2YotnFZFEjr1zCsicMWpAA</span><br><span class="line">          &amp;state=xyz&amp;token_type=example&amp;expires_in=3600</span><br></pre></td></tr></table></figure></div></blockquote>
+<p>在上面的例子中，认证服务器用HTTP头信息的Location栏，指定浏览器重定向的网址。注意，在这个网址的Hash部分包含了令牌。</p>
+<p>根据上面的D步骤，下一步浏览器会访问Location指定的网址，但是Hash部分不会发送。接下来的E步骤，服务提供商的资源服务器发送过来的代码，会提取出Hash中的令牌。</p>
+<h2 id="8-密码模式（🌟）"><a href="#8-密码模式（🌟）" class="headerlink" title="8.密码模式（🌟）"></a>8.密码模式（🌟）</h2><p>密码模式（Resource Owner Password Credentials Grant）中，用户向客户端提供自己的用户名和密码。客户端使用这些信息，向”服务商提供商”索要授权。</p>
+<p>在这种模式中，用户必须把自己的密码给客户端，但是客户端不得储存密码。这通常用在用户对客户端高度信任的情况下，比如客户端是操作系统的一部分，或者由一个著名公司出品。而认证服务器只有在其他授权模式无法执行的情况下，才能考虑使用这种模式。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/bg2014051206.png"
+                      alt="密码模式"
+                ></p>
+<p>它的步骤如下：</p>
+<blockquote>
+<p>（A）用户向客户端提供用户名和密码。</p>
+<p>（B）客户端将用户名和密码发给认证服务器，向后者请求令牌。</p>
+<p>（C）认证服务器确认无误后，向客户端提供访问令牌。</p>
+</blockquote>
+<p>B步骤中，客户端发出的HTTP请求，包含以下参数：</p>
+<ul>
+<li>grant_type：表示授权类型，此处的值固定为”password”，必选项。</li>
+<li>username：表示用户名，必选项。</li>
+<li>password：表示用户的密码，必选项。</li>
+<li>scope：表示权限范围，可选项。</li>
+</ul>
+<p>下面是一个例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-dts">grant_<span class="attr">type</span><span class="operator">=</span>password<span class="variable">&amp;username</span>=johndoe<span class="variable">&amp;password</span>=A3ddj3w</span></span><br></pre></td></tr></table></figure></div></blockquote>
+<p>C步骤中，认证服务器向客户端发送访问令牌，下面是一个例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-store</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"></span><br><span class="line"><span class="language-json"><span class="punctuation">&#123;</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;access_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;2YotnFZFEjr1zCsicMWpAA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;token_type&quot;</span><span class="punctuation">:</span><span class="string">&quot;example&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;expires_in&quot;</span><span class="punctuation">:</span><span class="number">3600</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;refresh_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;tGzv3JOkF0XG5Qx2TlKWIA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;example_parameter&quot;</span><span class="punctuation">:</span><span class="string">&quot;example_value&quot;</span></span></span><br><span class="line"><span class="language-json"><span class="punctuation">&#125;</span></span></span><br></pre></td></tr></table></figure></div></blockquote>
+<p>上面代码中，各个参数的含义参见《授权码模式》一节。</p>
+<p>整个过程中，客户端不得保存用户的密码。</p>
+<h2 id="9-客户端模式（🌟）"><a href="#9-客户端模式（🌟）" class="headerlink" title="9.客户端模式（🌟）"></a>9.客户端模式（🌟）</h2><p>客户端模式（Client Credentials Grant）指客户端以自己的名义，而不是以用户的名义，向”服务提供商”进行认证。严格地说，客户端模式并不属于OAuth框架所要解决的问题。在这种模式中，用户直接向客户端注册，客户端以自己的名义要求”服务提供商”提供服务，其实不存在授权问题。</p>
+<p><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="/springsercurity%E8%AF%A6%E8%A7%A3/bg2014051207.png"
+                      alt="客户端模式"
+                ></p>
+<p>它的步骤如下：</p>
+<blockquote>
+<p>（A）客户端向认证服务器进行身份认证，并要求一个访问令牌。</p>
+<p>（B）认证服务器确认无误后，向客户端提供访问令牌。</p>
+</blockquote>
+<p>A步骤中，客户端发出的HTTP请求，包含以下参数：</p>
+<ul>
+<li>grant<em>type：表示授权类型，此处的值固定为”client</em>credentials”，必选项。</li>
+<li>scope：表示权限范围，可选项。</li>
+</ul>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"></span><br><span class="line"><span class="language-ini"><span class="attr">grant_type</span>=client_credentials</span></span><br></pre></td></tr></table></figure></div></blockquote>
+<p>认证服务器必须以某种方式，验证客户端身份。</p>
+<p>B步骤中，认证服务器向客户端发送访问令牌，下面是一个例子。</p>
+<blockquote>
+<div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">HTTP/1.1</span> <span class="number">200</span> OK</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/json;charset=UTF-8</span><br><span class="line"><span class="attribute">Cache-Control</span><span class="punctuation">: </span>no-store</span><br><span class="line"><span class="attribute">Pragma</span><span class="punctuation">: </span>no-cache</span><br><span class="line"></span><br><span class="line"><span class="language-json"><span class="punctuation">&#123;</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;access_token&quot;</span><span class="punctuation">:</span><span class="string">&quot;2YotnFZFEjr1zCsicMWpAA&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;token_type&quot;</span><span class="punctuation">:</span><span class="string">&quot;example&quot;</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;expires_in&quot;</span><span class="punctuation">:</span><span class="number">3600</span><span class="punctuation">,</span></span></span><br><span class="line"><span class="language-json">  <span class="attr">&quot;example_parameter&quot;</span><span class="punctuation">:</span><span class="string">&quot;example_value&quot;</span></span></span><br><span class="line"><span class="language-json"><span class="punctuation">&#125;</span></span></span><br></pre></td></tr></table></figure></div></blockquote>
+<p>上面代码中，各个参数的含义参见《授权码模式》一节。</p>
+<h2 id="10-更新令牌"><a href="#10-更新令牌" class="headerlink" title="10.更新令牌"></a>10.更新令牌</h2><p>如果用户访问的时候，客户端的”访问令牌”已经过期，则需要使用”更新令牌”申请一个新的访问令牌。</p>
+<p>客户端发出更新令牌的HTTP请求，包含以下参数：</p>
+<ul>
+<li>grant<em>type：表示使用的授权模式，此处的值固定为”refresh</em>token”，必选项。</li>
+<li>refresh_token：表示早前收到的更新令牌，必选项。</li>
+<li>scope：表示申请的授权范围，不可以超出上一次申请的范围，如果省略该参数，则表示与上一次一致。</li>
+</ul>
+<p>下面是一个例子。</p>
+ <div class="code-container" data-rel="Http"><figure class="iseeu highlight http"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">POST</span> <span class="string">/token</span> <span class="meta">HTTP/1.1</span></span><br><span class="line"><span class="attribute">Host</span><span class="punctuation">: </span>server.example.com</span><br><span class="line"><span class="attribute">Authorization</span><span class="punctuation">: </span>Basic czZCaGRSa3F0MzpnWDFmQmF0M2JW</span><br><span class="line"><span class="attribute">Content-Type</span><span class="punctuation">: </span>application/x-www-form-urlencoded</span><br><span class="line"> </span><br><span class="line">grant_type=refresh_token&amp;refresh_token=tGzv3JOkF0XG5Qx2TlKWIA</span><br></pre></td></tr></table></figure></div>
+
+<h1 id="授权码模式"><a href="#授权码模式" class="headerlink" title="授权码模式"></a>授权码模式</h1>
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>标题:</strong> springsercurity详解</li>
+        <li><strong>作者:</strong> phenix-fledgling</li>
+        <li><strong>创建于
+                :</strong> 2021-06-23 07:49:49</li>
+        
+            <li>
+                <strong>更新于
+                    :</strong> 2026-07-29 02:35:18
+            </li>
+        
+        <li>
+            <strong>链接:</strong> https://tsinghuadream.github.io//post/springsercurity详解.html
+        </li>
+        <li>
+            <strong>
+                版权声明:
+            </strong>
+            
+
+            
+                本文章采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a> 进行许可。
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/spring/">#spring</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/post/Dubbo.html">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">Dubbo</span>
+						<span class="post-nav-item">上一篇</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/post/shiro%E8%AF%A6%E8%A7%A3.html">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">shiro详解</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        评论
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-CN',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">springsercurity详解</div>
+		<ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#1-%E4%BB%8B%E7%BB%8D"><span class="nav-text">1. 介绍</span></a></li><li class="nav-item nav-level-1"><a class="nav-link" href="#2-%E5%8E%9F%E7%90%86"><span class="nav-text">2. 原理</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-2-Spring-Boot%E5%AF%B9Spring-Security%E6%94%AF%E6%8C%81%E7%9A%84%E9%85%8D%E7%BD%AE%E9%A1%B9"><span class="nav-text">1.2 Spring Boot对Spring Security支持的配置项</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-3-%E4%BD%BF%E7%94%A8WebSecurityConfigurerAdapter%E8%87%AA%E5%AE%9A%E4%B9%89"><span class="nav-text">1.3 使用WebSecurityConfigurerAdapter自定义</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#3-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E6%9C%8D%E5%8A%A1%E4%BF%A1%E6%81%AF"><span class="nav-text">3. 自定义用户服务信息</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#3-1-%E4%BD%BF%E7%94%A8%E5%86%85%E5%AD%98%E7%94%A8%E6%88%B7"><span class="nav-text">3.1 使用内存用户</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-1-1-UserDetailsBuilder%E6%96%B9%E6%B3%95%E7%AE%80%E4%BB%8B"><span class="nav-text">3.1.1 UserDetailsBuilder方法简介</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-2-%E4%BD%BF%E7%94%A8%E6%95%B0%E6%8D%AE%E5%BA%93%E5%AE%9A%E4%B9%89%E7%94%A8%E6%88%B7%E8%AE%A4%E8%AF%81%E6%9C%8D%E5%8A%A1"><span class="nav-text">3.2 使用数据库定义用户认证服务</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#3-2-1-%E8%87%AA%E5%AE%9A%E4%B9%89%E7%99%BB%E5%BD%95%E9%A1%B5-%E4%B8%8E-UserDetailsService-%E7%94%A8%E6%88%B7%E5%90%8D%E5%AF%86%E7%A0%81%E6%A0%A1%E9%AA%8C"><span class="nav-text">3.2.1 自定义登录页 与 UserDetailsService 用户名密码校验</span></a></li></ol></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#Spring-Security-OAuth2"><span class="nav-text">Spring Security OAuth2</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="nav-text">1.应用场景</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-%E5%90%8D%E8%AF%8D%E5%AE%9A%E4%B9%89"><span class="nav-text">2.名词定义</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Oauth%E7%9A%84%E6%80%9D%E8%B7%AF"><span class="nav-text">3.Oauth的思路</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%BF%90%E8%A1%8C%E6%B5%81%E7%A8%8B"><span class="nav-text">4. 运行流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%AE%A2%E6%88%B7%E7%AB%AF%E7%9A%84%E6%8E%88%E6%9D%83%E6%A8%A1%E5%BC%8F"><span class="nav-text">5.客户端的授权模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F%EF%BC%88%F0%9F%8C%9F%EF%BC%89"><span class="nav-text">6.授权码模式（🌟）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%AE%80%E5%8C%96%E6%A8%A1%E5%BC%8F"><span class="nav-text">7.简化模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E5%AF%86%E7%A0%81%E6%A8%A1%E5%BC%8F%EF%BC%88%F0%9F%8C%9F%EF%BC%89"><span class="nav-text">8.密码模式（🌟）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%A8%A1%E5%BC%8F%EF%BC%88%F0%9F%8C%9F%EF%BC%89"><span class="nav-text">9.客户端模式（🌟）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E6%9B%B4%E6%96%B0%E4%BB%A4%E7%89%8C"><span class="nav-text">10.更新令牌</span></a></li></ol></li><li class="nav-item nav-level-1"><a class="nav-link" href="#%E6%8E%88%E6%9D%83%E7%A0%81%E6%A8%A1%E5%BC%8F"><span class="nav-text">授权码模式</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">phenix-fledgling</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 65 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+        
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="图片查看器">
+	<button class="image-viewer-close" type="button" aria-label="关闭">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="上一页">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="关闭">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="下一页">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>
