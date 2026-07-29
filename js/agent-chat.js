@@ -17,14 +17,14 @@
     "#pa-fab i{color:inherit}",
     "#pa-fab:hover{transform:scale(1.08);filter:brightness(1.1)}",
     /* 聊天面板 */
-    "#pa-box{position:fixed;right:24px;bottom:88px;width:min(360px,calc(100vw - 48px));height:480px;",
+    "#pa-box{position:fixed;right:24px;bottom:88px;width:min(360px,calc(100vw - 48px));height:min(480px,calc(100vh - 24px));",
     "background:var(--background-color,#fff);color:var(--default-text-color,#222);border-radius:14px;",
-    "box-shadow:0 8px 40px rgba(0,0,0,.3);z-index:9999;display:none;flex-direction:column;overflow:hidden;",
-    "border:1px solid rgba(128,128,128,.25);font-size:14px}",
-    "#pa-head{padding:12px 12px 12px 16px;background:var(--primary-color,#A31F34);color:#fff;font-weight:600;display:flex;justify-content:space-between;align-items:center}",
+    "box-shadow:0 8px 40px rgba(0,0,0,.3);z-index:9999;display:flex;flex-direction:column;overflow:hidden;",
+    "border:1px solid rgba(128,128,128,.25);font-size:14px;opacity:0;visibility:hidden;pointer-events:none;",
+    "transform:translateY(8px) scale(.98);transition:opacity .18s ease,transform .18s ease,visibility 0s linear .18s}",
+    "#pa-box.is-open{opacity:1;visibility:visible;pointer-events:auto;transform:none;transition-delay:0s}",
+    "#pa-head{padding:12px 16px;background:var(--primary-color,#A31F34);color:#fff;font-weight:600;display:flex;justify-content:space-between;align-items:center}",
     "#pa-head small{opacity:.8;font-weight:400}",
-    "#pa-close{border:0;padding:2px 4px;background:transparent;color:inherit;cursor:pointer;font-size:1.2rem;line-height:1}",
-    "#pa-close:hover{opacity:.75}",
     "#pa-log{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:8px}",
     ".pa-msg{max-width:85%;padding:8px 12px;border-radius:10px;line-height:1.55;word-break:break-word;white-space:pre-wrap}",
     ".pa-me{align-self:flex-end;background:var(--primary-color,#A31F34);color:var(--background-color,#fff)}",
@@ -54,8 +54,11 @@
 
   var box = document.createElement("div");
   box.id = "pa-box";
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-label", "博主数字分身");
+  box.setAttribute("aria-hidden", "true");
   box.innerHTML =
-    '<div id="pa-head"><span>博主数字分身</span><small>由个人 Agent 驱动</small><button id="pa-close" type="button" aria-label="关闭数字分身"><i class="fa-regular fa-xmark"></i></button></div>' +
+    '<div id="pa-head"><span>博主数字分身</span><small>由个人 Agent 驱动</small></div>' +
     '<div id="pa-log"></div>' +
     '<form id="pa-form"><input id="pa-input" placeholder="问我博客里的任何话题…" maxlength="500" autocomplete="off"/>' +
     '<button id="pa-send" type="submit">发送</button></form>';
@@ -88,12 +91,27 @@
     send = box.querySelector("#pa-send");
   }
 
+  function positionBox() {
+    if (!fab.isConnected || box.getAttribute("aria-hidden") === "true") return;
+    var fabRect = fab.getBoundingClientRect();
+    var gap = 8;
+    var desiredBottom = window.innerHeight - fabRect.top + gap;
+    var boxHeight = box.getBoundingClientRect().height;
+    var maxBottom = window.innerHeight - 12 - boxHeight;
+    var bottom = Math.max(12, Math.min(desiredBottom, maxBottom));
+    var right = Math.max(12, window.innerWidth - fabRect.right);
+    box.style.right = right + "px";
+    box.style.bottom = bottom + "px";
+  }
+
   function setOpen(open) {
-    box.style.display = open ? "flex" : "none";
+    box.classList.toggle("is-open", open);
+    box.setAttribute("aria-hidden", String(!open));
     fab.setAttribute("aria-expanded", String(open));
     fab.innerHTML = open
       ? '<i class="fa-regular fa-xmark"></i>'
       : '<i class="fa-regular fa-comments"></i>';
+    if (open) positionBox();
   }
 
   function esc(s) {
@@ -124,7 +142,7 @@
   var greeted = false;
   fab.addEventListener("click", function () {
     initRefs();
-    var open = box.style.display === "flex";
+    var open = box.classList.contains("is-open");
     setOpen(!open);
     if (!open && !greeted) {
       greeted = true;
@@ -133,8 +151,8 @@
     if (!open) input.focus();
   });
 
-  box.querySelector("#pa-close").addEventListener("click", function () {
-    setOpen(false);
+  window.addEventListener("resize", function () {
+    if (box.classList.contains("is-open")) positionBox();
   });
 
   fab.addEventListener("keydown", function (event) {
