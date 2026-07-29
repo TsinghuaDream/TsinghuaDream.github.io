@@ -454,7 +454,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">67</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">68</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -462,7 +462,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">72</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -494,7 +494,7 @@
 </div>
                 <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">67</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">68</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -502,7 +502,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">72</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -517,6 +517,107 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+                    
+                
+
+                
+                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
+                        <a href="/post/docker%E9%83%A8%E7%BD%B2.html">
+                            <img src="/img/cover-af3f466506ad.png" alt="Docker部署" class="w-full h-full object-cover dark:brightness-75 transition-all" />
+                        </a>
+                    </div>
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
+                    <h3 class="home-article-title">
+                        <a href="/post/docker%E9%83%A8%E7%BD%B2.html">
+                            Docker部署
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            Docker 组件部署一、部署MySQL8
+搜索mysql镜像
+
+1docker search mysql
+
+
+拉取mysql镜像
+
+1docker pull mysql:5.6
+
+
+创建容器，设置端口映射、目录映射
+
+123# 在/root目录下创建mysql目录用于存储mysql数据信息mkdir ~/mysqlcd ~/mysql
+
+12345678docker run -id \-p...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Sun May 16 2021 22:52:32 GMT+0800">
+                
+                    2021-05-16
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">工程实践</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/%E5%B7%A5%E5%85%B7%E4%B8%8E%E9%83%A8%E7%BD%B2/">工具与部署</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/docker/">docker</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/post/docker%E9%83%A8%E7%BD%B2.html">阅读全文<span class="seo-reader-text">Docker部署</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1265,98 +1366,6 @@ Auto Close TagAuto Rename TagChineseESlintHTML CSS SupportHTML SnippetsJavaScrip
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/post/jvm%E8%B0%83%E4%BC%98.html">
-                            <img src="/img/cover-a02d281c4647.png" alt="jvm调优" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/post/jvm%E8%B0%83%E4%BC%98.html">
-                            jvm调优
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            一、JVM内存调优
-对JVM内存的系统级的调优主要的目的是减少GC(垃圾回收)的频率和Full GC的次数。
-1.Full GC
-会对整个堆进行整理，包括Young、Tenured和Perm。Full GC因为需要对整个堆进行回收，所以比较慢，因此应该尽可能减少Full GC的次数。
-2.导致Full GC的原因
-1)*年老代（Tenured）被写满*
-调优时尽量让对象在新生代GC时被回收、...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Fri Apr 02 2021 16:49:16 GMT+0800">
-                
-                    2021-04-02
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/">后端开发</a>&nbsp;
-                        </li>
-                    
-                    
-                
-                    
-                        
-                            <li>></li>
-                        
-                        <li>
-                            <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/%E6%80%A7%E8%83%BD%E8%B0%83%E4%BC%98/">性能调优</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/jvm%E8%B0%83%E4%BC%98/">jvm调优</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/post/jvm%E8%B0%83%E4%BC%98.html">阅读全文<span class="seo-reader-text">jvm调优</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
@@ -1387,7 +1396,7 @@ Auto Close TagAuto Rename TagChineseESlintHTML CSS SupportHTML SnippetsJavaScrip
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 71 篇文章
+                        共撰写了 72 篇文章
                     </span>
                     
                 </p>
