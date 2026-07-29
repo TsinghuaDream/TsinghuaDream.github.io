@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="AI Agent, Java, 架构">
+    
+    
+    <meta name="author" content="phenix-fledgling">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://blog.xugua.xyz/post/驾驭 ai 编程实战手册：42 篇一线实践的可验证蒸馏.html"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏">
+<meta property="og:url" content="https://blog.xugua.xyz/post/%E9%A9%BE%E9%A9%AD%20AI%20%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E6%89%8B%E5%86%8C%EF%BC%9A42%20%E7%AF%87%E4%B8%80%E7%BA%BF%E5%AE%9E%E8%B7%B5%E7%9A%84%E5%8F%AF%E9%AA%8C%E8%AF%81%E8%92%B8%E9%A6%8F.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+<meta property="article:published_time" content="2026-07-29T10:30:00.000Z">
+<meta property="article:modified_time" content="2026-07-29T16:49:56.565Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="AI 编程">
+<meta property="article:tag" content="Agent 工作流">
+<meta property="article:tag" content="工程实践">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏 | 菲尼克斯blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+        
+            
+    
+            
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"blog.xugua.xyz","root":"/","language":"zh-CN"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"菲尼克斯blog","subtitle":{"text":["从 Java 到 AI Agent 的工程手记","拆解 Harness Agent，亲手造一个个人 Agent"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-box-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder-open"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":{"enable":true,"launch_time":"2020-04-01 00:00:00"},"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2022/8/17 11:45:14","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2022/8/17 11:45:14","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.i18n = {"search":"站内搜索您需要的内容...","toc":"目录","prev":"上一页","next":"下一页","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 页","recent_posts":"最新文章","share":"分享","powered_by":"由 %s 驱动","theme":"主题","rss_feed":"RSS Feed","category":"分类","categories":"分类","tag":"标签","tags":"标签","post":"文章","posts":"文章","tagcloud":"标签云","comment":"评论","comments":"评论","top":"置顶","sticky":"置顶","go-back-home":"回到首页","masonry_loading":"照片加载中...","image_viewer":"图片查看器","close":"关闭","exif":{"title":"EXIF","cards":{"camera":"相机","lens":"镜头","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"机型","date_taken":"拍摄时间","lens_model":"镜头","focal_length":"焦距","focus_mode":"对焦模式","shutter":"快门","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光补偿","metering_mode":"测光模式","flash":"闪光灯","white_balance":"白平衡","latitude":"纬度","longitude":"经度","altitude":"海拔"},"status":{"loading":"加载中...","no_exif":"无 EXIF 信息","library_missing":"EXIF 库未加载","image_source_missing":"图片地址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻止或缺少元数据）","flag_unavailable":"EXIF 不可用"}},"home":"首页","archive":"归档","archives":"归档","about":"关于","links":"链接","link":"链接","friends":"友情链接","friend":"友情链接","timeline":"时间轴","shuoshuo":"说说","bookmarks":"书签","site_uv":"访问人数","site_pv":"总访问量","read_more":"阅读全文","wordcount":"字","min2read":"分钟","changelog":"更新日志","status":"状态","runtime":"博客已运行","days":"天","hours":"小时","minutes":"分钟","seconds":"秒","optimized_by":"并由 Evan 进行优化","rights":"版权所有","site_posts":"共撰写了 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"title":"标题","author":"作者","link":"链接","create_time":"创建于","update_time":"更新于","license_title":"版权声明","license_content":"本文章采用 %s 进行许可。","all_rights_reserved":"版权所有 &#169 %s，禁止转载。","public_domain":"本文为公有领域作品，可自由转载、引用。"},"ago":{"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"},"create_time":"创建","update_time":"更新","expired":"这篇文章最后更新于 %s 天前，内容可能已经过时。"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                菲尼克斯blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-box-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    标签
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder-open fa-fw"></i>
+                                    分类
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-box-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                标签
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                分类
+                            </span>
+                            
+                                <i class="fa-regular fa-folder-open fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">67</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">18</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="https://github.com/TsinghuaDream.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">phenix-fledgling</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv5</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-07-29 18:30</span>
+        <span class="mobile">2026-07-29 18:30</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-07-30 00:49:56</span>
+            <span class="mobile">2026-07-30 00:49:56</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/">AI 与 Agent</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/Agent-%E5%B7%A5%E7%A8%8B/">Agent 工程</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">工程实践</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/AI-%E7%BC%96%E7%A8%8B/">AI 编程</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Agent-%E5%B7%A5%E4%BD%9C%E6%B5%81/">Agent 工作流</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<blockquote>
+<p>蒸馏自 blog-collector 采集的 42 篇一线实践文章（Anthropic、GitHub、martinfowler.com、Addy Osmani、Sean Goedecke、Armin Ronacher、宝玉、crossoverJie、Pragmatic Engineer 等，2025-2026）。</p>
+<p>每条实践都标注<strong>验证方式</strong>：作者原文给了验收信号的照抄，原文没给的如实标注——没有验证方式的建议只能算观点，不能算干货。</p>
+<p>所有来源都附原文链接，可直接跳转查证。</p>
+</blockquote>
+<hr>
+<h2 id="1-十条跨源共识"><a href="#1-十条跨源共识" class="headerlink" title="1. 十条跨源共识"></a>1. 十条跨源共识</h2><p>只收录被 3 个以上独立来源反复验证的结论。作者们互不相识、场景各异，却说了同样的话——这才是整个语料库里最值钱的部分。</p>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>共识</th>
+<th>出处数</th>
+<th>验证信号</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1</td>
+<td><strong>想让 agent 自主干活，先给它装上”回压”</strong>——类型系统、测试、linter、pre-commit 钩子。没有回压的自主 agent 就是垃圾生产机器</td>
+<td>7+</td>
+<td>模型能自我验证时，产出质量提升 2-3 倍（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-05-10/akshay-pachaar-2041146899319971922" >Boris Cherny<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>2</td>
+<td><strong>约束优于指令</strong>。绝对不许发生的事，要做成确定性门禁（gate），别指望 prompt——prompt 是建议，门禁才是门</td>
+<td>5</td>
+<td>门禁”不会被一段自信的话说服改判”（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/vibesec-reckoning.html" >VibeSec<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>3</td>
+<td><strong>写代码的和查代码的必须是两个 agent</strong>。同一个实例给自己打分，永远打得太宽容</td>
+<td>6</td>
+<td>用上下文全新的第二个 agent 做 review（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-07-06/claudedevs-2074208949205881033" >Claude Code 团队<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>4</td>
+<td><strong>先定好可度量的停止条件，才有资格放手</strong>。”整体改善体验”不行；”Lighthouse ≥90，最多试 5 次”才行</td>
+<td>4</td>
+<td>停止条件能被独立的小模型自动判定（<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/loop-engineering/" >Addy Osmani<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>5</td>
+<td><strong>瓶颈已经从”写代码”挪到了”验证”</strong>。Bun 重写实测：写代码只占 15% 时间，85% 花在修编译、修测试、做验证</td>
+<td>5</td>
+<td>你的时间&#x2F;token 分布里验证占大头，说明流程正常（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/inside-anthropic" >Pragmatic Engineer<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>6</td>
+<td><strong>意图要写下来，写成 agent 读得懂的文件</strong>（spec、AGENTS.md、ADR、学习日志）。agent 每个会话都是冷启动，你脑子里的”为什么”它拿不到</td>
+<td>5</td>
+<td>反面信号：没人说得清某个 guard clause 是承重墙还是历史遗留（<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/intent-debt/" >Intent Debt<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>7</td>
+<td><strong>上下文越精简越好</strong>。AGENTS.md 控制在 100 行左右、只当目录用；”指令太多等于没有指令”</td>
+<td>5</td>
+<td>听到 “You’re completely right!” 就立刻开新会话——这是上下文已经中毒的信号（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy" >Dex Horthy<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>8</td>
+<td><strong>别迷信表面指标</strong>。覆盖率只说明这行代码被跑过，不说明跑错了会被发现</td>
+<td>3</td>
+<td>实测：一个 100% 语句覆盖的文件，mutation testing 查出 13 个漏网变异（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/sensors-for-coding-agents.html" >Fowler 站<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>9</td>
+<td><strong>确定性工具收集数据，LLM 负责解读</strong>，两者配合强过任何一方单干</td>
+<td>4</td>
+<td>要求 LLM 的分析报告必须引用确定性工具输出的具体数字（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/sensors-for-coding-agents.html" >Fowler 站<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>、<a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/14/starrocks/StarRocks-upgrade-skill-principle/" >crossoverJie<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+<tr>
+<td>10</td>
+<td><strong>完全不读代码，迟早遭报应</strong>。人要守在设计、架构、合并裁决这三个位置上</td>
+<td>5</td>
+<td>反面教材：没人读过的代码 4 个月后生产崩溃，事后人花了 3 周才重新看懂自己的代码库（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy" >Dex Horthy<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Playbook-A：用-AI-做前端设计"><a href="#2-Playbook-A：用-AI-做前端设计" class="headerlink" title="2. Playbook A：用 AI 做前端设计"></a>2. Playbook A：用 AI 做前端设计</h2><blockquote>
+<p>主要来源：<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/" >Addy Osmani<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（Chrome 团队）、Claude Code 团队（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/" >宝玉译<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</p>
+</blockquote>
+<h3 id="Step-A1-—-起步：多方案并排挑，别在单方案上磨"><a href="#Step-A1-—-起步：多方案并排挑，别在单方案上磨" class="headerlink" title="Step A1 — 起步：多方案并排挑，别在单方案上磨"></a>Step A1 — 起步：多方案并排挑，别在单方案上磨</h3><ol>
+<li>初始提示词写得模糊没关系，让工具反过来问你（单选&#x2F;多选&#x2F;自填都行）。</li>
+<li>让它一次出 <strong>3-6 个方向明显不同的方案</strong>（布局、语气、信息密度都拉开差距），放进同一个 HTML 页面排成网格对比，每个方案旁边标注取舍。</li>
+<li>挑一版精修。可以把几版的优点合并，也可以把竞品截图喂进去当参考。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：以前时间只够做两版，现在是”出五版你挑”。并排对比加显式取舍，决策快得多。</li>
+<li>✅ <strong>验证</strong>：宝玉实测约 3 轮交互就能拿到大部分链接可点的交互成品（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-17/claude-design" >设计圈的 Claude Code 时刻<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ul>
+<h3 id="Step-A2-—-沉淀：把你的设计语言变成组织资产"><a href="#Step-A2-—-沉淀：把你的设计语言变成组织资产" class="headerlink" title="Step A2 — 沉淀：把你的设计语言变成组织资产"></a>Step A2 — 沉淀：把你的设计语言变成组织资产</h3><ol>
+<li>上传代码库、PPT、品牌资料，建组织级设计系统。</li>
+<li>或者让 agent 扫描代码库，生成一份「设计系统 HTML 文件」，之后生成页面时都拿它当参考。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：工具”认识”你的设计语言之后，迭代轮数会明显下降，也就解决了”生成的页面不符合审美”这个老问题。</li>
+<li>✅ <strong>验证</strong>：Brilliant 设计师实测——喂过设计系统后，别的工具要 20 多轮 prompt 才能搞定的复杂交互，2 轮搞定（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-17/claude-design" >同上<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+<li>⚠️ 合规红线：目前没有审计日志、上传资产会被持久存储，最高敏感度的设计素材先别放。</li>
+</ul>
+<h3 id="Step-A3-—-固化验证：把你的手动检查写成-SKILL-md"><a href="#Step-A3-—-固化验证：把你的手动检查写成-SKILL-md" class="headerlink" title="Step A3 — 固化验证：把你的手动检查写成 SKILL.md"></a>Step A3 — 固化验证：把你的手动检查写成 SKILL.md</h3><p>Claude Code 团队公开的前端验证 skill，五步可以直接抄（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-07-06/claudedevs-2074208949205881033" >从零开始玩转循环<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）：</p>
+<ol>
+<li>启动 dev server，在浏览器里打开改过的页面；</li>
+<li><strong>亲手操作改动的部分</strong>——新加的按钮、输入框要真的点一遍、确认状态变化，操作前后各截一张图；</li>
+<li>检查浏览器控制台，<strong>不允许出现新增的 error 或 warning</strong>；</li>
+<li>用 Chrome DevTools MCP 跑一次性能追踪，核对 Core Web Vitals；</li>
+<li>任何一步失败，修完从第 1 步重来——原文原话：”绝不把只验证了一半的工作交回”。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：代码改成功不等于 UI 改好了，agent 必须像人类 reviewer 一样实际验证。</li>
+<li>✅ <strong>验证</strong>：这五步本身就是验收标准——前后截图对照、控制台零新增报错、Core Web Vitals 达标。</li>
+</ul>
+<h3 id="Step-A4-—-中间产物用-HTML，把自己留在决策环里"><a href="#Step-A4-—-中间产物用-HTML，把自己留在决策环里" class="headerlink" title="Step A4 — 中间产物用 HTML，把自己留在决策环里"></a>Step A4 — 中间产物用 HTML，把自己留在决策环里</h3><ol>
+<li>spec、计划、review 报告，直接说”给我做成一个 HTML 文件”，不需要先搭什么 skill。</li>
+<li>规划阶段让它生成 HTML 形式的思考网络：先多方案头脑风暴，选中一个再深挖（界面草图加核心代码片段），满意后出实施计划；然后开新会话，把这些 HTML 全部喂进去正式写码。</li>
+<li>每个 PR 附一个 HTML 解读页：渲染真实 diff、行内注释、按严重程度标颜色。</li>
+<li>交互原型加滑块和旋钮，配一个**「复制参数」按钮**——调到满意后一键把参数带回 agent。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：你已经基本不手工编辑 agent 的产出物了，Markdown”方便人改”这个核心优势已经失效；HTML 信息密度高，别人真正去读的概率也大得多。</li>
+<li>✅ <strong>验证</strong>：作者自报 HTML 生成比 Markdown 慢 2-4 倍，换来的是阅读率；版本控制里 diff 会变乱是已知代价（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-05-08/trq212-status-2052809885763747935" >使用 Claude Code：HTML 难以置信的奇效<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ul>
+<h3 id="Step-A5-—-交接：给工程的是实现草案，不是一张图"><a href="#Step-A5-—-交接：给工程的是实现草案，不是一张图" class="headerlink" title="Step A5 — 交接：给工程的是实现草案，不是一张图"></a>Step A5 — 交接：给工程的是实现草案，不是一张图</h3><p>设计产出直接 handoff：工程师拿到的应该是”能接入现有组件库的实现草案”，而不是”一张图，照着还原”。</p>
+<ul>
+<li>✅ <strong>验证</strong>：Datadog 实测——以前要一周、来回多轮 brief→mockup→review 的事，现在一次会议里边聊边出成型原型（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-17/claude-design" >同 A1<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ul>
+<hr>
+<h2 id="3-Playbook-B：用-AI-时守住后端与代码稳定性"><a href="#3-Playbook-B：用-AI-时守住后端与代码稳定性" class="headerlink" title="3. Playbook B：用 AI 时守住后端与代码稳定性"></a>3. Playbook B：用 AI 时守住后端与代码稳定性</h2><blockquote>
+<p>主要来源：Birgitta Böckeler（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/sensors-for-coding-agents.html" >martinfowler.com 传感器系列<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）、<a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/" >Sean Goedecke<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（GitHub staff 工程师）、<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/vibesec-reckoning.html" >VibeSec<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>、<a class="link"   target="_blank" rel="noopener" href="https://github.blog/ai-and-ml/" >GitHub Blog<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>、<a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/" >crossoverJie<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>。</p>
+</blockquote>
+<h3 id="Step-B1-—-装传感器：让问题在到你眼前之前就被-agent-自己修掉"><a href="#Step-B1-—-装传感器：让问题在到你眼前之前就被-agent-自己修掉" class="headerlink" title="Step B1 — 装传感器：让问题在到你眼前之前就被 agent 自己修掉"></a>Step B1 — 装传感器：让问题在到你眼前之前就被 agent 自己修掉</h3><p>编码会话期间持续运行的<strong>确定性传感器</strong>清单（Fowler 站的完整配置，可直接抄）：</p>
+<table>
+<thead>
+<tr>
+<th>传感器</th>
+<th>查什么</th>
+<th>关键配置</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>类型检查</td>
+<td>类型错误</td>
+<td>默认开</td>
+</tr>
+<tr>
+<td>ESLint</td>
+<td><strong>AI 的典型毛病</strong>：参数太多、文件太长、函数太长、圈复杂度太高</td>
+<td>默认预设不含这几项，要手动配；把报错消息改写成”自我纠正指引”</td>
+</tr>
+<tr>
+<td>dependency-cruiser</td>
+<td>模块依赖方向（比如 clients 目录禁止 import services）</td>
+<td>severity 设 error；报错消息里复述分层规则</td>
+</tr>
+<tr>
+<td>测试套件 + 覆盖率</td>
+<td>回归</td>
+<td>既有测试挂了 &#x3D; 可能改坏了既有行为</td>
+</tr>
+<tr>
+<td><strong>增量 mutation testing</strong>（Stryker）</td>
+<td>缺失的断言——覆盖率照不到的盲区</td>
+<td>盯 <strong>survivor 数量</strong></td>
+</tr>
+<tr>
+<td>GitLeaks</td>
+<td>密钥泄漏</td>
+<td>挂 pre-commit hook</td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>为什么</strong>：指望 agent 看了 markdown 指南就自觉跑检查，”非常不可靠”（作者多次质问 agent 为什么一次都没跑）——必须用 hook 强制。</li>
+<li>✅ <strong>验证</strong>（作者原文的三个判断题）：某传感器的失败频率在下降 → 前馈指南在起作用；从来不失败 → 这个传感器可能没必要；频繁失败 → 对应的指南该改了。</li>
+<li>✅ <strong>mutation 实证</strong>：一个 100% 语句覆盖的文件查出 13 个 survivor——这就是覆盖率的谎言。</li>
+</ul>
+<h3 id="Step-B2-—-允许例外，但例外必须可审计"><a href="#Step-B2-—-允许例外，但例外必须可审计" class="headerlink" title="Step B2 — 允许例外，但例外必须可审计"></a>Step B2 — 允许例外，但例外必须可审计</h3><ol>
+<li>允许 agent 带理由抑制告警（<code>eslint-disable-next-line ... -- 理由</code>），或<strong>小幅上调阈值</strong>——不许永久关闭，这样指标再恶化时规则会再次触发。</li>
+<li><strong>人工 code review 就从 AI 留下的例外清单看起</strong>。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：既保住”零告警”的干净基线，又留下完整的审查痕迹。</li>
+<li>✅ <strong>验证</strong>：作者观察到，唯一没配自我纠正指引的规则（圈复杂度），agent 频繁直接上调阈值蒙混过关；配了指引的规则都没有这个现象——定制指引有没有用，就这么测出来的（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/sensors-for-coding-agents.html" >Maintainability sensors<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ul>
+<h3 id="Step-B3-—-红线走门禁，不走-prompt"><a href="#Step-B3-—-红线走门禁，不走-prompt" class="headerlink" title="Step B3 — 红线走门禁，不走 prompt"></a>Step B3 — 红线走门禁，不走 prompt</h3><ol>
+<li>每次 AI 编码会话默认加载一份<strong>版本化的安全规则文件</strong>：最小权限、密钥一律走环境变量或 secrets manager、只用成熟依赖、所有 AI 代码打标记送同行评审。</li>
+<li>部署前必须过确定性门禁：SAST 扫描、凭证扫描、基础设施校验。</li>
+<li>对 AI 建议的每一个权限多问一句为什么（真实案例：AI 建议把存储桶设成 public，理由是”每家公司都这么做”）。</li>
+<li>定期用红队 prompt 让 AI 扮演攻击者，打它自己刚写的东西。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：原文的说法很直白——“在 prompt 里要求 TDD，和在构建工具里强制覆盖率阈值，一个是建议，一个是门。”AI 天然选阻力最小的路，而那条路很少是安全的。</li>
+<li>✅ <strong>验证</strong>：门禁本身的 pass&#x2F;fail；红队产出的漏洞清单。作者团队靠这套把一个差点出事的原型安全上线给 150 个用户（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/vibesec-reckoning.html" >The VibeSec Reckoning<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ul>
+<h3 id="Step-B4-—-日常节奏：一位-staff-工程师的实测工作流"><a href="#Step-B4-—-日常节奏：一位-staff-工程师的实测工作流" class="headerlink" title="Step B4 — 日常节奏：一位 staff 工程师的实测工作流"></a>Step B4 — 日常节奏：一位 staff 工程师的实测工作流</h3><p><a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/how-i-use-llms-in-2026/" >Sean Goedecke（GitHub）<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>的个人流程，每条都是实际用出来的：</p>
+<ol>
+<li><strong>每个变更先丢给 agent</strong>，最后自己做一遍编辑，不逐行盯着它写。</li>
+<li><strong>30 秒初评，不合适整批扔掉</strong>；难任务扔个五六次还不行，再考虑接受现状或自己动手。</li>
+<li><strong>每个 bug 先丢给 agent</strong>（开新会话、贴 bug report）——✅ 实测能独立正确诊断 <strong>80%</strong> 的问题；剩下 20% 里，从它的错误解释里往往能看出它缺了什么信息。</li>
+<li>难查的 bug 由人来收窄范围：从日志、Slack 里挖上下文喂给它，或者直接说”你的理论不可能成立，因为 X”——✅ 实案：一个 bug 到第 14 个会话才找到，能找到是因为搜索范围早已被人一步步收窄。</li>
+<li>测试和环境配置尽量推给 agent，然后<strong>读它的操作日志</strong>。</li>
+<li><strong>PR 描述自己写</strong>——亲手写的描述等于告诉 reviewer：”这个 diff 我自己看过了。”</li>
+<li>想知道 agent 的底线在哪，就故意犯明显的错（用非用户维度的 key 缓存用户数据、写个可能不终止的循环），✅ 看它拦不拦——明显的错它会拦，但<strong>需要跨模块理解的隐蔽错误它依然会放过</strong>（<a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/ai-makes-weak-engineers-less-harmful/" >AI makes weak engineers less harmful<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ol>
+<h3 id="Step-B5-—-review-按爆炸半径分层，用两个”性格”不同的-AI-reviewer"><a href="#Step-B5-—-review-按爆炸半径分层，用两个”性格”不同的-AI-reviewer" class="headerlink" title="Step B5 — review 按爆炸半径分层，用两个”性格”不同的 AI reviewer"></a>Step B5 — review 按爆炸半径分层，用两个”性格”不同的 AI reviewer</h3><ol>
+<li>配置类改动：linter 加一眼扫过就够；支付链路：完整阵容——类型、测试、<strong>两个不同的 AI reviewer</strong>、系统 owner、安全审查。</li>
+<li>没有证据的 PR 不进 review：必须附改动目的、测试输出、实际跑过的证明。</li>
+<li><strong>测试的 diff 要比代码的 diff 看得更仔细</strong>；大量重写断言的 diff 是红旗，先看它。</li>
+<li>盯住 agent 的”变绿捷径”：删测试、跳过 lint、调低覆盖率阈值。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：4 个 AI reviewer 的并行实验（146 个真实 PR、679 个发现）显示，<strong>93.4% 的问题只有一个工具报出来，没有任何一个问题被四个工具同时发现</strong>——多样性本身就是价值（<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/agentic-code-review/" >Agentic Code Review<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+<li>✅ <strong>验证</strong>：在自己仓库实测命中率和误报率；Anthropic 的数据：AI 先分诊之后，实质性 review 的比例从 16% 升到 54%。</li>
+</ul>
+<h3 id="Step-B6-—-prompt-也是技术债，照着债来管"><a href="#Step-B6-—-prompt-也是技术债，照着债来管" class="headerlink" title="Step B6 — prompt 也是技术债，照着债来管"></a>Step B6 — prompt 也是技术债，照着债来管</h3><p><a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/prompts-are-technical-debt-too/" >Sean Goedecke<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 的四条：</p>
+<ol>
+<li>选一个有专业团队维护的编码工具（Claude Code &#x2F; Codex &#x2F; Cursor），<strong>尽量不做自定义配置</strong>——每出一代新模型，人家的团队会替你重调 prompt。</li>
+<li>MCP 和 skills 非必要不装，默认关。</li>
+<li>AGENTS.md 只写项目的客观事实，别写行为引导——“think step by step”这类咒语早过时了。</li>
+<li>别让模型往 AGENTS.md 里灌没审过的文字，<strong>prompt 自己写，能删就删</strong>。</li>
+</ol>
+<ul>
+<li><strong>为什么</strong>：prompt 是按特定模型调出来的，模型一升级，你精心打磨的 prompt 可能悄悄开始帮倒忙。</li>
+<li>✅ <strong>验证</strong>：症状是”新模型怎么没宣传的那么好”——很可能是旧 prompt 在拖累它。严格的验证只有一个办法：同样的问题跑不同模型、不同配置做对比。</li>
+</ul>
+<h3 id="Step-B7-—-事故响应：第一步是什么都不做"><a href="#Step-B7-—-事故响应：第一步是什么都不做" class="headerlink" title="Step B7 — 事故响应：第一步是什么都不做"></a>Step B7 — 事故响应：第一步是什么都不做</h3><p><a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/notes-on-incidents/" >Sean Goedecke 的事故笔记<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>：</p>
+<ol>
+<li>进事故现场的第一件事：<strong>什么都不做</strong>，先倒杯茶。大多数事故会自愈，反而是工程师出手太快把事情搞大（实案：着急清队列，结果把不可重入队的计费任务清没了）。</li>
+<li>真正有效的处置通常很无聊：关 feature flag，或者 revert，然后等系统自己恢复。</li>
+<li>让熟悉系统的人来处置（实案：五个不熟这套系统的强工程师查了半天没结果，一个熟人进来立刻知道该关哪个 flag）。</li>
+<li>行动要果断：说”我要做 X”，等 30 秒，然后做——恐惧会让团队互相推诿、无限等共识。</li>
+</ol>
+<ul>
+<li>✅ <strong>验证</strong>：作者经历的事故里，超过一半就算没人动手，也会在差不多的时间自己恢复（作者补充：小公司的系统未必适用）。</li>
+</ul>
+<hr>
+<h2 id="4-Playbook-C：AI-时代怎么定架构"><a href="#4-Playbook-C：AI-时代怎么定架构" class="headerlink" title="4. Playbook C：AI 时代怎么定架构"></a>4. Playbook C：AI 时代怎么定架构</h2><blockquote>
+<p>主要来源：<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/harness-engineering.html" >Harness engineering<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（martinfowler.com）、<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-03-11/levels-of-agentic-engineering" >智能体工程的 8 个等级<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（宝玉译）、<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/inside-anthropic" >Anthropic 内部实践<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>、<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-06/how-openais-codex-team-builds-with-codex" >Codex 团队<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>、<a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/" >Armin Ronacher<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>。</p>
+</blockquote>
+<h3 id="Step-C1-—-认清杠杆在哪：agent-模型-10-harness-90"><a href="#Step-C1-—-认清杠杆在哪：agent-模型-10-harness-90" class="headerlink" title="Step C1 — 认清杠杆在哪：agent &#x3D; 模型 10% + harness 90%"></a>Step C1 — 认清杠杆在哪：agent &#x3D; 模型 10% + harness 90%</h3><p>agent 犯蠢的时候，<strong>先查 harness，别等更好的模型</strong>：是不是缺工具？规则写太松？guardrail 忘了配？上下文里全是垃圾？</p>
+<ul>
+<li>✅ <strong>验证</strong>：LangChain 一行模型没换、只改 harness，TerminalBench 排名从 30 名开外冲到第 5；只改 system prompt、工具和中间件就加了 13.7 分（<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/new-sdlc-vibe-coding/" >The New Software Lifecycle<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+</ul>
+<h3 id="Step-C2-—-每个质量关注点都要配两手：前馈的-guides-反馈的-sensors"><a href="#Step-C2-—-每个质量关注点都要配两手：前馈的-guides-反馈的-sensors" class="headerlink" title="Step C2 — 每个质量关注点都要配两手：前馈的 guides + 反馈的 sensors"></a>Step C2 — 每个质量关注点都要配两手：前馈的 guides + 反馈的 sensors</h3><p><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/harness-engineering.html" >Fowler 站 harness engineering<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 的机制矩阵：</p>
+<table>
+<thead>
+<tr>
+<th>关注点</th>
+<th>前馈（Guides）</th>
+<th>反馈（Sensors）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>编码规范</td>
+<td>AGENTS.md、Skills</td>
+<td>自定义 linter、LLM 评审</td>
+</tr>
+<tr>
+<td>架构约束</td>
+<td>架构说明文档</td>
+<td>结构测试（ArchUnit）挂 pre-commit</td>
+</tr>
+<tr>
+<td>批量改造</td>
+<td>—</td>
+<td>codemods（OpenRewrite）</td>
+</tr>
+<tr>
+<td>评审标准</td>
+<td>评审指令 Skills</td>
+<td>AI 评审 agent</td>
+</tr>
+</tbody></table>
+<p>执行原则：</p>
+<ol>
+<li>优先上<strong>确定性 sensors</strong>（测试、linter、类型检查、结构分析），实在没法确定性检查的地方才用 LLM 当裁判。</li>
+<li><strong>纠偏循环</strong>：同一个问题出现第二次，就把纠正手段固化进 harness——让 AI 帮你写结构测试、写 linter 规则。</li>
+<li>质量检查尽量前移：快的（linter、快速测试）放提交前，贵的（mutation testing、架构评审）放集成后的流水线。</li>
+<li>架构选型时把”可 harness 性”当一个维度：强类型语言、清晰的模块边界；新项目从第一天就为此设计。</li>
+</ol>
+<ul>
+<li>⚠️ <strong>诚实标注</strong>：作者自己承认一个开放问题——“传感器不报警，到底是质量真的好，还是检测不够？”业界还没有类似”harness 覆盖率”的成熟度量。</li>
+</ul>
+<h3 id="Step-C3-—-用-8-级阶梯给自己定位，一次只爬一级"><a href="#Step-C3-—-用-8-级阶梯给自己定位，一次只爬一级" class="headerlink" title="Step C3 — 用 8 级阶梯给自己定位，一次只爬一级"></a>Step C3 — 用 8 级阶梯给自己定位，一次只爬一级</h3><p><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-03-11/levels-of-agentic-engineering" >《智能体工程的 8 个等级》<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>的完整分级：</p>
+<table>
+<thead>
+<tr>
+<th>级</th>
+<th>名称</th>
+<th>核心与瓶颈</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>L1</td>
+<td>Tab 补全</td>
+<td>人逐行掌控</td>
+</tr>
+<tr>
+<td>L2</td>
+<td>智能体 IDE</td>
+<td>记得用计划模式；瓶颈是上下文管理</td>
+</tr>
+<tr>
+<td>L3</td>
+<td>上下文工程</td>
+<td>提高每个 token 的信息密度，”正确的上下文在正确的时间出现”</td>
+</tr>
+<tr>
+<td>L4</td>
+<td>复合工程</td>
+<td>“计划、委派、评估、<strong>沉淀</strong>“四步循环；教训写进 CLAUDE.md，但别写太多</td>
+</tr>
+<tr>
+<td>L5</td>
+<td>MCP 与技能</td>
+<td>趋势是 CLI 比 MCP 省 token；瓶颈转移到人工审查</td>
+</tr>
+<tr>
+<td>L6</td>
+<td><strong>Harness 工程</strong></td>
+<td>回压机制：类型、测试、linter、pre-commit；<strong>为吞吐量设计而不是为完美设计；约束优于指令</strong></td>
+</tr>
+<tr>
+<td>L7</td>
+<td><strong>后台智能体</strong></td>
+<td>不同模型干不同活（比如 Opus 写实现、Gemini 做探索、Codex 做审查）；实现者和审查者必须分开</td>
+</tr>
+<tr>
+<td>L8</td>
+<td>自主智能体团队</td>
+<td><strong>原文明确说：还没人真正掌握 L8，建议聚焦 L7</strong></td>
+</tr>
+</tbody></table>
+<ul>
+<li><strong>为什么</strong>：每一级都是在解决上一级的瓶颈。跳级的结果就是”没有回压的自主”——垃圾生产机器。</li>
+<li>✅ <strong>验证</strong>：L6 的达标判据是能对 agent 说”这是我要的结果，一直做到通过所有这些测试为止”；L7 的判据是实现者与审查者跑在不同实例上。</li>
+</ul>
+<h3 id="Step-C4-—-spec-越薄越好：10-个要点原则"><a href="#Step-C4-—-spec-越薄越好：10-个要点原则" class="headerlink" title="Step C4 — spec 越薄越好：10 个要点原则"></a>Step C4 — spec 越薄越好：10 个要点原则</h3><p><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-06/how-openais-codex-team-builds-with-codex" >Codex 团队的做法<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（他们用自己的产品开发自己的产品）：</p>
+<ol>
+<li>只有多人协调或重大决策才写 spec，而且压到 <strong>10 个要点</strong>的量级。</li>
+<li>小改动直接提 PR，不走排期——原话：”提一个好 PR，比让别人在一万件事里给你排优先级快得多。”</li>
+<li>PM 用 agent 做”思维探索”：在代码库里对话、生成方案（方案本身不采用），然后把<strong>理解</strong>分享给工程师，而不是把计划扔给工程师——“我不是在写代码，我是在建立心智模型。”</li>
+<li>规划只做两头：近期（8 周以内、目标具体）和远期（方向感），<strong>中期路线图永远不做</strong>——模型能力变化这么快，中期规划纯属算命。</li>
+</ol>
+<ul>
+<li>⚠️ 原文自己给的前提：这套打法成立，是因为他们自己就是产品的重度用户。</li>
+<li>对照组：<a target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/inside-anthropic">Anthropic 的复杂基础设施项目<strong>照样以规划为最大环节、照样写 PRD</strong></a>——“有的产品可以直接出原型，有的必须先把架构想清楚。”两边都是实测，按项目类型选。</li>
+</ul>
+<h3 id="Step-C5-—-上下文工程：找到你的模型”变笨”的边界"><a href="#Step-C5-—-上下文工程：找到你的模型”变笨”的边界" class="headerlink" title="Step C5 — 上下文工程：找到你的模型”变笨”的边界"></a>Step C5 — 上下文工程：找到你的模型”变笨”的边界</h3><p><a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy" >Dex Horthy 的经验<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>：</p>
+<ol>
+<li>1M 窗口的模型，用到 <strong>300-400K</strong> 就该停；小模型大约 100K——注意力开销是二次方的，窗口塞得越满，模型越蠢（症状：开始干蠢事，比如删 .env）。</li>
+<li>听到 <strong>“You’re completely right!”</strong> 立刻开新会话——这是上下文中毒的标志：自回归模型会照着前面的错误轨迹继续预测下去。</li>
+<li>勤做<strong>主动压缩</strong>：把又长又吵的上下文压成一份 Markdown 文档，开新会话，指过去。</li>
+<li>把工作切成会话链：研究会话产出研究文档 → 设计会话产出设计文档 → 计划会话把两者合成计划——<strong>人只在设计文档和架构评审这两处介入</strong>，因为这正是模型最弱的地方。</li>
+<li>别过早省钱：永远先用最聪明的模型，规模上去了、账单真的疼了，再把简单步骤换成便宜模型。</li>
+</ol>
+<ul>
+<li>✅ <strong>验证</strong>：三种”软件工厂”的实测结局——完全不读代码的”关灯工厂”，4 个月后生产崩溃，人花 3 周才重新看懂代码库；全量人工审读只带来 30-50% 的提升；<strong>人守设计和架构、代码生成放手，能到纯手写的 2-3 倍</strong>。</li>
+</ul>
+<h3 id="Step-C6-—-循环工程：从写-prompt-进化到写-loop"><a href="#Step-C6-—-循环工程：从写-prompt-进化到写-loop" class="headerlink" title="Step C6 — 循环工程：从写 prompt 进化到写 loop"></a>Step C6 — 循环工程：从写 prompt 进化到写 loop</h3><ol>
+<li>Ralph 循环的骨架：用一段承载目标的提示启动 → 生成工作计划、<strong>每一项都带成功标准</strong> → 每轮做一项 → 做完对照目标检查 → 没达标就<strong>换干净上下文重启</strong>（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/what-is-loop-engineering" >What is “loop engineering?”<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+<li>有 <code>/goal</code> 就别手搓：给一个可判定的完成条件，原文示例：<code>p95 结账延迟降到 120ms 以下，同时正确性测试套件保持全绿</code>。</li>
+<li>实用循环清单（来自约 210 名开发者的反馈）：Sentry 出新 issue → agent 复现并开 PR（一次只开一个）；<code>/loop</code> 逐个修 flaky 测试（有工程师实测产出 13 个稳定性 PR）；循环评审设计方案，停止条件是”<strong>这一轮找到 0 个新的重大问题</strong>“。</li>
+<li>循环只用在已被验证可行的四类场景：<strong>代码移植、性能探索、安全扫描、研究探索</strong>——共同点是要么只做既有代码的转换，要么产物本来就不打算长期维护，验证性都强（<a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/6/23/the-coming-loop/" >The Coming Loop<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+<li>长期维护的代码要留人在环里：循环会放大模型的防御式编程癖好（fallback 上摞 fallback，系统看着更稳、实际更看不懂）。正确的解法是<strong>让坏状态从一开始就无法表示</strong>，而不是挨个处理每种坏状态。</li>
+</ol>
+<ul>
+<li>✅ <strong>验证</strong>：Bun 的 Zig→Rust 重写（11 天、64 个并行 agent、16.5 万美元 token）——测试套件是 TypeScript 写的、与实现语言无关，”<strong>所有测试通过，就是重写可行的高置信信号</strong>“；另一条硬规矩：提 PR 的 agent 必须先写出一个”没打补丁时失败、打了补丁后通过”的测试，没有测试的 PR 自动拒绝（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/inside-anthropic" >Pragmatic Engineer<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</li>
+<li>⚠️ 反面证据（同样来自原文）：不少开发者试了之后放弃了——agent 会漂移、人在环里效果反而更好、按 API 计价烧钱很快。</li>
+</ul>
+<h3 id="Step-C7-—-每次放权之前，先写一份自治契约"><a href="#Step-C7-—-每次放权之前，先写一份自治契约" class="headerlink" title="Step C7 — 每次放权之前，先写一份自治契约"></a>Step C7 — 每次放权之前，先写一份自治契约</h3><p>每次让 agent 无人值守跑之前，写清楚（<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/agentic-autonomy-levels/" >Agentic Autonomy Levels<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）：</p>
+<ol>
+<li>目标（要结果，不要活动描述）、范围、非目标；</li>
+<li>给什么工具、什么权限；</li>
+<li><strong>可度量的停止条件</strong>；</li>
+<li><strong>独立于 agent 的证据</strong>——测试、截图、日志、数据库记录；</li>
+<li>升级路径：什么情况下、谁介入；</li>
+<li>预算：token、时间、尝试次数、并行度上限。</li>
+</ol>
+<p>三个问题判断一个系统配不配高自治：<strong>出错了我们多快能知道？能多干净地撤销？拿什么证明做对了？</strong>——三个答案如果是”不快、很难、只能信它的总结”，那就还不配。</p>
+<ul>
+<li>✅ <strong>验证</strong>：证据这一项的要求是”不问 agent 也能确认事情做完了”。四大反模式的解法全都是要证据包（diff、测试、日志、截图、风险清单），没有一个是”再多信它一点”。</li>
+</ul>
+<h3 id="Step-C8-—-让飞轮转起来：把每次的教训灌回系统"><a href="#Step-C8-—-让飞轮转起来：把每次的教训灌回系统" class="headerlink" title="Step C8 — 让飞轮转起来：把每次的教训灌回系统"></a>Step C8 — 让飞轮转起来：把每次的教训灌回系统</h3><p><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/reduce-friction-ai/feedback-flywheel.html" >Feedback Flywheel<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 的机制：</p>
+<ol>
+<li>四类信号进四个去处：上下文信号 → priming 文档；指令信号 → 共享命令；工作流信号 → 团队 playbook；<strong>失败信号 → 护栏和反模式文档</strong>（按根因分类）。</li>
+<li>四个固定节奏：每次会话结束问一句”有什么该更新到共享工件里”；每日站会问”昨天谁学到了什么”；回顾会上列成议程项；每季度盘一次这些工件的实际使用率。</li>
+<li>在 repo 里维护一份一行式学习日志，进 priming 上下文。原文示例：”新 endpoint 的鉴权检查没有被生成指令强制。”</li>
+</ol>
+<ul>
+<li>✅ <strong>验证</strong>（原文明确给出的指标）：一次通过率上升、迭代轮次下降、合并后返工减少；最简单的代理指标，是团队里”AI 一次就做对了”这句话出现的频率；<strong>最可靠的信号，是”AI 为什么干了那个？”这种抱怨越来越少</strong>。作者明确说：不建议为这事做 dashboard。</li>
+</ul>
+<hr>
+<h2 id="5-反模式清单（每条都有真实翻车案例）"><a href="#5-反模式清单（每条都有真实翻车案例）" class="headerlink" title="5. 反模式清单（每条都有真实翻车案例）"></a>5. 反模式清单（每条都有真实翻车案例）</h2><table>
+<thead>
+<tr>
+<th>反模式</th>
+<th>翻车实例</th>
+<th>解法</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>关灯工厂（完全不读代码）</td>
+<td>4 个月后生产崩溃，Opus 4.1 找不到根因，人工查了几天才发现一个主键错误贯穿全库（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy" >Dex Horthy<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>人守设计和架构，代码生成放手</td>
+</tr>
+<tr>
+<td>全面推 AI 的同时裁撤质量团队</td>
+<td>Meta 的”零鉴权改邮箱”事故 &#x3D; AI 生成 + AI 审查 + Integrity 团队被裁，三件事叠加（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/slow-down-to-speed-up" >Pragmatic Engineer<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>这两件事不要同时做</td>
+</tr>
+<tr>
+<td>不给标准的验证者</td>
+<td>原文比喻：”闭着眼睛盖合格章的橡皮图章”（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-04-11/multi-agent-coordination-patterns" >多智能体协作指南<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>给验证者具体的评估标准清单 + 最大循环次数 + 兜底方案</td>
+</tr>
+<tr>
+<td>拿 agent 的总结当 review</td>
+<td>“done 是主张，不是证明”（<a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/own-the-outer-loop/" >Own the Outer Loop<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>要求和人工 review 同等的证据包</td>
+</tr>
+<tr>
+<td>AGENTS.md 灌水</td>
+<td>模型往里灌几页没人审过的文字，随模型升级悄悄腐化（<a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/prompts-are-technical-debt-too/" >Prompts are technical debt<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>prompt 自己写，能删就删</td>
+</tr>
+<tr>
+<td>覆盖率崇拜</td>
+<td>100% 语句覆盖的文件，13 个 mutation survivor、零条真正的单测（<a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/sensors-for-coding-agents.html" >Fowler 站<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>增量 mutation testing 补盲区</td>
+</tr>
+<tr>
+<td>人肉转发层</td>
+<td>只负责把消息贴进 Claude 再贴回来——“公司付着人类的薪水，买到的是一份 Copilot 订阅”（<a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/ai-makes-weak-engineers-less-harmful/" >Sean Goedecke<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>保住徒手识别明显 AI 错误的基本功</td>
+</tr>
+<tr>
+<td>自定义工具 schema 过度嵌套</td>
+<td>Opus 4.8 对嵌套 schema 约 20% 调用失败——偏离模型后训练时见过的工具形状会被隐性惩罚（<a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/" >Better Models: Worse Tools<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</td>
+<td>schema 贴近主流 harness 的形状，再开 strict 采样（实测失败清零）</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="6-一页速查：明天就能做的五件事"><a href="#6-一页速查：明天就能做的五件事" class="headerlink" title="6. 一页速查：明天就能做的五件事"></a>6. 一页速查：明天就能做的五件事</h2><ol>
+<li><strong>给 ESLint 加上 AI 缺陷四件套</strong>：参数个数上限、文件长度、函数长度、圈复杂度（默认预设都不含）。验证：看告警触发后 agent 是否自我纠正。</li>
+<li><strong>下一个 bug 先丢给 agent</strong>（新会话、贴 bug report）。预期：80% 的概率它能独立诊断正确。</li>
+<li><strong>先写好停止条件再走开</strong>：”X 目录下所有测试通过且 lint 干净，最多尝试 5 次。”</li>
+<li><strong>review 下一个 AI PR 时，先看测试的 diff</strong>：大量重写断言 &#x3D; 红旗。</li>
+<li><strong>本周结束时问自己一句</strong>：”这周哪个教训值得写进 AGENTS.md 或 skill？”写一行就够，别写一段。</li>
+</ol>
+<hr>
+<h2 id="7-真实工具箱：他们平时到底在用什么"><a href="#7-真实工具箱：他们平时到底在用什么" class="headerlink" title="7. 真实工具箱：他们平时到底在用什么"></a>7. 真实工具箱：他们平时到底在用什么</h2><blockquote>
+<p>只收原文明确说”在用”的东西。作者试过但放弃的单独标【已放弃】——放弃原因和推荐理由一样值钱。</p>
+</blockquote>
+<h3 id="7-1-六个人-团队的真实配置"><a href="#7-1-六个人-团队的真实配置" class="headerlink" title="7.1 六个人&#x2F;团队的真实配置"></a>7.1 六个人&#x2F;团队的真实配置</h3><p><strong>crossoverJie（国内后端&#x2F;基础架构，维护 StarRocks、Istio）</strong> —— 主力 <a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/29/AI/claudecode-skills-tools/" >Claude Code<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>，装了约 70 个 skill 但常用的不多；同时并用 Codex、OpenCode、Copilot CLI，按业务分组同时开多个 agent。</p>
+<ul>
+<li>Skills：<a class="link"   target="_blank" rel="noopener" href="https://github.com/crossoverJie/skills/tree/main/skills/agent-notifier" >agent-notifier<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（自研，agent 干完活&#x2F;等权限时走 Hooks 发通知，支持 5 个平台 6 个渠道）、<a class="link"   target="_blank" rel="noopener" href="https://github.com/tw93/kami" >kami<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（生成落地页&#x2F;简历&#x2F;PPT）、<a class="link"   target="_blank" rel="noopener" href="https://github.com/DietrichGebert/ponytail" >ponytail<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（防 AI 过度设计：YAGNI、标准库优先、最短 diff）、<a class="link"   target="_blank" rel="noopener" href="https://github.com/eze-is/web-access" >web-access<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（CDP 直连日常 Chrome 带登录态操作网页）、自研的 starrocks-upgrade 和博客配图三件套</li>
+<li>终端：<a class="link"   target="_blank" rel="noopener" href="https://github.com/manaflow-ai/cmux" >cmux<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（主 agent、测试、日志、子 agent 放同一 workspace，蓝色通知环区分”哪个 agent 在叫”）+ Otty（防睡眠）+ zoxide（worktree 目录跳转）+ fzf 自定义函数（把文件绝对路径精准投喂给 agent）+ <a class="link"   target="_blank" rel="noopener" href="https://github.com/jarrodwatts/claude-hud" >claude-hud<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（状态栏显示上下文百分比&#x2F;额度&#x2F;子 agent 进度）</li>
+<li>【已放弃】Warp（越做越臃肿）；自研 Tauri 终端（体验不如原生，做了一周弃）；在 CLAUDE.md 里写提示词放提示音（LLM 不 100% 遵循操作类指令，改用 Hooks——<strong>这条教训被他反复强调：Hooks &gt; 提示词</strong>）</li>
+<li>MCP：零。他的能力扩展路线是 Skills + Hooks + CLI</li>
+<li>态度鲜明的一条：不再刻意学 <code>rg</code>&#x2F;<code>fd</code>&#x2F;<code>jq</code>&#x2F;<code>ast-grep</code>——“<a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/22/AI/terminal-tools-for-ai-coding-agent/" >那是 Agent 的执行工具<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>“</li>
+</ul>
+<p><strong>宝玉（独立开发者&#x2F;AI 翻译写作）</strong> —— 主力 Claude Code。</p>
+<ul>
+<li>Skills：自研 <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-03-04/ai-merge-drafts-into-skills" >merge-drafts<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（多稿合并，文中给了完整 SKILL 全文）+ 官方 <a class="link"   target="_blank" rel="noopener" href="https://skills.sh/anthropics/skills/skill-creator" >skill-creator<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（先手动跑一遍流程，再固化成 skill）</li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-06/claude-code-token-optimization" >省 token 六条<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>：Sonnet 日常、Opus 只留给架构决策（token 约 2 倍）；别在会话中间换模型（缓存按模型隔离）；CLAUDE.md 压在 200 行内；<strong>命令行优先、MCP 其次</strong>——<code>gh</code> CLI 比 GitHub MCP 省得多，没用的 MCP 关掉；复杂任务先进计划模式；<code>permissions.deny</code> 排除 node_modules、.env</li>
+<li>会话习惯：缓存还热、任务没换就继续聊；闲置超 1 小时、任务切换、噪音多就果断重开。频繁 <code>/clear</code> 是反模式（每次触发约 5 万 token 的全价重建）</li>
+<li>跨厂分流：用 <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-06/claude-code-token-optimization" >codex-plugin-cc<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> 把结构化修 bug&#x2F;审查&#x2F;写测试分给 Codex（社区反馈约 1&#x2F;3 token），架构设计和跨文件重构留给 Claude Code</li>
+</ul>
+<p><strong>Anthropic Claude Code 团队（Thariq 等）</strong> —— 内部活跃 Skills 数百个（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-03-17/claude-code-skills-lessons" >构建 Claude Code 的经验<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</p>
+<ul>
+<li>公开的 <a class="link"   target="_blank" rel="noopener" href="https://github.com/anthropics/skills/blob/main/skills/frontend-design/SKILL.md" >frontend-design skill<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>：专门规避 Inter 字体和紫色渐变这类 AI 套路审美</li>
+<li>内部 skill 实例：babysit-pr（盯 PR→重试 flaky CI→解决冲突→自动合并）、adversarial-review（起新子 agent 专门挑刺，迭代到只剩吹毛求疵）、signup-flow-driver（无头浏览器跑注册流程）、grafana（数据源 UID + 问题→仪表盘对照表）、standup-post（standups.log 做记忆，只报增量）</li>
+<li>安全钩子：&#x2F;careful（PreToolUse 拦截 <code>rm -rf</code>、<code>DROP TABLE</code>、force-push）、&#x2F;freeze（冻结目录外的写操作）</li>
+<li><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/claude-code-session-management" >会话管理<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>：每轮回答后五选一——继续 &#x2F; rewind &#x2F; clear &#x2F; compact &#x2F; 派子 agent；<strong>新任务 &#x3D; 新会话</strong>；纠错优先 rewind 而不是追加纠正（”回溯到读完文件那一刻，带着教训重新下指令”）；派子 agent 的判据是”以后还要看这些工具输出的细节吗，还是只要结论？”</li>
+</ul>
+<p><strong>Codex 官方团队</strong> —— 主力 Codex App（<a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-05-20/jxnlco-2057153744630890620" >用自己的产品干活<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</p>
+<ul>
+<li>Cmd-1~9 置顶长线对话流（”幕僚长”、产品发布、文档审查各占一个）；语音输入抓未成形的想法；Steering 中途打断纠偏 + Queuing 排队下一步</li>
+<li>Automations 定时查岗（”每 30 分钟查 Slack 和 Gmail 未回消息、排优先级、起草回复但不发送”）；Goals 配验证器（”直到所有单元测试通过才算完成”）</li>
+<li>记忆方案：<strong>Obsidian vault 当共享记忆</strong>（TODO.md、people&#x2F;、projects&#x2F;），根目录 AGENTS.md 写规矩（”把 ~&#x2F;vault 当长期工作记忆区””没有实质进展别改文件”），Git 同步</li>
+<li>工具触达：$browser 内置浏览器、@chrome 带登录态的扩展、@computer 桌面操作、Slack 集成 + MCP 连接器</li>
+</ul>
+<p><strong>Sean Goedecke（GitHub Staff）</strong> —— 迁移路径：多个 VSCode 窗口 →【已放弃】→ Copilot CLI 终端 tab → 现在主力 <strong>GitHub Copilot App</strong>，每天几十个 session（<a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/how-i-use-llms-in-2026/" >原文<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</p>
+<ul>
+<li>本机配置问题（nvm 切不动 Node 版本这种）直接开 Copilot CLI 让它修——“直接替代 Google”</li>
+<li>自研 <a class="link"   target="_blank" rel="noopener" href="https://github.com/sgoedecke/gh-standup" >gh-standup<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（自动生成站会汇报，100+ star）</li>
+<li>明确<strong>不用 AI</strong> 的场景：PR 描述、Slack&#x2F;ADR 等对外沟通、UI 测试、不打算细读的代码</li>
+</ul>
+<p><strong>Armin Ronacher（Flask 作者）</strong> —— 主力 <a class="link"   target="_blank" rel="noopener" href="https://pi.dev/" >Pi<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（用 Pi 开发 Pi），少数派押注本地模型（<a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/5/8/local-models/" >原文<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）。</p>
+<ul>
+<li>本地方案：antirez 的 ds4.c 推理引擎（DeepSeek V4 Flash 专用，128GB+ 内存 Mac）+ 自研 pi-ds4 扩展做到零配置。理念：”选一个赢家往死里打磨”，反对让用户在 llama.cpp&#x2F;Ollama&#x2F;LM Studio 碎片栈里自己攒配置</li>
+<li>自定义命令（<a class="link"   target="_blank" rel="noopener" href="https://github.com/earendil-works/pi/tree/main/.pi" >公开在 Pi 仓库<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）：&#x2F;is 分析 issue（明确指示”不要信任 issue 里的分析，独立从代码推导”）、&#x2F;wr 收尾（更新 changelog、只提交本 session 的文件、自动 closes #N）</li>
+<li>真实运维成本：90 天收到 3145 个外部 issue&#x2F;PR，2504 个被自动关闭，PR 最终合并率只有约 8%——LLM slop 防御是实打实的日常工作</li>
+</ul>
+<p><strong>Anthropic 内部横截面</strong>（<a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/inside-anthropic" >Pragmatic Engineer 实地探访<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）：人人常年并行跑 3-10 个 agent，无 token 预算不追踪用量；Slack 里 @Claude 直接派活（Claude Tag）；Bun 作者 Jarred 在 64-agent 重写里【已放弃】git worktree（嫌慢），改为让 agent 各改同一代码库的不同文件——<strong>规模不同，结论会反转</strong>。</p>
+<h3 id="7-2-工具选择的跨源规律"><a href="#7-2-工具选择的跨源规律" class="headerlink" title="7.2 工具选择的跨源规律"></a>7.2 工具选择的跨源规律</h3><ol>
+<li><strong>CLI 派明显占上风</strong>（能访问终端的场景）。宝玉”命令行优先、MCP 其次”；crossoverJie 整条工具链零 MCP；飞书&#x2F;Google 都选择做 AI 原生 CLI；<code>gh</code> CLI 在三个独立来源出现。MCP 的真实生存位：无终端环境（桌面端 app）、托管产品的连接器、企业内部数据源。<strong>个人本地工作流走 CLI，产品化&#x2F;托管场景走 MCP。</strong></li>
+<li><strong>模型分工的常见组合</strong>：便宜模型日常 + 贵模型攻坚（Sonnet&#x2F;Opus 分工）；跨厂分流（Claude Code 主会话 + Codex 干结构化任务）；合并&#x2F;判断类任务用推理模型。最一致的一条依然是 maker&#x2F;checker 分离——写代码的模型不能给自己打分。</li>
+<li><strong>重复 ≥2 次的流程就固化成 skill</strong>。宝玉（发现自己在复制粘贴提示词就是信号）、crossoverJie、Anthropic（数百个内部 skill）、Codex 团队（跑通即固化）——四方说法几乎一字不差。</li>
+<li><strong>确定性动作交给 Hooks&#x2F;脚本，不交给提示词</strong>。crossoverJie 的通知铃铛用提示词失败、换 Hooks 成功；Anthropic 用 PreToolUse 拦截危险命令。</li>
+<li><strong>记忆放磁盘，不放上下文</strong>。Codex 团队用 Obsidian vault，Addy Osmani 用 Markdown 进度文件——“agent 会忘，仓库不会”。</li>
+<li><strong>通知能力正在从 skill 层下沉到终端&#x2F;产品层</strong>：crossoverJie 自研了通知 skill 之后，cmux 和 Otty 原生支持了，他自己说”终端原生支持后 SKILL 就不需要了”——选工具时优先看产品原生能力，skill 是补位手段。</li>
+</ol>
+<hr>
+<h2 id="8-来源索引"><a href="#8-来源索引" class="headerlink" title="8. 来源索引"></a>8. 来源索引</h2><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>作者</th>
+<th>篇目（含原文链接）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>前端&#x2F;工作流</td>
+<td>Addy Osmani</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/loop-engineering/" >Loop Engineering<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/agentic-code-review/" >Agentic Code Review<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/intent-debt/" >The Intent Debt<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/own-the-outer-loop/" >Own the Outer Loop<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/agentic-autonomy-levels/" >Agentic Autonomy Levels<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://addyosmani.com/blog/new-sdlc-vibe-coding/" >The New Software Lifecycle<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>前端&#x2F;工作流</td>
+<td>Claude Code 团队（宝玉译）</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-07-06/claudedevs-2074208949205881033" >从零开始玩转循环<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-05-08/trq212-status-2052809885763747935" >HTML 难以置信的奇效<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-17/claude-design" >设计圈的 Claude Code 时刻<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>Birgitta Böckeler</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/sensors-for-coding-agents.html" >Maintainability sensors for coding agents<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（注：本地的 3 篇 sensor 文件是同一长文的分章节快照）</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>Sean Goedecke</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/how-i-use-llms-in-2026/" >How I use LLMs as a staff engineer in 2026<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/prompts-are-technical-debt-too/" >Prompts are technical debt too<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/notes-on-incidents/" >Notes on incidents<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/ai-makes-weak-engineers-less-harmful/" >AI makes weak engineers less harmful<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/build-agents-not-pipelines/" >Build agents, not pipelines<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>Gautam Koul 等</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/vibesec-reckoning.html" >The VibeSec Reckoning<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>Sarang Kulkarni</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/reliable-llm-bayer.html" >Building Reliable Agentic AI Systems<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>（Bayer PRINCE 案例）</td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>GitHub Blog</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://github.blog/ai-and-ml/github-copilot/better-tools-made-copilot-code-review-worse-heres-how-we-actually-improved-it/" >Better tools made Copilot code review worse<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://github.blog/ai-and-ml/github-copilot/evaluating-performance-and-efficiency-of-the-github-copilot-agentic-harness-across-models-and-tasks/" >Evaluating the Copilot agentic harness<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://github.blog/ai-and-ml/github-copilot/the-harness-is-all-you-need-mostly/" >The harness is all you need (mostly)<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>稳定性</td>
+<td>crossoverJie</td>
+<td><a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/14/starrocks/StarRocks-upgrade-skill-principle/" >AI 版 StarRocks 升级风险扫描工具<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>Birgitta Böckeler</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/harness-engineering.html" >Harness engineering for coding agent users<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>Rahul Garg &#x2F; Wei Zhang &#x2F; Unmesh Joshi</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/reduce-friction-ai/feedback-flywheel.html" >Feedback Flywheel<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/structured-prompt-driven/" >SPDD<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://martinfowler.com/articles/llm-and-dsls.html" >DSLs Enable Reliable Use of LLMs<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>Bassim Eledath（宝玉译）</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-03-11/levels-of-agentic-engineering" >智能体工程的 8 个等级<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>Gergely Orosz</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/inside-anthropic" >How building software is changing at Anthropic<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/what-is-loop-engineering" >What is “loop engineering?”<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/context-engineering-with-dex-horthy" >Context engineering with Dex Horthy<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/slow-down-to-speed-up" >Slow down to speed up<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>Armin Ronacher</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/6/23/the-coming-loop/" >The Coming Loop<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/7/4/better-models-worse-tools/" >Better Models: Worse Tools<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/5/24/pi-oss/" >Building Pi With Pi<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>架构</td>
+<td>Codex 团队 &#x2F; Boris Cherny（宝玉译）</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-06/how-openais-codex-team-builds-with-codex" >Codex 团队如何用自己的产品构建产品<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/anthropics-boris-cherny-why-coding-is-solved-and-what-comes-next" >写代码正在变成”管理 Agent”<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-04-11/multi-agent-coordination-patterns" >多智能体协作指南<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-04-04/components-of-a-coding-agent" >编程智能体的核心组件<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-05-10/akshay-pachaar-2041146899319971922" >AI Agent Harness 的构造<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/2026-03-17/claude-code-skills-lessons" >构建 Claude Code 的经验：Skills<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>工具箱</td>
+<td>crossoverJie</td>
+<td><a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/29/AI/claudecode-skills-tools/" >我的 Claude Code 常用 SKILLS 和工具<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/22/AI/terminal-tools-for-ai-coding-agent/" >最常用的 4 个终端工具<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/06/17/AI/cmux-introduce/" >从 Warp 换到 cmux<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/02/09/AI/agent-notifier-skill/" >给 Claude Code 装个通知铃铛<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="http://crossoverjie.top/2026/02/07/AI/create-skills/" >用 AI 搓出三个实用 SKILLS<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>工具箱</td>
+<td>宝玉 &#x2F; Codex 团队 &#x2F; Thariq</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-04-06/claude-code-token-optimization" >Claude Code 省 Token 指南<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-03-04/ai-merge-drafts-into-skills" >多稿合并 Skill<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-03-28/lark-cli-ai-agents" >飞书 CLI 与命令行工具趋势<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/blog/2026-05-20/jxnlco-2057153744630890620" >把 Codex 用到极致<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://baoyu.io/translations/claude-code-session-management" >会话管理与 100 万上下文<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+<tr>
+<td>工具箱</td>
+<td>Sean Goedecke &#x2F; Armin Ronacher &#x2F; Gergely Orosz</td>
+<td><a class="link"   target="_blank" rel="noopener" href="https://seangoedecke.com/weird-projects-i-shipped-with-ai/" >Weird projects I shipped with AI<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://lucumr.pocoo.org/2026/5/8/local-models/" >Pushing Local Models<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a> · <a class="link"   target="_blank" rel="noopener" href="https://newsletter.pragmaticengineer.com/p/impressions-from-visiting-openai" >Impressions from visiting OpenAI, Anthropic, &amp; Cursor<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></td>
+</tr>
+</tbody></table>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>标题:</strong> 驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏</li>
+        <li><strong>作者:</strong> phenix-fledgling</li>
+        <li><strong>创建于
+                :</strong> 2026-07-29 18:30:00</li>
+        
+            <li>
+                <strong>更新于
+                    :</strong> 2026-07-30 00:49:56
+            </li>
+        
+        <li>
+            <strong>链接:</strong> https://blog.xugua.xyz//post/驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏.html
+        </li>
+        <li>
+            <strong>
+                版权声明:
+            </strong>
+            
+
+            
+                本文章采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a> 进行许可。
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5/">#工程实践</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/AI-%E7%BC%96%E7%A8%8B/">#AI 编程</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/Agent-%E5%B7%A5%E4%BD%9C%E6%B5%81/">#Agent 工作流</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/post/Harness%20Agent%20%E7%A0%94%E7%A9%B6%E7%9F%A5%E8%AF%86%E5%BA%93%EF%BC%9ACodex%E3%80%81OpenCode%20%E4%B8%8E%20grok-build%20%E5%85%A8%E8%A7%A3.html">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        评论
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-CN',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E5%8D%81%E6%9D%A1%E8%B7%A8%E6%BA%90%E5%85%B1%E8%AF%86"><span class="nav-text">1. 十条跨源共识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Playbook-A%EF%BC%9A%E7%94%A8-AI-%E5%81%9A%E5%89%8D%E7%AB%AF%E8%AE%BE%E8%AE%A1"><span class="nav-text">2. Playbook A：用 AI 做前端设计</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-A1-%E2%80%94-%E8%B5%B7%E6%AD%A5%EF%BC%9A%E5%A4%9A%E6%96%B9%E6%A1%88%E5%B9%B6%E6%8E%92%E6%8C%91%EF%BC%8C%E5%88%AB%E5%9C%A8%E5%8D%95%E6%96%B9%E6%A1%88%E4%B8%8A%E7%A3%A8"><span class="nav-text">Step A1 — 起步：多方案并排挑，别在单方案上磨</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-A2-%E2%80%94-%E6%B2%89%E6%B7%80%EF%BC%9A%E6%8A%8A%E4%BD%A0%E7%9A%84%E8%AE%BE%E8%AE%A1%E8%AF%AD%E8%A8%80%E5%8F%98%E6%88%90%E7%BB%84%E7%BB%87%E8%B5%84%E4%BA%A7"><span class="nav-text">Step A2 — 沉淀：把你的设计语言变成组织资产</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-A3-%E2%80%94-%E5%9B%BA%E5%8C%96%E9%AA%8C%E8%AF%81%EF%BC%9A%E6%8A%8A%E4%BD%A0%E7%9A%84%E6%89%8B%E5%8A%A8%E6%A3%80%E6%9F%A5%E5%86%99%E6%88%90-SKILL-md"><span class="nav-text">Step A3 — 固化验证：把你的手动检查写成 SKILL.md</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-A4-%E2%80%94-%E4%B8%AD%E9%97%B4%E4%BA%A7%E7%89%A9%E7%94%A8-HTML%EF%BC%8C%E6%8A%8A%E8%87%AA%E5%B7%B1%E7%95%99%E5%9C%A8%E5%86%B3%E7%AD%96%E7%8E%AF%E9%87%8C"><span class="nav-text">Step A4 — 中间产物用 HTML，把自己留在决策环里</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-A5-%E2%80%94-%E4%BA%A4%E6%8E%A5%EF%BC%9A%E7%BB%99%E5%B7%A5%E7%A8%8B%E7%9A%84%E6%98%AF%E5%AE%9E%E7%8E%B0%E8%8D%89%E6%A1%88%EF%BC%8C%E4%B8%8D%E6%98%AF%E4%B8%80%E5%BC%A0%E5%9B%BE"><span class="nav-text">Step A5 — 交接：给工程的是实现草案，不是一张图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-Playbook-B%EF%BC%9A%E7%94%A8-AI-%E6%97%B6%E5%AE%88%E4%BD%8F%E5%90%8E%E7%AB%AF%E4%B8%8E%E4%BB%A3%E7%A0%81%E7%A8%B3%E5%AE%9A%E6%80%A7"><span class="nav-text">3. Playbook B：用 AI 时守住后端与代码稳定性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B1-%E2%80%94-%E8%A3%85%E4%BC%A0%E6%84%9F%E5%99%A8%EF%BC%9A%E8%AE%A9%E9%97%AE%E9%A2%98%E5%9C%A8%E5%88%B0%E4%BD%A0%E7%9C%BC%E5%89%8D%E4%B9%8B%E5%89%8D%E5%B0%B1%E8%A2%AB-agent-%E8%87%AA%E5%B7%B1%E4%BF%AE%E6%8E%89"><span class="nav-text">Step B1 — 装传感器：让问题在到你眼前之前就被 agent 自己修掉</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B2-%E2%80%94-%E5%85%81%E8%AE%B8%E4%BE%8B%E5%A4%96%EF%BC%8C%E4%BD%86%E4%BE%8B%E5%A4%96%E5%BF%85%E9%A1%BB%E5%8F%AF%E5%AE%A1%E8%AE%A1"><span class="nav-text">Step B2 — 允许例外，但例外必须可审计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B3-%E2%80%94-%E7%BA%A2%E7%BA%BF%E8%B5%B0%E9%97%A8%E7%A6%81%EF%BC%8C%E4%B8%8D%E8%B5%B0-prompt"><span class="nav-text">Step B3 — 红线走门禁，不走 prompt</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B4-%E2%80%94-%E6%97%A5%E5%B8%B8%E8%8A%82%E5%A5%8F%EF%BC%9A%E4%B8%80%E4%BD%8D-staff-%E5%B7%A5%E7%A8%8B%E5%B8%88%E7%9A%84%E5%AE%9E%E6%B5%8B%E5%B7%A5%E4%BD%9C%E6%B5%81"><span class="nav-text">Step B4 — 日常节奏：一位 staff 工程师的实测工作流</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B5-%E2%80%94-review-%E6%8C%89%E7%88%86%E7%82%B8%E5%8D%8A%E5%BE%84%E5%88%86%E5%B1%82%EF%BC%8C%E7%94%A8%E4%B8%A4%E4%B8%AA%E2%80%9D%E6%80%A7%E6%A0%BC%E2%80%9D%E4%B8%8D%E5%90%8C%E7%9A%84-AI-reviewer"><span class="nav-text">Step B5 — review 按爆炸半径分层，用两个”性格”不同的 AI reviewer</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B6-%E2%80%94-prompt-%E4%B9%9F%E6%98%AF%E6%8A%80%E6%9C%AF%E5%80%BA%EF%BC%8C%E7%85%A7%E7%9D%80%E5%80%BA%E6%9D%A5%E7%AE%A1"><span class="nav-text">Step B6 — prompt 也是技术债，照着债来管</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-B7-%E2%80%94-%E4%BA%8B%E6%95%85%E5%93%8D%E5%BA%94%EF%BC%9A%E7%AC%AC%E4%B8%80%E6%AD%A5%E6%98%AF%E4%BB%80%E4%B9%88%E9%83%BD%E4%B8%8D%E5%81%9A"><span class="nav-text">Step B7 — 事故响应：第一步是什么都不做</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-Playbook-C%EF%BC%9AAI-%E6%97%B6%E4%BB%A3%E6%80%8E%E4%B9%88%E5%AE%9A%E6%9E%B6%E6%9E%84"><span class="nav-text">4. Playbook C：AI 时代怎么定架构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C1-%E2%80%94-%E8%AE%A4%E6%B8%85%E6%9D%A0%E6%9D%86%E5%9C%A8%E5%93%AA%EF%BC%9Aagent-%E6%A8%A1%E5%9E%8B-10-harness-90"><span class="nav-text">Step C1 — 认清杠杆在哪：agent &#x3D; 模型 10% + harness 90%</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C2-%E2%80%94-%E6%AF%8F%E4%B8%AA%E8%B4%A8%E9%87%8F%E5%85%B3%E6%B3%A8%E7%82%B9%E9%83%BD%E8%A6%81%E9%85%8D%E4%B8%A4%E6%89%8B%EF%BC%9A%E5%89%8D%E9%A6%88%E7%9A%84-guides-%E5%8F%8D%E9%A6%88%E7%9A%84-sensors"><span class="nav-text">Step C2 — 每个质量关注点都要配两手：前馈的 guides + 反馈的 sensors</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C3-%E2%80%94-%E7%94%A8-8-%E7%BA%A7%E9%98%B6%E6%A2%AF%E7%BB%99%E8%87%AA%E5%B7%B1%E5%AE%9A%E4%BD%8D%EF%BC%8C%E4%B8%80%E6%AC%A1%E5%8F%AA%E7%88%AC%E4%B8%80%E7%BA%A7"><span class="nav-text">Step C3 — 用 8 级阶梯给自己定位，一次只爬一级</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C4-%E2%80%94-spec-%E8%B6%8A%E8%96%84%E8%B6%8A%E5%A5%BD%EF%BC%9A10-%E4%B8%AA%E8%A6%81%E7%82%B9%E5%8E%9F%E5%88%99"><span class="nav-text">Step C4 — spec 越薄越好：10 个要点原则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C5-%E2%80%94-%E4%B8%8A%E4%B8%8B%E6%96%87%E5%B7%A5%E7%A8%8B%EF%BC%9A%E6%89%BE%E5%88%B0%E4%BD%A0%E7%9A%84%E6%A8%A1%E5%9E%8B%E2%80%9D%E5%8F%98%E7%AC%A8%E2%80%9D%E7%9A%84%E8%BE%B9%E7%95%8C"><span class="nav-text">Step C5 — 上下文工程：找到你的模型”变笨”的边界</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C6-%E2%80%94-%E5%BE%AA%E7%8E%AF%E5%B7%A5%E7%A8%8B%EF%BC%9A%E4%BB%8E%E5%86%99-prompt-%E8%BF%9B%E5%8C%96%E5%88%B0%E5%86%99-loop"><span class="nav-text">Step C6 — 循环工程：从写 prompt 进化到写 loop</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C7-%E2%80%94-%E6%AF%8F%E6%AC%A1%E6%94%BE%E6%9D%83%E4%B9%8B%E5%89%8D%EF%BC%8C%E5%85%88%E5%86%99%E4%B8%80%E4%BB%BD%E8%87%AA%E6%B2%BB%E5%A5%91%E7%BA%A6"><span class="nav-text">Step C7 — 每次放权之前，先写一份自治契约</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Step-C8-%E2%80%94-%E8%AE%A9%E9%A3%9E%E8%BD%AE%E8%BD%AC%E8%B5%B7%E6%9D%A5%EF%BC%9A%E6%8A%8A%E6%AF%8F%E6%AC%A1%E7%9A%84%E6%95%99%E8%AE%AD%E7%81%8C%E5%9B%9E%E7%B3%BB%E7%BB%9F"><span class="nav-text">Step C8 — 让飞轮转起来：把每次的教训灌回系统</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E5%8F%8D%E6%A8%A1%E5%BC%8F%E6%B8%85%E5%8D%95%EF%BC%88%E6%AF%8F%E6%9D%A1%E9%83%BD%E6%9C%89%E7%9C%9F%E5%AE%9E%E7%BF%BB%E8%BD%A6%E6%A1%88%E4%BE%8B%EF%BC%89"><span class="nav-text">5. 反模式清单（每条都有真实翻车案例）</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E4%B8%80%E9%A1%B5%E9%80%9F%E6%9F%A5%EF%BC%9A%E6%98%8E%E5%A4%A9%E5%B0%B1%E8%83%BD%E5%81%9A%E7%9A%84%E4%BA%94%E4%BB%B6%E4%BA%8B"><span class="nav-text">6. 一页速查：明天就能做的五件事</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E7%9C%9F%E5%AE%9E%E5%B7%A5%E5%85%B7%E7%AE%B1%EF%BC%9A%E4%BB%96%E4%BB%AC%E5%B9%B3%E6%97%B6%E5%88%B0%E5%BA%95%E5%9C%A8%E7%94%A8%E4%BB%80%E4%B9%88"><span class="nav-text">7. 真实工具箱：他们平时到底在用什么</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#7-1-%E5%85%AD%E4%B8%AA%E4%BA%BA-%E5%9B%A2%E9%98%9F%E7%9A%84%E7%9C%9F%E5%AE%9E%E9%85%8D%E7%BD%AE"><span class="nav-text">7.1 六个人&#x2F;团队的真实配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#7-2-%E5%B7%A5%E5%85%B7%E9%80%89%E6%8B%A9%E7%9A%84%E8%B7%A8%E6%BA%90%E8%A7%84%E5%BE%8B"><span class="nav-text">7.2 工具选择的跨源规律</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E6%9D%A5%E6%BA%90%E7%B4%A2%E5%BC%95"><span class="nav-text">8. 来源索引</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">phenix-fledgling</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 71 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+        
+        
+            
+                
+        
+                
+        
+                
+
+                    
+                        <script data-swup-reload-script src="/js/agent-chat.js"></script>
+                    
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="图片查看器">
+	<button class="image-viewer-close" type="button" aria-label="关闭">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="上一页">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="关闭">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="下一页">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>

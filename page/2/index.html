@@ -454,7 +454,7 @@
 
         <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">65</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">67</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -462,7 +462,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">69</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -494,7 +494,7 @@
 </div>
                 <div class="statistics flex justify-around my-2.5">
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">65</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">67</div>
         <div class="label text-third-text-color text-sm">标签</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
@@ -502,7 +502,7 @@
         <div class="label text-third-text-color text-sm">分类</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">69</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
         <div class="label text-third-text-color text-sm">文章</div>
     </a>
 </div>
@@ -517,6 +517,202 @@
 			<div class="main-content">
 				<div class="home-content-container">
     <ul class="home-article-list">
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/post/%E8%AE%B0%E5%BF%86%20RAG%EF%BC%9A%E4%B8%8D%E8%A3%85%E5%90%91%E9%87%8F%E5%BA%93%EF%BC%8C%E4%B9%9F%E8%83%BD%E5%81%9A%E5%87%BA%E5%83%8F%E6%A0%B7%E7%9A%84%E6%A3%80%E7%B4%A2.html">
+                            记忆 RAG：不装向量库，也能做出像样的检索
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            “做 RAG”在很多人心里等于”装向量数据库”。但看过 grok-build 的记忆检索源码后会发现：一条纯词法检索 + 精心设计的打分管线，在个人记忆这个规模（几千条以内）上完全够用，而且零外部依赖。
+检索管线全景查询 → 分词 → FTS5 BM25 取候选（3 倍量）
+    → BM25 归一化到 [0,1]
+    → 时间衰减（只衰减会话类记忆）
+    → 来源权重（用户显式&...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Tue Jul 28 2026 12:00:00 GMT+0800">
+                
+                    2026-07-28
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/">AI 与 Agent</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/Agent-%E5%B7%A5%E7%A8%8B/">Agent 工程</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/%E8%AE%B0%E5%BF%86%E7%B3%BB%E7%BB%9F/">记忆系统</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/RAG/">RAG</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/SQLite/">SQLite</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/post/%E8%AE%B0%E5%BF%86%20RAG%EF%BC%9A%E4%B8%8D%E8%A3%85%E5%90%91%E9%87%8F%E5%BA%93%EF%BC%8C%E4%B9%9F%E8%83%BD%E5%81%9A%E5%87%BA%E5%83%8F%E6%A0%B7%E7%9A%84%E6%A3%80%E7%B4%A2.html">阅读全文<span class="seo-reader-text">记忆 RAG：不装向量库，也能做出像样的检索</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
+        
+            <li class="home-article-item">
+
+                
+
+                
+
+                
+                <div class="flex flex-col gap-5 px-7 pb-7 pt-7">
+                    <h3 class="home-article-title">
+                        <a href="/post/%E8%A7%A3%E5%89%96%E4%B8%89%E4%B8%AA%E5%BC%80%E6%BA%90%20Harness%20Agent%EF%BC%9ACodex%E3%80%81OpenCode%20%E4%B8%8E%20grok-build.html">
+                            解剖三个开源 Harness Agent：Codex、OpenCode 与 grok-build
+                        </a>
+                    </h3>
+
+                    <div class="home-article-content markdown-body">
+                        
+                            
+                            2025 年之后，”harness agent”成了一类产品的统称：给大模型套上工具、权限、记忆和会话管理的外壳，让它能真正替人干活。我把三个已开源的生产级实现完整读了一遍，这篇是横向结论。
+三家的立身之本
+
+
+系统
+语言
+核心设计哲学
+
+
+
+OpenAI Codex
+Rust
+引擎-界面分离：SQ&#x2F;EQ 双队列，协议先行（前身即 ACP 思想）
+
+
+sst OpenCode
+Ty...
+                        
+                    </div>
+
+                    <div class="home-article-meta-info-container">
+    <div class="home-article-meta-info">
+        <span><i class="fa-solid fa-calendars"></i>&nbsp;
+            <span class="home-article-date" data-date="Mon Jul 27 2026 12:00:00 GMT+0800">
+                
+                    2026-07-27
+                
+            </span>
+        </span>
+        
+            <span class="home-article-category">
+                <i class="fa-solid fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/">AI 与 Agent</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/Agent-%E5%B7%A5%E7%A8%8B/">Agent 工程</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+        
+        
+            <span class="home-article-tag">
+                <i class="fa-solid fa-tags"></i>&nbsp;
+                <ul>
+                    
+                        <li>
+                            
+                            <a href="/tags/Agent-%E6%9E%B6%E6%9E%84/">Agent 架构</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/Harness/">Harness</a>&nbsp;
+                        </li>
+                    
+                        <li>
+                            | 
+                            <a href="/tags/%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/">源码研究</a>&nbsp;
+                        </li>
+                    
+                </ul>
+            </span>
+        
+    </div>
+
+    <a href="/post/%E8%A7%A3%E5%89%96%E4%B8%89%E4%B8%AA%E5%BC%80%E6%BA%90%20Harness%20Agent%EF%BC%9ACodex%E3%80%81OpenCode%20%E4%B8%8E%20grok-build.html">阅读全文<span class="seo-reader-text">解剖三个开源 Harness Agent：Codex、OpenCode 与 grok-build</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
+</div>
+
+                </div>
+            </li>
         
             <li class="home-article-item">
 
@@ -1208,188 +1404,11 @@ https://dotnet.microsoft.com/download/dotnet/sdk-for-vs-code?utm_source=vs-code&
                 </div>
             </li>
         
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/post/SpringJsp.html">
-                            <img src="/img/cover-c39adff2d794.png" alt="SpringJsp" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/post/SpringJsp.html">
-                            SpringJsp
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            JSPJSP全称Java Server Pages，是一种动态网页开发技术。它使用JSP标签在HTML网页中插入Java代码。标签通常以&lt;%开头以%&gt;结束。
-JSP通过网页表单获取用户输入数据、访问数据库及其他数据源，然后动态地创建网页。
-JSP标签有多种功能，比如访问数据库、记录用户选择信息、访问JavaBeans组件等，还可以在不同的网页中传递控制信息和共享信息。
-​    ...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Fri Jul 23 2021 22:31:50 GMT+0800">
-                
-                    2021-07-23
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/">后端开发</a>&nbsp;
-                        </li>
-                    
-                    
-                
-                    
-                        
-                            <li>></li>
-                        
-                        <li>
-                            <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/Spring-%E7%94%9F%E6%80%81/">Spring 生态</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/spring/">spring</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/post/SpringJsp.html">阅读全文<span class="seo-reader-text">SpringJsp</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
-            <li class="home-article-item">
-
-                
-
-                
-                    
-                
-
-                
-                    <div id="home-article-thumbnail" class="home-article-thumbnail relative h-[150px] overflow-hidden rounded-t-large">
-                        <a href="/post/springMVC4.html">
-                            <img src="/img/cover-23beef482406.png" alt="springMVC4" class="w-full h-full object-cover dark:brightness-75 transition-all" />
-                        </a>
-                    </div>
-                
-                <div class="flex flex-col gap-5 px-7 pb-7 pt-5">
-                    <h3 class="home-article-title">
-                        <a href="/post/springMVC4.html">
-                            springMVC4
-                        </a>
-                    </h3>
-
-                    <div class="home-article-content markdown-body">
-                        
-                            
-                            1、上下文配置spring最为精彩的地方的便是它的容器思想和AOP切面编程，那么spring是如何实现的容器化呢？ 在源码阅读阶段我们可知通过它的bean思想实现，那么这里变产生了歧义，因为Java似乎也预留了一个Java bean，那么@bean和Java bean的区别在哪呢？
-1.1 Java bean 和@bean
-Java bean指的是一种规范，它实现序列化，且包含get set...
-                        
-                    </div>
-
-                    <div class="home-article-meta-info-container">
-    <div class="home-article-meta-info">
-        <span><i class="fa-solid fa-calendars"></i>&nbsp;
-            <span class="home-article-date" data-date="Thu Jul 22 2021 17:35:14 GMT+0800">
-                
-                    2021-07-22
-                
-            </span>
-        </span>
-        
-            <span class="home-article-category">
-                <i class="fa-solid fa-folders"></i>&nbsp;
-            <ul>
-                
-                
-                    
-                        
-                        <li>
-                            <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/">后端开发</a>&nbsp;
-                        </li>
-                    
-                    
-                
-                    
-                        
-                            <li>></li>
-                        
-                        <li>
-                            <a href="/categories/%E5%90%8E%E7%AB%AF%E5%BC%80%E5%8F%91/Spring-%E7%94%9F%E6%80%81/">Spring 生态</a>&nbsp;
-                        </li>
-                    
-                    
-                
-            </ul>
-        </span>
-        
-        
-            <span class="home-article-tag">
-                <i class="fa-solid fa-tags"></i>&nbsp;
-                <ul>
-                    
-                        <li>
-                            
-                            <a href="/tags/spring/">spring</a>&nbsp;
-                        </li>
-                    
-                </ul>
-            </span>
-        
-    </div>
-
-    <a href="/post/springMVC4.html">阅读全文<span class="seo-reader-text">springMVC4</span>&nbsp;<i class="fa-solid fa-angle-right"></i></a>
-</div>
-
-                </div>
-            </li>
-        
     </ul>
 
     <div class="home-paginator px-7 py-5">
         <div class="paginator">
-	<a class="extend prev" rel="prev" href="/"><i class="fa-regular fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/7/">7</a><a class="extend next" rel="next" href="/page/3/"><i class="fa-regular fa-angle-right"></i></a>
+	<a class="extend prev" rel="prev" href="/"><i class="fa-regular fa-angle-left"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span><a class="page-number" href="/page/3/">3</a><a class="page-number" href="/page/4/">4</a><span class="space">&hellip;</span><a class="page-number" href="/page/8/">8</a><a class="extend next" rel="next" href="/page/3/"><i class="fa-regular fa-angle-right"></i></a>
 </div>
   
     </div>
@@ -1415,7 +1434,7 @@ Java bean指的是一种规范，它实现序列化，且包含get set...
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        共撰写了 69 篇文章
+                        共撰写了 71 篇文章
                     </span>
                     
                 </p>

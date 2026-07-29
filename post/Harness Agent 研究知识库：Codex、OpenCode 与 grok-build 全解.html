@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="AI Agent, Java, 架构">
+    
+    
+    <meta name="author" content="phenix-fledgling">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://blog.xugua.xyz/post/harness agent 研究知识库：codex、opencode 与 grok-build 全解.html"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解">
+<meta property="og:url" content="https://blog.xugua.xyz/post/Harness%20Agent%20%E7%A0%94%E7%A9%B6%E7%9F%A5%E8%AF%86%E5%BA%93%EF%BC%9ACodex%E3%80%81OpenCode%20%E4%B8%8E%20grok-build%20%E5%85%A8%E8%A7%A3.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+<meta property="article:published_time" content="2026-07-29T10:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-29T16:50:34.885Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="Agent 架构">
+<meta property="article:tag" content="Harness">
+<meta property="article:tag" content="源码研究">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解 | 菲尼克斯blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+        
+            
+    
+            
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"blog.xugua.xyz","root":"/","language":"zh-CN"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"菲尼克斯blog","subtitle":{"text":["从 Java 到 AI Agent 的工程手记","拆解 Harness Agent，亲手造一个个人 Agent"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-box-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder-open"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":{"enable":true,"launch_time":"2020-04-01 00:00:00"},"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2022/8/17 11:45:14","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2022/8/17 11:45:14","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.i18n = {"search":"站内搜索您需要的内容...","toc":"目录","prev":"上一页","next":"下一页","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 页","recent_posts":"最新文章","share":"分享","powered_by":"由 %s 驱动","theme":"主题","rss_feed":"RSS Feed","category":"分类","categories":"分类","tag":"标签","tags":"标签","post":"文章","posts":"文章","tagcloud":"标签云","comment":"评论","comments":"评论","top":"置顶","sticky":"置顶","go-back-home":"回到首页","masonry_loading":"照片加载中...","image_viewer":"图片查看器","close":"关闭","exif":{"title":"EXIF","cards":{"camera":"相机","lens":"镜头","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"机型","date_taken":"拍摄时间","lens_model":"镜头","focal_length":"焦距","focus_mode":"对焦模式","shutter":"快门","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光补偿","metering_mode":"测光模式","flash":"闪光灯","white_balance":"白平衡","latitude":"纬度","longitude":"经度","altitude":"海拔"},"status":{"loading":"加载中...","no_exif":"无 EXIF 信息","library_missing":"EXIF 库未加载","image_source_missing":"图片地址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻止或缺少元数据）","flag_unavailable":"EXIF 不可用"}},"home":"首页","archive":"归档","archives":"归档","about":"关于","links":"链接","link":"链接","friends":"友情链接","friend":"友情链接","timeline":"时间轴","shuoshuo":"说说","bookmarks":"书签","site_uv":"访问人数","site_pv":"总访问量","read_more":"阅读全文","wordcount":"字","min2read":"分钟","changelog":"更新日志","status":"状态","runtime":"博客已运行","days":"天","hours":"小时","minutes":"分钟","seconds":"秒","optimized_by":"并由 Evan 进行优化","rights":"版权所有","site_posts":"共撰写了 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"title":"标题","author":"作者","link":"链接","create_time":"创建于","update_time":"更新于","license_title":"版权声明","license_content":"本文章采用 %s 进行许可。","all_rights_reserved":"版权所有 &#169 %s，禁止转载。","public_domain":"本文为公有领域作品，可自由转载、引用。"},"ago":{"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"},"create_time":"创建","update_time":"更新","expired":"这篇文章最后更新于 %s 天前，内容可能已经过时。"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                菲尼克斯blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-box-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    标签
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder-open fa-fw"></i>
+                                    分类
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-box-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                标签
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                分类
+                            </span>
+                            
+                                <i class="fa-regular fa-folder-open fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">67</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">18</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">71</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="https://github.com/TsinghuaDream.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">phenix-fledgling</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv5</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-07-29 18:00</span>
+        <span class="mobile">2026-07-29 18:00</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-07-30 00:50:34</span>
+            <span class="mobile">2026-07-30 00:50:34</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/">AI 与 Agent</a>&nbsp;
+                        </li>
+                    
+                    
+                
+                    
+                        
+                            <li>></li>
+                        
+                        <li>
+                            <a href="/categories/AI-%E4%B8%8E-Agent/Agent-%E5%B7%A5%E7%A8%8B/">Agent 工程</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/Agent-%E6%9E%B6%E6%9E%84/">Agent 架构</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/Harness/">Harness</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/">源码研究</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<blockquote>
+<p>说明：本文是完整研究笔记。此前发过精简对比版<a href="/post/%E8%A7%A3%E5%89%96%E4%B8%89%E4%B8%AA%E5%BC%80%E6%BA%90%20Harness%20Agent%EF%BC%9ACodex%E3%80%81OpenCode%20%E4%B8%8E%20grok-build/">《解剖三个开源 Harness Agent》</a>，这篇是它背后的全部底稿：按主题重组的一手结论，含目录可跳转。</p>
+</blockquote>
+<blockquote>
+<p>用途：把与 AI 关于三大开源 harness agent（Codex &#x2F; OpenCode &#x2F; grok-build）的多轮讨论，<br>从零散问答重组为按主题的完整复习材料。用于个人复习、面试讲稿、以及”个人 Agent 引擎 MVP”的设计依据。</p>
+<p>方法：文档优先（读官方开发文档理解设计意图）→ 源码验证（读实现确认）→ 提炼优劣与可借鉴点。</p>
+</blockquote>
+<h2 id="目录"><a href="#目录" class="headerlink" title="目录"></a>目录</h2><ul>
+<li><a href="#0-%E6%80%BB%E8%A7%88%E4%B8%8E%E9%A1%B9%E7%9B%AE%E5%AE%9A%E4%BD%8D">0. 总览与项目定位</a></li>
+<li><a href="#1-%E4%B8%89%E5%AE%B6-harness-%E6%A8%AA%E5%90%91%E5%AF%B9%E6%AF%94">1. 三家 Harness 横向对比</a></li>
+<li><a href="#2-agent-%E5%BE%AA%E7%8E%AF%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%A8%A1%E5%9E%8B">2. Agent 循环与会话模型</a></li>
+<li><a href="#3-%E5%8E%8B%E7%BC%A9%E5%8D%B3%E8%AE%B0%E5%BF%86-%E4%B8%8E-%E4%B8%89%E5%B1%82%E8%AE%B0%E5%BF%86">3. 压缩即记忆 与 三层记忆</a></li>
+<li><a href="#4-%E8%AE%B0%E5%BF%86-rag">4. 记忆 RAG：检索管线 &#x2F; dream &#x2F; 为何代码检索不用向量</a></li>
+<li><a href="#5-%E6%9D%83%E9%99%90%E4%B8%8E%E5%A4%9A%E5%B1%82%E5%AE%A1%E6%89%B9%E6%BC%8F%E6%96%97">5. 权限与多层审批漏斗</a></li>
+<li><a href="#6-%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E4%B8%8E%E5%AD%90%E4%BB%A3%E7%90%86%E4%B8%89%E8%BD%B4">6. 多智能体与子代理三轴</a></li>
+<li><a href="#7-%E5%B7%A5%E5%85%B7--mcp--skill--plugin-%E5%9B%9B%E5%B1%82%E6%89%A9%E5%B1%95">7. 工具 &#x2F; MCP &#x2F; Skill &#x2F; Plugin 四层扩展</a></li>
+<li><a href="#8-%E9%85%8D%E7%BD%AE%E5%B1%82%E4%B8%8E%E7%BB%93%E6%9E%84%E5%8C%96%E6%95%A3%E6%96%87%E5%88%86%E5%B1%82%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99">8. 配置层与”结构化&#x2F;散文分层”设计原则</a></li>
+<li><a href="#9-%E5%A3%B0%E6%98%8E%E5%BC%8F%E9%85%8D%E7%BD%AE%E4%B8%BA%E4%BD%95%E7%94%A8-markdown">9. 声明式配置为何用 Markdown</a></li>
+<li><a href="#10-%E6%BA%90%E6%96%87%E6%A1%A3%E7%B4%A2%E5%BC%95">10. 源文档索引</a></li>
+<li><a href="#%E9%99%84-%E5%AE%9E%E6%96%BD%E6%96%B9%E6%A1%88%E4%B8%8E%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F">附. 实施方案与协作模式</a></li>
+</ul>
+<hr>
+<h2 id="0-总览与项目定位"><a href="#0-总览与项目定位" class="headerlink" title="0. 总览与项目定位"></a>0. 总览与项目定位</h2><p>三个参考系统都是 <strong>coding agent 的 harness</strong>（把 LLM 包装成能读写代码、执行命令、管理长任务的自主体）：</p>
+<ul>
+<li><strong>Codex</strong>（OpenAI，Rust）：引擎-界面分离、事件溯源；最强的安全模型与会话持久化。</li>
+<li><strong>OpenCode</strong>（sst，TypeScript）：server-first、万物皆声明式配置；扩展体系边界最清晰。</li>
+<li><strong>grok-build</strong>（xAI，Rust）：库化解耦；压缩、子代理、workflow 的工程化最完整。</li>
+</ul>
+<p><strong>本项目定位</strong>：自研的是<strong>个人 Agent 大脑</strong>（对话、记忆、审批、调度、多智能体编排、IM 渠道、轻量工具），<br>不是 coding agent。编码任务通过统一 <code>delegate</code> 工具的 coding provider 整体<strong>委派给 grok-build</strong>（专家子代理范式）。</p>
+<p><strong>北极星原则</strong>：对开源 harness 做一次<strong>解剖 → 逐步长出自己的 harness</strong>。功能只能多不能少（能力域全覆盖），<br>实现细腻度可分档（完整自研 &#x2F; 委派 &#x2F; 简化 &#x2F; 占位预留）。</p>
+<p><strong>核心洞察（贯穿全库）</strong>：</p>
+<ol>
+<li>多智能体的价值在<strong>编排</strong>，不在自己实现每个子代理——子代理可异构（本地 loop 或外部进程）。</li>
+<li><strong>压缩即记忆处理</strong>：上下文压缩与长期记忆是同一系统的两半（在线蒸馏 vs 离线整理）。</li>
+<li>代码检索是 <strong>agentic</strong>（子代理多轮 grep&#x2F;glob&#x2F;read + 改写查询），只有”记忆”才用向量&#x2F;混合 RAG。</li>
+<li>配置用 <strong>frontmatter(结构) + Markdown(散文)</strong> 分层，因为”配置的消费者变成了 LLM”。</li>
+</ol>
+<hr>
+<h2 id="1-三家-Harness-横向对比"><a href="#1-三家-Harness-横向对比" class="headerlink" title="1. 三家 Harness 横向对比"></a>1. 三家 Harness 横向对比</h2><h3 id="设计哲学与强弱"><a href="#设计哲学与强弱" class="headerlink" title="设计哲学与强弱"></a>设计哲学与强弱</h3><table>
+<thead>
+<tr>
+<th>系统</th>
+<th>一句话哲学</th>
+<th>最强</th>
+<th>最弱</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Codex</td>
+<td>引擎-界面分离 + 事件溯源，一切皆 Op&#x2F;Event</td>
+<td>安全模型（策略&#x2F;机制正交的多层审批）、rollout 持久化、两阶段记忆</td>
+<td>复杂度爆炸；v1&#x2F;v2&#x2F;legacy 三代并存；文档滞后于代码</td>
+</tr>
+<tr>
+<td>OpenCode</td>
+<td>server-first + 万物皆声明式配置</td>
+<td>扩展边界最清晰（tool&#x2F;skill&#x2F;plugin&#x2F;MCP 各司其职）、权限规则、Skill 惰性加载</td>
+<td>无长期记忆层（只有有损压缩）；绑死 Bun&#x2F;TS&#x2F;Effect；单机单用户</td>
+</tr>
+<tr>
+<td>grok-build</td>
+<td>库化解耦，每能力抽成无宿主依赖纯库</td>
+<td>压缩（trait seam + 质量合同 + 三风格）、子代理四维、workflow 断点续跑</td>
+<td>抽取半途（循环仍在巨型 shell）；记忆属实验；协议对单机过重</td>
+</tr>
+</tbody></table>
+<h3 id="逐能力域”谁最强”"><a href="#逐能力域”谁最强”" class="headerlink" title="逐能力域”谁最强”"></a>逐能力域”谁最强”</h3><table>
+<thead>
+<tr>
+<th>能力域</th>
+<th>最值得抄谁</th>
+<th>关键点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>核心协议&#x2F;循环</td>
+<td>Codex</td>
+<td>SQ&#x2F;EQ 双队列、thread&#x2F;turn&#x2F;item 三原语、事件可回放</td>
+</tr>
+<tr>
+<td>编辑鲁棒性</td>
+<td>Codex</td>
+<td>apply-patch 独立 crate，上下文锚点模糊定位（容忍行号漂移）</td>
+</tr>
+<tr>
+<td>权限审批</td>
+<td>Codex + OpenCode</td>
+<td>Codex 多层漏斗 + amendment 回写；OpenCode 三元组规则 + doom_loop</td>
+</tr>
+<tr>
+<td>上下文压缩</td>
+<td>grok-build</td>
+<td>退化检测 + 用户原文保留 + tool 配对安全 + 三风格</td>
+</tr>
+<tr>
+<td>会话持久化</td>
+<td>Codex</td>
+<td>rollout jsonl + resume + fork（边界语义严谨）</td>
+</tr>
+<tr>
+<td>长期记忆</td>
+<td>Codex（唯一有真长期记忆）</td>
+<td>两阶段管线 + git diff 脏检查；grok 有混合检索但属实验；OpenCode 无</td>
+</tr>
+<tr>
+<td>多智能体</td>
+<td>三家一致（编排范式）</td>
+<td>Codex spawn 工具族 + review rubric；OpenCode task + 子会话；grok 四维解析</td>
+</tr>
+<tr>
+<td>配置层</td>
+<td>OpenCode</td>
+<td>8 层合并、agent&#x2F;command&#x2F;skill 全用 markdown+frontmatter</td>
+</tr>
+<tr>
+<td>扩展边界</td>
+<td>OpenCode</td>
+<td>MCP&#x3D;工具&#x2F;数据、Skill&#x3D;知识、Plugin&#x3D;行为改写，职责不重叠</td>
+</tr>
+<tr>
+<td>独有能力</td>
+<td>grok-build workflow &#x2F; Codex Guardian</td>
+<td>Rhai 编排+journal 续跑 &#x2F; AI 审 AI</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="2-Agent-循环与会话模型"><a href="#2-Agent-循环与会话模型" class="headerlink" title="2. Agent 循环与会话模型"></a>2. Agent 循环与会话模型</h2><h3 id="核心循环"><a href="#核心循环" class="headerlink" title="核心循环"></a>核心循环</h3><p><strong>Codex 的 SQ&#x2F;EQ 模型</strong>（<code>sources/codex-protocol_v1.md</code>）：客户端与引擎经 <strong>提交队列(SQ)&#x2F;事件队列(EQ)</strong> 异步通信。</p>
+<ul>
+<li>客户端提交 <code>Op</code>（UserTurn &#x2F; Interrupt &#x2F; ExecApproval &#x2F; PatchApproval &#x2F; Shutdown…）；引擎回推 <code>EventMsg</code>（AgentMessage &#x2F; delta &#x2F; ExecApprovalRequest &#x2F; TurnComplete…）。</li>
+<li><strong>审批本身就是队列里的一条异步消息</strong>（Op），不是阻塞回调——这是流式体验的关键。</li>
+<li>分层：<code>Session</code>（配置+状态）→ <code>Task</code>（一次用户输入触发的工作，同时至多一个）→ <code>Turn</code>（一轮”请求模型→执行工具→产出”）。一个 Turn 无输出则 Task 结束。</li>
+<li><code>response_id</code> 作为书签：既可 resume 线程，也可从早期点 fork。</li>
+</ul>
+<p><strong>通用单 turn 流程</strong>（我们要自研的）：组装消息(system + 记忆注入 + 历史) → LLM 流式 → 逐个执行 tool_calls（每个先过权限）→ tool 结果回填 → 循环直到无 tool_call 或触达 max_turns。</p>
+<h3 id="对外抽象：thread-turn-item"><a href="#对外抽象：thread-turn-item" class="headerlink" title="对外抽象：thread &#x2F; turn &#x2F; item"></a>对外抽象：thread &#x2F; turn &#x2F; item</h3><p>Codex app-server（<code>sources/codex-app-server-README.md</code>）把引擎抽象成三原语，是 IDE&#x2F;多客户端接入的事实标准：</p>
+<ul>
+<li><strong>Thread</strong>：一次会话；<strong>Turn</strong>：一问一答；<strong>Item</strong>：消息&#x2F;推理&#x2F;命令&#x2F;文件编辑等。</li>
+<li>客户端 <code>thread/start|resume|fork</code> → <code>turn/start</code>（立即返回）→ 持续读 <code>item/started</code>、<code>item/agentMessage/delta</code>、<code>turn/completed</code> 通知流。</li>
+<li>背压：有界队列，过载回 <code>-32001</code> 可重试错误。</li>
+</ul>
+<h3 id="会话状态管理"><a href="#会话状态管理" class="headerlink" title="会话状态管理"></a>会话状态管理</h3><ul>
+<li><strong>grok-build</strong>：Actor 模式（<code>sources/grok-build-user-guide/17-sessions.md</code> + chat-state crate）——会话状态跑在独立 tokio task，<strong>无锁</strong>，经 Command+oneshot 查询、事件流回推。</li>
+<li><strong>OpenCode</strong>：session&#x2F;message&#x2F;part 三级模型，一切事件化，天然支持多客户端与回放。</li>
+</ul>
+<h3 id="可借鉴到本项目"><a href="#可借鉴到本项目" class="headerlink" title="可借鉴到本项目"></a>可借鉴到本项目</h3><p>会话模型用 thread&#x2F;turn&#x2F;item 三级；持久化 &#x3D; <strong>SQLite 元数据 + 每会话 jsonl 事件日志</strong>（无损事实源），重启后从 jsonl 重建历史 → 长对话能力的根基。</p>
+<hr>
+<h2 id="3-压缩即记忆-与-三层记忆"><a href="#3-压缩即记忆-与-三层记忆" class="headerlink" title="3. 压缩即记忆 与 三层记忆"></a>3. 压缩即记忆 与 三层记忆</h2><h3 id="核心观点：压缩不是省-token，是记忆处理的中间环节"><a href="#核心观点：压缩不是省-token，是记忆处理的中间环节" class="headerlink" title="核心观点：压缩不是省 token，是记忆处理的中间环节"></a>核心观点：压缩不是省 token，是记忆处理的中间环节</h3><p><strong>在线压缩和离线记忆整理是同一个操作（LLM 蒸馏历史）</strong>，区别只在触发时机、存放位置、生命周期。</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">┌─ 工作记忆（上下文窗口 = 容器）─────────────────────┐</span><br><span class="line">│  ① 系统提示 + 长期记忆注入（检索来的，会话头部）    │</span><br><span class="line">│  ② 中期记忆：压缩摘要（替换掉的旧历史的蒸馏版）      │</span><br><span class="line">│  ③ 短期记忆：尾部保留的最近 N 轮【原文】            │</span><br><span class="line">│  ④ 当前轮：正在进行的输入/工具调用                  │</span><br><span class="line">└──────────────────────────────────────────────────┘</span><br><span class="line">   压缩发生时：② 吞掉 ③ 的老化部分，③ 的边界前移</span><br><span class="line">   离线时：会话摘要/压缩产物落盘 → dream 整理 → 长期记忆</span><br><span class="line">   新会话/压缩后：检索长期记忆 → 重新注入 ① （闭环）</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="短期记忆的三条硬规则（不是”最近几条”）"><a href="#短期记忆的三条硬规则（不是”最近几条”）" class="headerlink" title="短期记忆的三条硬规则（不是”最近几条”）"></a>短期记忆的三条硬规则（不是”最近几条”）</h3><ol>
+<li><strong>单位是轮(turn)不是消息条数</strong>：OpenCode 用 <code>tail_start_id</code> 标记边界；grok-build <code>select_turns_to_compact</code> 按轮切分。</li>
+<li><strong>tool call&#x2F;result 配对不可拆散</strong>：尾部若保留了孤儿工具结果会让模型错乱 → 保留轮数为配对完整性动态调整。</li>
+<li><strong>分级遗忘</strong>：正式压缩前先忘”体积大、复述价值低”的——grok-build 顺序为 图片 → 旧工具输出(&gt;50%利用率) → 最后才蒸馏对话原文。用户原话最不可蒸馏（<code>wrap_user_query</code> 强制保留）。</li>
+</ol>
+<h3 id="尾部为何必须原文"><a href="#尾部为何必须原文" class="headerlink" title="尾部为何必须原文"></a>尾部为何必须原文</h3><p>细节保真（路径&#x2F;行号&#x2F;报错）、行为连续性（隐式 few-shot）、<strong>KV cache 经济学</strong>（重写历史会打爆前缀缓存，故压缩策略都是”尽量少发生、一发生就一次到位”，两次压缩间只追加不改写）。</p>
+<h3 id="三家压缩实现"><a href="#三家压缩实现" class="headerlink" title="三家压缩实现"></a>三家压缩实现</h3><ul>
+<li><strong>grok-build</strong>（最完整，<code>sources/grok-build-user-guide/13-memory.md</code> + compaction crate）：三风格（code 全替换 &#x2F; intra 尾部保留 &#x2F; inter 分块轮间）；质量合同：<code>select</code> 保 tool 配对、<code>wrap_user_query</code> 保原诉求、<code>is_degenerate_summary</code> 退化检测 + 重试。</li>
+<li><strong>OpenCode</strong>：隐藏 compaction 子代理生成 summary；<code>tail_start_id</code> 保尾部；工具输出截 2000 字符、保护 skill 输出、保留最近 2 轮。</li>
+<li><strong>Codex</strong>：<code>compact.rs</code> 多策略 + pre&#x2F;post compact 钩子；且 <strong>rollout 始终保留全量历史</strong>，记忆管线从完整 rollout 提取而非压缩后上下文（避免二次失真）。</li>
+</ul>
+<h3 id="落到本项目的准则"><a href="#落到本项目的准则" class="headerlink" title="落到本项目的准则"></a>落到本项目的准则</h3><ol>
+<li>编排层要<strong>感知压缩事件</strong>，压缩摘要落盘成为记忆写入源。</li>
+<li>记忆管线输入用<strong>全量 jsonl</strong>，不从压缩后上下文二次蒸馏（学 Codex）。</li>
+<li>growth-log 本质是手动 dream，可升级为自动提取+整理。</li>
+</ol>
+<hr>
+<h2 id="4-记忆-RAG"><a href="#4-记忆-RAG" class="headerlink" title="4. 记忆 RAG"></a>4. 记忆 RAG</h2><h3 id="先纠正一个行业事实：代码检索不用向量"><a href="#先纠正一个行业事实：代码检索不用向量" class="headerlink" title="先纠正一个行业事实：代码检索不用向量"></a>先纠正一个行业事实：代码检索不用向量</h3><p><strong>三家没有一家对代码做向量 RAG。</strong> 代码检索是 <strong>agentic</strong>：</p>
+<ul>
+<li>explore 子代理循环 grep 关键词 → 没命中就换同义词&#x2F;换命名约定再 grep → glob 换路径 → read 确认。</li>
+<li>“没查到就改写重查、多烧点 token 换召回”这个行为是 <strong>LLM 在子会话里自主完成</strong>，外层只给它只读工具集和检索力度指令（quick&#x2F;medium&#x2F;very thorough）。</li>
+<li>外层 loop 校验：父代理拿到结论后自己验证（读关键文件），Codex 更用 ReviewTask&#x2F;Guardian 做结构化 JSON 校验。</li>
+<li><strong>查询改写（同义词）放在 agentic 层做，不放管线里</strong>——管线要快且确定，改写交给会烧 token 的小 agent。</li>
+</ul>
+<h3 id="记忆检索才是混合-RAG-管线（grok-build，值得整条抄）"><a href="#记忆检索才是混合-RAG-管线（grok-build，值得整条抄）" class="headerlink" title="记忆检索才是混合 RAG 管线（grok-build，值得整条抄）"></a>记忆检索才是混合 RAG 管线（grok-build，值得整条抄）</h3><div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">查询 → FTS5 BM25（候选=3×max_results，另补 evergreen 来源查询防被会话记忆挤出）</span><br><span class="line">     → 并行 embed 查询做 sqlite-vec KNN（失败自动降级 FTS-only）</span><br><span class="line">     → 双信号合并：max(纯FTS, text_weight×FTS + vector_weight×向量)</span><br><span class="line">     → 时间衰减：session 记忆指数半衰 e^(-λ·age)，全局/项目记忆免衰减</span><br><span class="line">     → 来源权重 × 访问频次加成 1+ln(1+n)×0.05（被用过的略升权）</span><br><span class="line">     → min_score 门槛 → MMR 去冗余（Jaccard，λ×相关-(1-λ)×最大相似）→ 截断 top-N</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li><code>query_expansion.rs</code> 不是 LLM 同义词改写，只是 130 个停用词的关键词提取（FTS-only 降级路径用）。</li>
+<li>MMR 是 ~60 行纯函数（无需 embedding，Jaccard 相似度），可直接移植 Python。</li>
+</ul>
+<h3 id="离线整理两流派"><a href="#离线整理两流派" class="headerlink" title="离线整理两流派"></a>离线整理两流派</h3><ul>
+<li><strong>grok-build dream</strong>：门槛（≥N 小时 + ≥N 个新会话）；LLM 五规则整理（合并同主题 &#x2F; 新事实覆盖旧 &#x2F; 相对日期转绝对 &#x2F; 丢弃寒暄噪音 &#x2F; 保留决策与问题-方案对）；处理完删源日志清索引。</li>
+<li><strong>Codex 两阶段</strong>（<code>sources/codex-memories.md</code>）：Phase1 并发从每个 rollout 抽取 <code>raw_memory/rollout_summary</code>（DB 租约防重、退避重试、密钥脱敏）；Phase2 全局锁 + git 基线工作区 + spawn 无网络无审批的 consolidation 子代理，<strong>用 git diff 让子代理只看增量</strong>。</li>
+</ul>
+<h3 id="落到本项目"><a href="#落到本项目" class="headerlink" title="落到本项目"></a>落到本项目</h3><p>记忆源 &#x3D; 巡检历史 &#x2F; Finding &#x2F; 成长日志 &#x2F; 仓库上下文 &#x2F; “记住”条目 &#x2F; 导入的工作经验。<br>MVP：markdown 文件 + SQLite FTS5（jieba 中文分词）+ 时间衰减 + MMR；向量为可选增强。代码检索交给 explore 子代理 + codegraph MCP。</p>
+<hr>
+<h2 id="5-权限与多层审批漏斗"><a href="#5-权限与多层审批漏斗" class="headerlink" title="5. 权限与多层审批漏斗"></a>5. 权限与多层审批漏斗</h2><h3 id="Codex-的三层漏斗（全场最精华）"><a href="#Codex-的三层漏斗（全场最精华）" class="headerlink" title="Codex 的三层漏斗（全场最精华）"></a>Codex 的三层漏斗（全场最精华）</h3><div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">命令要执行</span><br><span class="line"> ├─ 第1层 静态规则：execpolicy（Starlark）</span><br><span class="line"> │    prefix_rule(pattern=[&quot;git&quot;,[&quot;push&quot;,&quot;reset&quot;]], decision=&quot;prompt|allow|forbidden&quot;)</span><br><span class="line"> │    多规则命中取最严；自带 match/not_match 当&quot;规则单测&quot;</span><br><span class="line"> ├─ 第2层 Hook 拦截：PermissionRequest hooks（外部程序 Allow/Deny）</span><br><span class="line"> ├─ 第3层 AI 自动审：Guardian 子代理</span><br><span class="line"> │    压缩转录(意图+最近上下文) → 独立审查会话 → 严格 JSON &#123;risk_level, user_authorization, outcome&#125;</span><br><span class="line"> │    90秒超时 fail-closed；熔断器：连续3拒 或 50窗口内10拒 → 打断整轮</span><br><span class="line"> └─ 第4层 人审：ReviewDecision 变体</span><br><span class="line">      Approved / ApprovedForSession / Denied&#123;rejection&#125; / Abort / TimedOut</span><br><span class="line">      ★ ApprovedExecpolicyAmendment：批准同时把命令前缀持久化为第1层规则</span><br><span class="line">      ★ NetworkPolicyAmendment：持久化主机级网络 allow/deny</span><br></pre></td></tr></table></figure></div>
+
+<p><strong>amendment 机制</strong>（最妙）：人审的”总是允许”不是内存开关，而是<strong>回写成第 1 层静态规则</strong>（同时更新内存 + 磁盘），审批系统越用越少打扰。见 <code>sources/codex-approval-on_request.md</code>、<code>sources/codex-execpolicy.md</code>。</p>
+<p><strong>审批与沙箱正交</strong>：<code>AskForApproval</code>（untrusted&#x2F;on-request&#x2F;granular&#x2F;never）× <code>SandboxPolicy</code>（danger-full-access &#x2F; read-only &#x2F; external-sandbox &#x2F; workspace-write）两轴组合。</p>
+<h3 id="OpenCode-的规则模型（最好落地，sources-opencode-permissions-mdx）"><a href="#OpenCode-的规则模型（最好落地，sources-opencode-permissions-mdx）" class="headerlink" title="OpenCode 的规则模型（最好落地，sources/opencode-permissions.mdx）"></a>OpenCode 的规则模型（最好落地，<code>sources/opencode-permissions.mdx</code>）</h3><ul>
+<li>规则 &#x3D; <code>(permission, pattern, action=allow/ask/deny)</code> 三元组，通配匹配，<strong>findLast 后者覆盖前者</strong>。</li>
+<li>挂起模型：ask → 发事件 + 挂起 Deferred → 客户端回 once&#x2F;always&#x2F;reject；<strong>reject 级联拒绝该会话全部挂起项</strong>；always 追加规则并自动放行同会话同类挂起。</li>
+<li><strong>doom_loop</strong>：同名工具 + 完全相同输入连续 3 次 → 强制审批（防 agent 烧 token 死循环；IM 场景尤其需要）。</li>
+<li>默认：多数 allow，<code>doom_loop</code>&#x2F;<code>external_directory</code> 默认 ask，<code>.env</code> 默认拒读。</li>
+<li><strong>子代理权限收窄铁律</strong>：子代理只继承父的 deny 规则，父的允许不放大子的能力。</li>
+</ul>
+<h3 id="落到本项目-1"><a href="#落到本项目-1" class="headerlink" title="落到本项目"></a>落到本项目</h3><p>规则层抄 OpenCode（三元组 + doom_loop）；交互层抄 Codex（挂起 → 飞书审批卡片 → amendment 回写 policy.json）。三层齐后 <code>--always-approve</code> 才能退役。</p>
+<hr>
+<h2 id="6-多智能体与子代理三轴"><a href="#6-多智能体与子代理三轴" class="headerlink" title="6. 多智能体与子代理三轴"></a>6. 多智能体与子代理三轴</h2><h3 id="核心认知：多智能体-编排，不是自己实现每个子代理"><a href="#核心认知：多智能体-编排，不是自己实现每个子代理" class="headerlink" title="核心认知：多智能体 &#x3D; 编排，不是自己实现每个子代理"></a>核心认知：多智能体 &#x3D; 编排，不是自己实现每个子代理</h3><blockquote>
+<p>子代理 &#x3D; 主 agent 通过 spawn&#x2F;task&#x2F;delegate 工具，把专业活委派给带独立配置的子代理，收结构化结果。</p>
+</blockquote>
+<p><strong>子代理实现允许异构</strong>（本地 loop &#x2F; 外部进程均可）。编排权（何时 spawn、spawn 哪个、给什么上下文、结果聚合、血缘）在大脑手里——<strong>这就是多智能体架构，与子代理是否自研无关</strong>。所以”编码委派 grok”本身就是多智能体架构的第一个实例。</p>
+<h3 id="三家-spawn-机制"><a href="#三家-spawn-机制" class="headerlink" title="三家 spawn 机制"></a>三家 spawn 机制</h3><table>
+<thead>
+<tr>
+<th>维度</th>
+<th>Codex</th>
+<th>OpenCode</th>
+<th>grok-build</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>触发</td>
+<td>spawn_agent 工具族（spawn&#x2F;wait&#x2F;send_message&#x2F;interrupt&#x2F;list）</td>
+<td>task 工具（<code>sources/opencode-agents.mdx</code>）</td>
+<td>Task 工具（<code>sources/grok-build-user-guide/16-subagents.md</code>）</td>
+</tr>
+<tr>
+<td>上下文继承</td>
+<td>fork_turns: none&#x2F;all&#x2F;N</td>
+<td>全新会话，只带 prompt</td>
+<td>可 resume 已完成同类子代理（继承 transcript+worktree snapshot）</td>
+</tr>
+<tr>
+<td>角色&#x2F;隔离</td>
+<td>agent_type(role)</td>
+<td>mode&#x3D;primary&#x2F;subagent&#x2F;all</td>
+<td>role&#x2F;persona&#x2F;capability&#x2F;isolation 四维</td>
+</tr>
+<tr>
+<td>深度防失控</td>
+<td>thread_spawn_depth 限制</td>
+<td>subagent_depth 默认 1</td>
+<td>达 MAX_DEPTH 剥掉 task 工具</td>
+</tr>
+<tr>
+<td>结果回传</td>
+<td>事件流 + wait</td>
+<td>同步文本标签 &#x2F; 后台 synthetic 消息注入父会话</td>
+<td>阻塞等待预算(600s)超时转后台</td>
+</tr>
+</tbody></table>
+<p><strong>“外层 loop 校验 + 内嵌小 agent 检查”</strong> 的教科书实现：</p>
+<ul>
+<li>Codex <strong>ReviewTask</strong>：一次性 sub-codex 会话，换 REVIEW_PROMPT、审批强制 Never、禁 web&#x2F;collab 防递归、可用独立 review_model、输出强制 JSON（<code>sources/codex-review-rubric.md</code> 有 8 条判 bug 准则 + P0-P3 + JSON schema）。</li>
+<li>Codex <strong>Guardian</strong>：常驻安全审查子代理（见第 5 节）。</li>
+<li>OpenCode <strong>explore</strong>：纯只读工具集子代理。</li>
+</ul>
+<h3 id="子代理三轴（本项目-SubagentProvider-接口的一等公民）"><a href="#子代理三轴（本项目-SubagentProvider-接口的一等公民）" class="headerlink" title="子代理三轴（本项目 SubagentProvider 接口的一等公民）"></a>子代理三轴（本项目 SubagentProvider 接口的一等公民）</h3><table>
+<thead>
+<tr>
+<th>轴</th>
+<th>源码对应</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>角色</td>
+<td>agent_type &#x2F; SubagentRole &#x2F; persona</td>
+<td>由谁定义职责与 prompt</td>
+</tr>
+<tr>
+<td>权限</td>
+<td>grok capability_mode(read-only&#x2F;read-write&#x2F;execute&#x2F;all)、OpenCode deriveSubagentSessionPermission</td>
+<td>能用哪些工具</td>
+</tr>
+<tr>
+<td>上下文分配</td>
+<td>Codex fork_turns、persona inputs&#x2F;outputs</td>
+<td>注入哪些记忆&#x2F;文件&#x2F;历史片段</td>
+</tr>
+</tbody></table>
+<p><strong>关键设计边界（两类 provider 控制粒度不同）</strong>：</p>
+<ul>
+<li>自研 provider（跑我方 loop+权限漏斗）→ 三轴<strong>全控</strong>（逐工具权限、精确 fork 历史）。</li>
+<li>外部黑盒 provider（grok）→ 三轴<strong>粗粒度</strong>（角色固定、权限只能外层审批一次、上下文只能单向注入 prompt）。框架不得假装黑盒可被细粒度管控。</li>
+</ul>
+<hr>
+<h2 id="7-工具-MCP-Skill-Plugin-四层扩展"><a href="#7-工具-MCP-Skill-Plugin-四层扩展" class="headerlink" title="7. 工具 &#x2F; MCP &#x2F; Skill &#x2F; Plugin 四层扩展"></a>7. 工具 &#x2F; MCP &#x2F; Skill &#x2F; Plugin 四层扩展</h2><h3 id="四层工具栈"><a href="#四层工具栈" class="headerlink" title="四层工具栈"></a>四层工具栈</h3><div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">① 内置工具    Tool trait/接口 + 流式输出契约（Progress* + Terminal）</span><br><span class="line">② MCP 工具    多源聚合（config + 插件 + 运行时 overlay）；工具目录缓存</span><br><span class="line">③ Skill       渐进披露（关键）</span><br><span class="line">④ 动态裁剪    按轮/按 agent 权限过滤工具清单（grok should_list / OpenCode 权限过滤）</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="扩展机制职责边界（OpenCode-讲得最清楚，直接采用其心智模型）"><a href="#扩展机制职责边界（OpenCode-讲得最清楚，直接采用其心智模型）" class="headerlink" title="扩展机制职责边界（OpenCode 讲得最清楚，直接采用其心智模型）"></a>扩展机制职责边界（OpenCode 讲得最清楚，直接采用其心智模型）</h3><ul>
+<li><strong>MCP</strong> &#x3D; 外部工具&#x2F;数据（<code>sources/opencode-mcp-servers.mdx</code>；文档明确警告”吞噬上下文”，要节制）。</li>
+<li><strong>Skill</strong> &#x3D; 纯知识&#x2F;指令，<strong>惰性加载</strong>（<code>sources/opencode-skills.mdx</code>）：system prompt 只放 <code>&lt;available_skills&gt;</code> 名字+描述，模型调 <code>skill</code> 工具时才返回 SKILL.md 全文 + 目录文件，且过 skill 权限。</li>
+<li><strong>Plugin</strong> &#x3D; 进程内行为改写（<code>sources/opencode-plugins.mdx</code>）：18 个钩子（tool.execute.before&#x2F;after、permission.ask、chat.params、session.compacting…），output 可变对象改行为。</li>
+<li><strong>自定义工具</strong>（<code>sources/opencode-custom-tools.mdx</code>）：<code>.opencode/tools/*.ts</code>，文件名即工具名，可覆盖内置。</li>
+</ul>
+<h3 id="Skill-渐进披露-本项目该马上改的点"><a href="#Skill-渐进披露-本项目该马上改的点" class="headerlink" title="Skill 渐进披露 &#x3D; 本项目该马上改的点"></a>Skill 渐进披露 &#x3D; 本项目该马上改的点</h3><p>对比：我们现在 10 个 Skill 全靠 grok 启动扫描，Skill 越多 system prompt 越肥。照 OpenCode 模式（清单常驻 + 正文按需加载）能显著省上下文，Router 分发也因描述更聚焦而更准。</p>
+<h3 id="MCP-的现成挂载点"><a href="#MCP-的现成挂载点" class="headerlink" title="MCP 的现成挂载点"></a>MCP 的现成挂载点</h3><p>grok ACP <code>session/new</code> 传的 <code>mcpServers</code> 参数支持<strong>按会话注入 MCP server</strong>（含超时&#x2F;禁用工具）。即 Python 层可<strong>按任务类型给不同会话注入不同工具集</strong>（巡检注入 GitHub 只读、交付注入完整），一行参数的事。</p>
+<hr>
+<h2 id="8-配置层与”结构化-散文分层”设计原则"><a href="#8-配置层与”结构化-散文分层”设计原则" class="headerlink" title="8. 配置层与”结构化&#x2F;散文分层”设计原则"></a>8. 配置层与”结构化&#x2F;散文分层”设计原则</h2><h3 id="分层原则：按”内容给谁读”决定格式"><a href="#分层原则：按”内容给谁读”决定格式" class="headerlink" title="分层原则：按”内容给谁读”决定格式"></a>分层原则：按”内容给谁读”决定格式</h3><ul>
+<li>机器&#x2F;解析器读 → <strong>JSON</strong>（engine&#x2F;policy&#x2F;server&#x2F;memory 配置、权限规则、MCP 配置）。</li>
+<li>LLM 读的散文 → <strong>Markdown 正文</strong>（系统提示词、技能指令、角色 prompt）。</li>
+<li>两者都要 → <strong>frontmatter(YAML&#x2F;JSON 字段) + Markdown 正文</strong>（agent&#x2F;skill&#x2F;command 定义）。</li>
+<li>frontmatter 严格 schema 校验（name 正则、description 限长、capability 枚举）；正文当<strong>不透明字符串透传</strong>给模型，绝不解析成字段。</li>
+</ul>
+<h3 id="结构的产生方式（关键：结构从哪来，杜绝脆弱解析）"><a href="#结构的产生方式（关键：结构从哪来，杜绝脆弱解析）" class="headerlink" title="结构的产生方式（关键：结构从哪来，杜绝脆弱解析）"></a>结构的产生方式（关键：结构从哪来，杜绝脆弱解析）</h3><p><strong>结构化数据绝不通过解析模型自由书写的 Markdown 散文得到。</strong> 只有三种合法来源：</p>
+<ol>
+<li><strong>人写的</strong>（多数声明式配置）：<code>agents/*.md</code>、<code>SKILL.md</code> 的 frontmatter 是人照文档格式手写，模型不参与；加载时 schema&#x2F;正则&#x2F;限长校验，不合格拒绝。</li>
+<li><strong>代码确定性序列化</strong>（应用自己拥有的数据）：会话元数据、”记住”条目的 source&#x2F;时间戳、配置写回、amendment——由<strong>代码用序列化器写</strong>（<code>yaml.dump</code>&#x2F;<code>json.dumps</code>），模型不手打这些字节。</li>
+<li><strong>受约束生成 + 校验 + 重试</strong>（运行时必须让模型产出结构）：用 <strong>JSON Schema &#x2F; 结构化输出 &#x2F; tool-call 参数</strong>在生成阶段强制模型只吐合法 JSON，再做 schema&#x2F;正则&#x2F;退化检测校验，非法则拒绝重试（对齐 Codex review 严格 JSON、记忆 Phase1、grok <code>is_degenerate_summary</code>）。</li>
+</ol>
+<p>一句话：<strong>格式化(serialize)由代码做，结构约束(schema)由生成层强制，散文由人或模型自由写但从不被解析。</strong> 模型永远不是结构化数据的”事实来源手写者”。</p>
+<p>具体例子：</p>
+<ul>
+<li><code>记住 我偏好用 pytest</code> → frontmatter(source&#x2F;created_at&#x2F;kind) <strong>由代码写</strong>，正文是用户原文，模型零参与。</li>
+<li>会话摘要提取 → JSON Schema 约束模型返回 <code>{facts:[], decisions:[]}</code>，校验后<strong>由代码</strong>序列化进 <code>sessions/*.md</code>。</li>
+</ul>
+<hr>
+<h2 id="9-声明式配置为何用-Markdown"><a href="#9-声明式配置为何用-Markdown" class="headerlink" title="9. 声明式配置为何用 Markdown"></a>9. 声明式配置为何用 Markdown</h2><p><strong>它们没有在”MD vs JSON”里二选一，而是 frontmatter + Markdown 混合；分界线是”这段内容给谁读”。</strong></p>
+<p><strong>决定性原因</strong>：agent&#x2F;skill&#x2F;command 里最重要的字段是<strong>系统提示词，读者是模型</strong>。Markdown 是模型的母语（训练语料海量、天然理解标题&#x2F;列表&#x2F;代码块）。把 300 行 prompt 塞进 JSON 字符串会变成转义 blob，模型读到的也是那坨；Markdown 正文是<strong>零摩擦注入</strong>（所见即所得）。</p>
+<p>附带收益：人类可写（无括号&#x2F;逗号&#x2F;转义错）、Git 友好（一文件一 agent、diff 清晰可 review）、渐进披露（标题层级给模型导航）、token 高效。</p>
+<p><strong>“不稳定”的正解</strong>：担忧只在”试图从散文解析出结构化数据”时成立，而它们恰恰不这么做——只严格解析 frontmatter，正文当不透明字符串透传，不解析 → 无脆弱解析。</p>
+<p>一句话：<strong>当你的配置里有字段的读者是语言模型时，就用语言模型的母语写那个字段。AI 厂商爱 Markdown，本质是”配置的消费者变了”。</strong></p>
+<hr>
+<h2 id="10-源文档索引"><a href="#10-源文档索引" class="headerlink" title="10. 源文档索引"></a>10. 源文档索引</h2><p>本地离线副本在 <code>sources/</code>（详见 <code>sources/README.md</code>）。关键原始文档：</p>
+<p><strong>Codex</strong>（<a class="link"   target="_blank" rel="noopener" href="https://github.com/openai/codex" >github.com&#x2F;openai&#x2F;codex<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>）</p>
+<ul>
+<li><code>sources/codex-protocol_v1.md</code> — SQ&#x2F;EQ、Session&#x2F;Task&#x2F;Turn、response_id 书签</li>
+<li><code>sources/codex-app-server-README.md</code> — thread&#x2F;turn&#x2F;item、审批流程、背压（原文 2411 行，看 Approvals &#x2F; Core Primitives &#x2F; API Overview 节）</li>
+<li><code>sources/codex-execpolicy.md</code> — Starlark 前缀规则引擎</li>
+<li><code>sources/codex-approval-on_request.md</code> — 审批升权与 prefix_rule 设计</li>
+<li><code>sources/codex-review-rubric.md</code> — review 子代理判 bug 准则 + JSON schema</li>
+<li><code>sources/codex-memories.md</code> — 两阶段记忆管线</li>
+<li><code>sources/codex-core-README.md</code> — 各平台沙箱（Seatbelt&#x2F;Landlock+bwrap&#x2F;Windows）</li>
+<li>官方：<a class="link"   target="_blank" rel="noopener" href="https://developers.openai.com/codex/" >https://developers.openai.com/codex/<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></li>
+</ul>
+<p><strong>OpenCode</strong>（<a class="link"   target="_blank" rel="noopener" href="https://github.com/sst/opencode" >github.com&#x2F;sst&#x2F;opencode<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a>，官方站 <a class="link"   target="_blank" rel="noopener" href="https://opencode.ai/docs/%EF%BC%89" >https://opencode.ai/docs/）<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<ul>
+<li><code>sources/opencode-agents.mdx</code> — primary&#x2F;subagent、task、子会话</li>
+<li><code>sources/opencode-permissions.mdx</code> — allow&#x2F;ask&#x2F;deny 规则、doom_loop、.env 默认拒读</li>
+<li><code>sources/opencode-server.mdx</code> — headless server + SSE</li>
+<li><code>sources/opencode-config.mdx</code> — 8 层配置合并</li>
+<li><code>sources/opencode-skills.mdx</code> — SKILL.md 惰性加载</li>
+<li><code>sources/opencode-mcp-servers.mdx</code>、<code>opencode-plugins.mdx</code>、<code>opencode-custom-tools.mdx</code>、<code>opencode-tools.mdx</code>、<code>opencode-acp.mdx</code>、<code>opencode-sdk.mdx</code></li>
+</ul>
+<p><strong>grok-build</strong>（<code>grok-build/</code>，官方站 <a class="link"   target="_blank" rel="noopener" href="https://docs.x.ai/build/overview%EF%BC%89" >https://docs.x.ai/build/overview）<i class="fa-solid fa-arrow-up-right ml-[0.2em] font-light align-text-top text-[0.7em] link-icon"></i></a></p>
+<ul>
+<li><code>sources/grok-build-user-guide/</code>（25 篇完整用户指南）——重点：13-memory、16-subagents、17-sessions、18-sandbox、22-permissions-and-safety、10-hooks、14-headless-mode、19-plan-mode、20-background-tasks</li>
+<li>设计意图另见各 crate <code>src/lib.rs</code> 顶部注释（compaction &#x2F; memory &#x2F; subagent-resolution &#x2F; chat-state 等）</li>
+</ul>
+<hr>
+<h2 id="附-实施方案与协作模式"><a href="#附-实施方案与协作模式" class="headerlink" title="附. 实施方案与协作模式"></a>附. 实施方案与协作模式</h2><p><strong>实施方案</strong>：见仓库根 <code>个人Agent引擎MVP实施方案.md</code>（14 能力域完备性基线 + M1-M4 里程碑 + 三张架构图 + Test Plan）。</p>
+<p><strong>协作模式（学习价值分工）</strong>：</p>
+<ul>
+<li><strong>认知黄金</strong>（agent loop &#x2F; 压缩选择算法 &#x2F; 记忆 RAG 打分 &#x2F; 权限漏斗求值）→ 用户亲手写 Python，AI 带读源码 + 出实现规格 + code review。</li>
+<li><strong>样板管道</strong>（FastAPI 路由 &#x2F; SQLite 建表 &#x2F; jieba 接线 &#x2F; 渠道适配）→ AI 直接写。</li>
+<li>每里程碑结束做复盘（对应三家哪个设计、可迁移到什么场景）。</li>
+</ul>
+<p><strong>编码路径</strong>：先委派 grok（coding provider），原生 coding 作为可逆升级（共享同一 loop，只需补 apply-patch + 编码 prompt + 验证循环，不返工）。</p>
+<hr>
+<h2 id="附2-诚实边界与面试答法（复习前必看）"><a href="#附2-诚实边界与面试答法（复习前必看）" class="headerlink" title="附2. 诚实边界与面试答法（复习前必看）"></a>附2. 诚实边界与面试答法（复习前必看）</h2><p><strong>本 MVP 真实状态分档</strong>（面试只能按此表述，说过头即翻车）：</p>
+<ul>
+<li>设计充分可主讲：记忆 RAG、压缩、会话持久化、Server&#x2F;渠道、配置层、可观测、模型接入。</li>
+<li>仅架构草图待深化：Agent Loop（流式&#x2F;工具交错&#x2F;中断&#x2F;max_turns 细节未定）。</li>
+<li>框架+占位勿夸大：多智能体（接口+单一委派 provider）、Hooks（预留钩子）、MCP（首期 1 个）、Skill（渐进披露设计，与 <code>.agents/skills</code> 关系待定）。</li>
+<li>明确降档需主动承认：无 OS 沙箱（靠审批+危险前缀 deny）、无 Guardian AI 审、edit 委派不自研。</li>
+</ul>
+<p><strong>5 个面试戳穿点 + 诚实答法</strong>：</p>
+<ol>
+<li>多智能体就一个调外部 CLI？→ 刻意取舍，价值在编排，编码复用成熟引擎当子代理且可逆。</li>
+<li>没沙箱 prefix-deny 可绕过？→ 承认，MVP 靠审批+deny-list，OS 沙箱是明确下一档。</li>
+<li>最难的编码没自研？→ 边际成本可控+可逆，能讲清 apply-patch 长尾难点。</li>
+<li>跑起来了吗？→ 最危险，解法&#x3D;先做能跑的纵向切片，从”设计”升”作品”。</li>
+<li>记忆参数怎么来？→ 移植 grok-build 默认值+自建评测集上调过。</li>
+</ol>
+<p><strong>面试就绪路径</strong>：补完 loop 深设计 → 纵向切片跑通（loop+工具+记忆+CLI）→ 评测数字+demo → 全程档位语言。</p>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>标题:</strong> Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解</li>
+        <li><strong>作者:</strong> phenix-fledgling</li>
+        <li><strong>创建于
+                :</strong> 2026-07-29 18:00:00</li>
+        
+            <li>
+                <strong>更新于
+                    :</strong> 2026-07-30 00:50:34
+            </li>
+        
+        <li>
+            <strong>链接:</strong> https://blog.xugua.xyz//post/Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解.html
+        </li>
+        <li>
+            <strong>
+                版权声明:
+            </strong>
+            
+
+            
+                本文章采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a> 进行许可。
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/Agent-%E6%9E%B6%E6%9E%84/">#Agent 架构</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/Harness/">#Harness</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E6%BA%90%E7%A0%81%E7%A0%94%E7%A9%B6/">#源码研究</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/post/%E9%A9%BE%E9%A9%AD%20AI%20%E7%BC%96%E7%A8%8B%E5%AE%9E%E6%88%98%E6%89%8B%E5%86%8C%EF%BC%9A42%20%E7%AF%87%E4%B8%80%E7%BA%BF%E5%AE%9E%E8%B7%B5%E7%9A%84%E5%8F%AF%E9%AA%8C%E8%AF%81%E8%92%B8%E9%A6%8F.html">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">驾驭 AI 编程实战手册：42 篇一线实践的可验证蒸馏</span>
+						<span class="post-nav-item">上一篇</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/post/LLM%20%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%EF%BC%9A%E4%BB%8E%20MHA%20%E5%88%B0%20MLA%20%E7%9A%84%E5%9B%A0%E6%9E%9C%E9%93%BE.html">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        评论
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-CN',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">Harness Agent 研究知识库：Codex、OpenCode 与 grok-build 全解</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%AE%E5%BD%95"><span class="nav-text">目录</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#0-%E6%80%BB%E8%A7%88%E4%B8%8E%E9%A1%B9%E7%9B%AE%E5%AE%9A%E4%BD%8D"><span class="nav-text">0. 总览与项目定位</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-%E4%B8%89%E5%AE%B6-Harness-%E6%A8%AA%E5%90%91%E5%AF%B9%E6%AF%94"><span class="nav-text">1. 三家 Harness 横向对比</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BE%E8%AE%A1%E5%93%B2%E5%AD%A6%E4%B8%8E%E5%BC%BA%E5%BC%B1"><span class="nav-text">设计哲学与强弱</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%90%E8%83%BD%E5%8A%9B%E5%9F%9F%E2%80%9D%E8%B0%81%E6%9C%80%E5%BC%BA%E2%80%9D"><span class="nav-text">逐能力域”谁最强”</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-Agent-%E5%BE%AA%E7%8E%AF%E4%B8%8E%E4%BC%9A%E8%AF%9D%E6%A8%A1%E5%9E%8B"><span class="nav-text">2. Agent 循环与会话模型</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E5%BE%AA%E7%8E%AF"><span class="nav-text">核心循环</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AF%B9%E5%A4%96%E6%8A%BD%E8%B1%A1%EF%BC%9Athread-turn-item"><span class="nav-text">对外抽象：thread &#x2F; turn &#x2F; item</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BC%9A%E8%AF%9D%E7%8A%B6%E6%80%81%E7%AE%A1%E7%90%86"><span class="nav-text">会话状态管理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%AF%E5%80%9F%E9%89%B4%E5%88%B0%E6%9C%AC%E9%A1%B9%E7%9B%AE"><span class="nav-text">可借鉴到本项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-%E5%8E%8B%E7%BC%A9%E5%8D%B3%E8%AE%B0%E5%BF%86-%E4%B8%8E-%E4%B8%89%E5%B1%82%E8%AE%B0%E5%BF%86"><span class="nav-text">3. 压缩即记忆 与 三层记忆</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E8%A7%82%E7%82%B9%EF%BC%9A%E5%8E%8B%E7%BC%A9%E4%B8%8D%E6%98%AF%E7%9C%81-token%EF%BC%8C%E6%98%AF%E8%AE%B0%E5%BF%86%E5%A4%84%E7%90%86%E7%9A%84%E4%B8%AD%E9%97%B4%E7%8E%AF%E8%8A%82"><span class="nav-text">核心观点：压缩不是省 token，是记忆处理的中间环节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9F%AD%E6%9C%9F%E8%AE%B0%E5%BF%86%E7%9A%84%E4%B8%89%E6%9D%A1%E7%A1%AC%E8%A7%84%E5%88%99%EF%BC%88%E4%B8%8D%E6%98%AF%E2%80%9D%E6%9C%80%E8%BF%91%E5%87%A0%E6%9D%A1%E2%80%9D%EF%BC%89"><span class="nav-text">短期记忆的三条硬规则（不是”最近几条”）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B0%BE%E9%83%A8%E4%B8%BA%E4%BD%95%E5%BF%85%E9%A1%BB%E5%8E%9F%E6%96%87"><span class="nav-text">尾部为何必须原文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E5%AE%B6%E5%8E%8B%E7%BC%A9%E5%AE%9E%E7%8E%B0"><span class="nav-text">三家压缩实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%90%BD%E5%88%B0%E6%9C%AC%E9%A1%B9%E7%9B%AE%E7%9A%84%E5%87%86%E5%88%99"><span class="nav-text">落到本项目的准则</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-%E8%AE%B0%E5%BF%86-RAG"><span class="nav-text">4. 记忆 RAG</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%88%E7%BA%A0%E6%AD%A3%E4%B8%80%E4%B8%AA%E8%A1%8C%E4%B8%9A%E4%BA%8B%E5%AE%9E%EF%BC%9A%E4%BB%A3%E7%A0%81%E6%A3%80%E7%B4%A2%E4%B8%8D%E7%94%A8%E5%90%91%E9%87%8F"><span class="nav-text">先纠正一个行业事实：代码检索不用向量</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%B0%E5%BF%86%E6%A3%80%E7%B4%A2%E6%89%8D%E6%98%AF%E6%B7%B7%E5%90%88-RAG-%E7%AE%A1%E7%BA%BF%EF%BC%88grok-build%EF%BC%8C%E5%80%BC%E5%BE%97%E6%95%B4%E6%9D%A1%E6%8A%84%EF%BC%89"><span class="nav-text">记忆检索才是混合 RAG 管线（grok-build，值得整条抄）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A6%BB%E7%BA%BF%E6%95%B4%E7%90%86%E4%B8%A4%E6%B5%81%E6%B4%BE"><span class="nav-text">离线整理两流派</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%90%BD%E5%88%B0%E6%9C%AC%E9%A1%B9%E7%9B%AE"><span class="nav-text">落到本项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-%E6%9D%83%E9%99%90%E4%B8%8E%E5%A4%9A%E5%B1%82%E5%AE%A1%E6%89%B9%E6%BC%8F%E6%96%97"><span class="nav-text">5. 权限与多层审批漏斗</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Codex-%E7%9A%84%E4%B8%89%E5%B1%82%E6%BC%8F%E6%96%97%EF%BC%88%E5%85%A8%E5%9C%BA%E6%9C%80%E7%B2%BE%E5%8D%8E%EF%BC%89"><span class="nav-text">Codex 的三层漏斗（全场最精华）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#OpenCode-%E7%9A%84%E8%A7%84%E5%88%99%E6%A8%A1%E5%9E%8B%EF%BC%88%E6%9C%80%E5%A5%BD%E8%90%BD%E5%9C%B0%EF%BC%8Csources-opencode-permissions-mdx%EF%BC%89"><span class="nav-text">OpenCode 的规则模型（最好落地，sources&#x2F;opencode-permissions.mdx）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%90%BD%E5%88%B0%E6%9C%AC%E9%A1%B9%E7%9B%AE-1"><span class="nav-text">落到本项目</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#6-%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93%E4%B8%8E%E5%AD%90%E4%BB%A3%E7%90%86%E4%B8%89%E8%BD%B4"><span class="nav-text">6. 多智能体与子代理三轴</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%A0%B8%E5%BF%83%E8%AE%A4%E7%9F%A5%EF%BC%9A%E5%A4%9A%E6%99%BA%E8%83%BD%E4%BD%93-%E7%BC%96%E6%8E%92%EF%BC%8C%E4%B8%8D%E6%98%AF%E8%87%AA%E5%B7%B1%E5%AE%9E%E7%8E%B0%E6%AF%8F%E4%B8%AA%E5%AD%90%E4%BB%A3%E7%90%86"><span class="nav-text">核心认知：多智能体 &#x3D; 编排，不是自己实现每个子代理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%89%E5%AE%B6-spawn-%E6%9C%BA%E5%88%B6"><span class="nav-text">三家 spawn 机制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E4%BB%A3%E7%90%86%E4%B8%89%E8%BD%B4%EF%BC%88%E6%9C%AC%E9%A1%B9%E7%9B%AE-SubagentProvider-%E6%8E%A5%E5%8F%A3%E7%9A%84%E4%B8%80%E7%AD%89%E5%85%AC%E6%B0%91%EF%BC%89"><span class="nav-text">子代理三轴（本项目 SubagentProvider 接口的一等公民）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#7-%E5%B7%A5%E5%85%B7-MCP-Skill-Plugin-%E5%9B%9B%E5%B1%82%E6%89%A9%E5%B1%95"><span class="nav-text">7. 工具 &#x2F; MCP &#x2F; Skill &#x2F; Plugin 四层扩展</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%9B%E5%B1%82%E5%B7%A5%E5%85%B7%E6%A0%88"><span class="nav-text">四层工具栈</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%89%A9%E5%B1%95%E6%9C%BA%E5%88%B6%E8%81%8C%E8%B4%A3%E8%BE%B9%E7%95%8C%EF%BC%88OpenCode-%E8%AE%B2%E5%BE%97%E6%9C%80%E6%B8%85%E6%A5%9A%EF%BC%8C%E7%9B%B4%E6%8E%A5%E9%87%87%E7%94%A8%E5%85%B6%E5%BF%83%E6%99%BA%E6%A8%A1%E5%9E%8B%EF%BC%89"><span class="nav-text">扩展机制职责边界（OpenCode 讲得最清楚，直接采用其心智模型）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Skill-%E6%B8%90%E8%BF%9B%E6%8A%AB%E9%9C%B2-%E6%9C%AC%E9%A1%B9%E7%9B%AE%E8%AF%A5%E9%A9%AC%E4%B8%8A%E6%94%B9%E7%9A%84%E7%82%B9"><span class="nav-text">Skill 渐进披露 &#x3D; 本项目该马上改的点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#MCP-%E7%9A%84%E7%8E%B0%E6%88%90%E6%8C%82%E8%BD%BD%E7%82%B9"><span class="nav-text">MCP 的现成挂载点</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#8-%E9%85%8D%E7%BD%AE%E5%B1%82%E4%B8%8E%E2%80%9D%E7%BB%93%E6%9E%84%E5%8C%96-%E6%95%A3%E6%96%87%E5%88%86%E5%B1%82%E2%80%9D%E8%AE%BE%E8%AE%A1%E5%8E%9F%E5%88%99"><span class="nav-text">8. 配置层与”结构化&#x2F;散文分层”设计原则</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%86%E5%B1%82%E5%8E%9F%E5%88%99%EF%BC%9A%E6%8C%89%E2%80%9D%E5%86%85%E5%AE%B9%E7%BB%99%E8%B0%81%E8%AF%BB%E2%80%9D%E5%86%B3%E5%AE%9A%E6%A0%BC%E5%BC%8F"><span class="nav-text">分层原则：按”内容给谁读”决定格式</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%93%E6%9E%84%E7%9A%84%E4%BA%A7%E7%94%9F%E6%96%B9%E5%BC%8F%EF%BC%88%E5%85%B3%E9%94%AE%EF%BC%9A%E7%BB%93%E6%9E%84%E4%BB%8E%E5%93%AA%E6%9D%A5%EF%BC%8C%E6%9D%9C%E7%BB%9D%E8%84%86%E5%BC%B1%E8%A7%A3%E6%9E%90%EF%BC%89"><span class="nav-text">结构的产生方式（关键：结构从哪来，杜绝脆弱解析）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#9-%E5%A3%B0%E6%98%8E%E5%BC%8F%E9%85%8D%E7%BD%AE%E4%B8%BA%E4%BD%95%E7%94%A8-Markdown"><span class="nav-text">9. 声明式配置为何用 Markdown</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#10-%E6%BA%90%E6%96%87%E6%A1%A3%E7%B4%A2%E5%BC%95"><span class="nav-text">10. 源文档索引</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84-%E5%AE%9E%E6%96%BD%E6%96%B9%E6%A1%88%E4%B8%8E%E5%8D%8F%E4%BD%9C%E6%A8%A1%E5%BC%8F"><span class="nav-text">附. 实施方案与协作模式</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%842-%E8%AF%9A%E5%AE%9E%E8%BE%B9%E7%95%8C%E4%B8%8E%E9%9D%A2%E8%AF%95%E7%AD%94%E6%B3%95%EF%BC%88%E5%A4%8D%E4%B9%A0%E5%89%8D%E5%BF%85%E7%9C%8B%EF%BC%89"><span class="nav-text">附2. 诚实边界与面试答法（复习前必看）</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">phenix-fledgling</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 71 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+        
+        
+            
+                
+        
+                
+        
+                
+
+                    
+                        <script data-swup-reload-script src="/js/agent-chat.js"></script>
+                    
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="图片查看器">
+	<button class="image-viewer-close" type="button" aria-label="关闭">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="上一页">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="关闭">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="下一页">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>
