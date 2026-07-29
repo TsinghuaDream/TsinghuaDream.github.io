@@ -25,6 +25,8 @@
     ".pa-me{align-self:flex-end;background:#A31F34;color:#fff}",
     ".pa-ai{align-self:flex-start;background:rgba(128,128,128,.14)}",
     ".pa-ai a{color:#A31F34}",
+    ".pa-ai code{background:rgba(128,128,128,.2);padding:1px 5px;border-radius:4px;font-size:12.5px}",
+    ".pa-ai pre{background:rgba(0,0,0,.25);padding:8px 10px;border-radius:8px;overflow-x:auto;font-size:12.5px;line-height:1.5}",
     "#pa-form{display:flex;gap:8px;padding:10px;border-top:1px solid rgba(128,128,128,.2)}",
     "#pa-input{flex:1;padding:8px 12px;border-radius:8px;border:1px solid rgba(128,128,128,.35);",
     "background:transparent;color:inherit;outline:none}",
@@ -51,10 +53,26 @@
   var input = box.querySelector("#pa-input");
   var send = box.querySelector("#pa-send");
 
+  function esc(s) {
+    return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  }
+  function md(s) {
+    s = esc(s);
+    s = s.replace(/```\w*\n?([\s\S]*?)```/g, function (m, c) { return "<pre>" + c + "</pre>"; });
+    s = s.replace(/`([^`\n]+)`/g, "<code>$1</code>");
+    s = s.replace(/\*\*([^*\n]+)\*\*/g, "<strong>$1</strong>");
+    s = s.replace(/^#{1,4} (.*)$/gm, "<strong>$1</strong>");
+    s = s.replace(/^\s*[-*] (.*)$/gm, "&nbsp;• $1");
+    s = s.replace(/^---+$/gm, "<hr>");
+    s = s.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener">$1</a>');
+    s = s.replace(/\n/g, "<br>");
+    return s;
+  }
+
   function add(kind, text) {
     var d = document.createElement("div");
     d.className = "pa-msg " + (kind === "me" ? "pa-me" : "pa-ai");
-    d.textContent = text;
+    if (kind === "me") { d.textContent = text; } else { d.innerHTML = md(text); }
     log.appendChild(d);
     log.scrollTop = log.scrollHeight;
     return d;
@@ -78,18 +96,57 @@
     add("me", q);
     input.value = "";
     send.disabled = true;
-    var thinking = add("ai", "思考中…");
-    fetch(API, {
+    var bubble = add("ai", "…");
+    var acc = "";
+
+    function finish(text) {
+      bubble.innerHTML = md(text || acc || "出了点问题，稍后再试。");
+      send.disabled = false;
+      log.scrollTop = log.scrollHeight;
+    }
+    function offline() {
+      bubble.textContent = "分身暂时不在线（博主的本机 Agent 没开机）。可以先逛逛文章，稍后再来聊。";
+      send.disabled = false;
+    }
+
+    fetch(API + "/stream", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: q, session: SID })
-    }).then(function (r) { return r.json(); }).then(function (d) {
-      thinking.textContent = d.reply || d.error || "出了点问题，稍后再试。";
+    }).then(function (r) {
+      if (!r.ok || !r.body) throw new Error("no-stream");
+      var reader = r.body.getReader();
+      var dec = new TextDecoder();
+      var buf = "";
+      function pump() {
+        return reader.read().then(function (x) {
+          if (x.done) { finish(acc); return; }
+          buf += dec.decode(x.value, { stream: true });
+          var frames = buf.split("\n\n");
+          buf = frames.pop();
+          frames.forEach(function (f) {
+            var line = f.split("\n").filter(function (l) { return l.indexOf("data: ") === 0; })[0];
+            if (!line) return;
+            try {
+              var d = JSON.parse(line.slice(6));
+              if (d.delta) { acc += d.delta; bubble.innerHTML = md(acc); log.scrollTop = log.scrollHeight; }
+              if (d.status && !acc) { bubble.textContent = d.status; }
+              if (d.error) { acc = ""; bubble.textContent = d.error; }
+              if (d.done) { finish(d.reply || acc); }
+            } catch (err) { /* 忽略半帧 */ }
+          });
+          return pump();
+        });
+      }
+      return pump();
     }).catch(function () {
-      thinking.textContent = "分身暂时不在线（博主的本机 Agent 没开机）。可以先逛逛文章，稍后再来聊。";
-    }).finally(function () {
-      send.disabled = false;
-      log.scrollTop = log.scrollHeight;
+      fetch(API, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: q, session: SID })
+      }).then(function (r) { return r.json(); }).then(function (d) {
+        finish(d.reply || d.error);
+      }).catch(offline);
     });
   });
 })();
