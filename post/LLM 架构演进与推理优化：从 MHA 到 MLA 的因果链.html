@@ -1,0 +1,1337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="AI Agent, Java, 架构">
+    
+    
+    <meta name="author" content="phenix-fledgling">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://blog.xugua.xyz/post/llm 架构演进与推理优化：从 mha 到 mla 的因果链.html"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链">
+<meta property="og:url" content="https://blog.xugua.xyz/post/LLM%20%E6%9E%B6%E6%9E%84%E6%BC%94%E8%BF%9B%E4%B8%8E%E6%8E%A8%E7%90%86%E4%BC%98%E5%8C%96%EF%BC%9A%E4%BB%8E%20MHA%20%E5%88%B0%20MLA%20%E7%9A%84%E5%9B%A0%E6%9E%9C%E9%93%BE.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+<meta property="article:published_time" content="2026-07-29T07:00:00.000Z">
+<meta property="article:modified_time" content="2026-07-29T11:15:49.200Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="KV Cache">
+<meta property="article:tag" content="LLM架构">
+<meta property="article:tag" content="MoE">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链 | 菲尼克斯blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+        
+            
+    
+            
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"blog.xugua.xyz","root":"/","language":"zh-CN"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"菲尼克斯blog","subtitle":{"text":["从 Java 到 AI Agent 的工程手记","拆解 Harness Agent，亲手造一个个人 Agent"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-box-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder-open"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":{"enable":true,"launch_time":"2020-04-01 00:00:00"},"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2022/8/17 11:45:14","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2022/8/17 11:45:14","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.i18n = {"search":"站内搜索您需要的内容...","toc":"目录","prev":"上一页","next":"下一页","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 页","recent_posts":"最新文章","share":"分享","powered_by":"由 %s 驱动","theme":"主题","rss_feed":"RSS Feed","category":"分类","categories":"分类","tag":"标签","tags":"标签","post":"文章","posts":"文章","tagcloud":"标签云","comment":"评论","comments":"评论","top":"置顶","sticky":"置顶","go-back-home":"回到首页","masonry_loading":"照片加载中...","image_viewer":"图片查看器","close":"关闭","exif":{"title":"EXIF","cards":{"camera":"相机","lens":"镜头","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"机型","date_taken":"拍摄时间","lens_model":"镜头","focal_length":"焦距","focus_mode":"对焦模式","shutter":"快门","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光补偿","metering_mode":"测光模式","flash":"闪光灯","white_balance":"白平衡","latitude":"纬度","longitude":"经度","altitude":"海拔"},"status":{"loading":"加载中...","no_exif":"无 EXIF 信息","library_missing":"EXIF 库未加载","image_source_missing":"图片地址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻止或缺少元数据）","flag_unavailable":"EXIF 不可用"}},"home":"首页","archive":"归档","archives":"归档","about":"关于","links":"链接","link":"链接","friends":"友情链接","friend":"友情链接","timeline":"时间轴","shuoshuo":"说说","bookmarks":"书签","site_uv":"访问人数","site_pv":"总访问量","read_more":"阅读全文","wordcount":"字","min2read":"分钟","changelog":"更新日志","status":"状态","runtime":"博客已运行","days":"天","hours":"小时","minutes":"分钟","seconds":"秒","optimized_by":"并由 Evan 进行优化","rights":"版权所有","site_posts":"共撰写了 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"title":"标题","author":"作者","link":"链接","create_time":"创建于","update_time":"更新于","license_title":"版权声明","license_content":"本文章采用 %s 进行许可。","all_rights_reserved":"版权所有 &#169 %s，禁止转载。","public_domain":"本文为公有领域作品，可自由转载、引用。"},"ago":{"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"},"create_time":"创建","update_time":"更新","expired":"这篇文章最后更新于 %s 天前，内容可能已经过时。"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                菲尼克斯blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-box-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    标签
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder-open fa-fw"></i>
+                                    分类
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-box-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                标签
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                分类
+                            </span>
+                            
+                                <i class="fa-regular fa-folder-open fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">65</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">22</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">69</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="https://github.com/TsinghuaDream.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">phenix-fledgling</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv5</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-07-29 15:00</span>
+        <span class="mobile">2026-07-29 15:00</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-07-29 19:15:49</span>
+            <span class="mobile">2026-07-29 19:15:49</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/AI%E7%9F%A5%E8%AF%86%E6%B2%89%E6%B7%80/">AI知识沉淀</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/LLM%E6%9E%B6%E6%9E%84/">LLM架构</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/KV-Cache/">KV Cache</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/MoE/">MoE</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<blockquote>
+<p>一句话总纲：2019 年至今 LLM 架构没有革命，只有围绕<strong>一个矛盾</strong>的持续工程优化——上下文越来越长（推理模型、Agent 都在囤 token），而注意力计算和 KV cache 的成本随长度膨胀。几乎所有架构改动都是在”省这笔钱”和”别把模型搞笨”之间找平衡。</p>
+</blockquote>
+<h2 id="一张图看懂现代-LLM-架构主干"><a href="#一张图看懂现代-LLM-架构主干" class="headerlink" title="一张图看懂现代 LLM 架构主干"></a>一张图看懂现代 LLM 架构主干</h2><p><strong>人话结论</strong>：把 GPT-2 拿来，换掉 7 个零件，就得到 2025-2026 年任何一个主流开源模型的骨架。各家（DeepSeek、Qwen、Kimi、gpt-oss、Gemma）的差异只是零件参数不同。</p>
+<div class="code-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Token → Embedding（RoPE 取代绝对位置编码）</span><br><span class="line">  → N × Transformer Block:</span><br><span class="line">      RMSNorm（取代 LayerNorm）</span><br><span class="line">      注意力（GQA / MLA / 滑窗 / 稀疏 / 线性混合，取代 MHA）</span><br><span class="line">      RMSNorm</span><br><span class="line">      FFN → SwiGLU（取代 GELU 两层 MLP）或 MoE（取代密集 FFN）</span><br><span class="line">      残差连接（前沿：mHC 多路残差流）</span><br><span class="line">  → RMSNorm → 输出头</span><br><span class="line">（Dropout：直接删了）</span><br></pre></td></tr></table></figure></div>
+
+<h3 id="GPT-2-→-现代架构的-7-个替换，每个都有因果"><a href="#GPT-2-→-现代架构的-7-个替换，每个都有因果" class="headerlink" title="GPT-2 → 现代架构的 7 个替换，每个都有因果"></a>GPT-2 → 现代架构的 7 个替换，每个都有因果</h3><table>
+<thead>
+<tr>
+<th>零件</th>
+<th>GPT-2 时代</th>
+<th>现在</th>
+<th>解决什么问题</th>
+<th>代价</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Dropout</td>
+<td>有</td>
+<td><strong>删除</strong></td>
+<td>LLM 只训 1 个 epoch，每个 token 只见一次，没有过拟合风险；实验证明 Dropout 反而伤性能</td>
+<td>无</td>
+</tr>
+<tr>
+<td>位置编码</td>
+<td>绝对位置（学习的）</td>
+<td><strong>RoPE</strong>（旋转 Q&#x2F;K）</td>
+<td>绝对位置无法外推到更长序列</td>
+<td>超长序列需 YaRN 等缩放；近期又出现 NoPE&#x2F;partial RoPE 反思（见注意力节）</td>
+</tr>
+<tr>
+<td>激活&#x2F;FFN</td>
+<td>GELU 两层 MLP</td>
+<td><strong>SwiGLU</strong>（3 层带门控）</td>
+<td>乘法门控交互提升表达力；Swish 比 GELU 计算便宜</td>
+<td>多一个矩阵，但通常收窄隐层，总参数反而更少</td>
+</tr>
+<tr>
+<td>归一化</td>
+<td>LayerNorm</td>
+<td><strong>RMSNorm</strong></td>
+<td>只除均方根、不减均值，少一次跨特征归约，更快且同样稳</td>
+<td>无明显代价</td>
+</tr>
+<tr>
+<td>Norm 位置</td>
+<td>Post-Norm→Pre-Norm</td>
+<td>Pre-Norm 为主 + 变体</td>
+<td>Pre-Norm 训练更稳不用 warmup 精调；OLMo 2 用”残差内 Post-Norm”、Gemma 3 前后双 Norm、再加 QK-Norm（RoPE 前对 Q&#x2F;K 归一化）压 logit 爆炸</td>
+<td>双 Norm 略增计算</td>
+</tr>
+<tr>
+<td>注意力</td>
+<td>MHA</td>
+<td>GQA &#x2F; MLA &#x2F; 混合</td>
+<td>KV cache 太贵（详见下两节）</td>
+<td>见下</td>
+</tr>
+<tr>
+<td>FFN</td>
+<td>密集</td>
+<td><strong>MoE</strong></td>
+<td>容量与算力解耦（详见 MoE 节）</td>
+<td>见下</td>
+</tr>
+</tbody></table>
+<h3 id="宽-vs-深（同参数量怎么摆）"><a href="#宽-vs-深（同参数量怎么摆）" class="headerlink" title="宽 vs 深（同参数量怎么摆）"></a>宽 vs 深（同参数量怎么摆）</h3><ul>
+<li>gpt-oss 走<strong>宽</strong>（大 embedding 维度、少层），Qwen3 走<strong>深</strong>。宽模型推理并行度高、吞吐好、训练更稳；深模型表达更灵活但难训。</li>
+<li>Gemma 2 的 9B 消融：宽版 52.0 vs 深版 50.8，宽略胜。结论是”差别不大，看部署硬件”。</li>
+</ul>
+<h3 id="量化与本地部署（gpt-oss-的-MXFP4-示范）"><a href="#量化与本地部署（gpt-oss-的-MXFP4-示范）" class="headerlink" title="量化与本地部署（gpt-oss 的 MXFP4 示范）"></a>量化与本地部署（gpt-oss 的 MXFP4 示范）</h3><ul>
+<li>gpt-oss 首发即带 <strong>MXFP4</strong> 量化的 MoE 专家权重（约 4.25 bit&#x2F;参数）：120B 模型塞进单张 80GB H100，20B 模型 16GB 消费级显卡能跑。</li>
+<li>因果：MoE 专家权重占总参数绝对大头、且每 token 只激活一小撮，对量化误差最不敏感——所以只量化专家，注意力&#x2F;embedding 等主干保持高精度，性能几乎无损。</li>
+<li>代价：MXFP4 的原生硬件加速要较新 GPU（Hopper 级起）；老卡只能反量化回 bf16 跑，省下载体积不省显存算力。</li>
+</ul>
+<p><strong>工程师判断</strong>：</p>
+<ul>
+<li>读模型卡先看五件事：总参数&#x2F;激活参数（MoE 稀疏度）、注意力类型（决定 KV cache 大小）、上下文长度与实现方式（原生 or YaRN 外推）、norm 方案（训练稳定性线索）、词表大小。</li>
+<li>面试讲架构演进，抓主线：”都是围绕训练稳定性（norm&#x2F;QK-Norm）和推理成本（注意力&#x2F;MoE&#x2F;KV cache）两件事”，比背零件清单高一档。</li>
+</ul>
+<h2 id="注意力的演进因果链"><a href="#注意力的演进因果链" class="headerlink" title="注意力的演进因果链"></a>注意力的演进因果链</h2><p><strong>人话结论</strong>：注意力的历史就是一部”KV cache 减肥史”。MHA→GQA→MLA 是压”每个 token 存多少”；滑窗&#x2F;稀疏注意力是压”看多少个 token”；线性注意力是干脆不存历史、只留一个固定大小的记忆状态。</p>
+<h3 id="主线一：压缩每-token-的-KV（MHA-→-MQA-GQA-→-MLA）"><a href="#主线一：压缩每-token-的-KV（MHA-→-MQA-GQA-→-MLA）" class="headerlink" title="主线一：压缩每 token 的 KV（MHA → MQA&#x2F;GQA → MLA）"></a>主线一：压缩每 token 的 KV（MHA → MQA&#x2F;GQA → MLA）</h3><table>
+<thead>
+<tr>
+<th>变体</th>
+<th>机制</th>
+<th>解决什么</th>
+<th>代价</th>
+<th>代表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>MHA</td>
+<td>每个 Q 头配独立 K&#x2F;V 头</td>
+<td>—（基线）</td>
+<td>KV cache 最大</td>
+<td>GPT-2、OLMo 2&#x2F;3</td>
+</tr>
+<tr>
+<td>MQA</td>
+<td>所有 Q 头共享 1 组 KV</td>
+<td>cache 缩到 1&#x2F;头数</td>
+<td>表达力损失明显</td>
+<td>Gemma 4 E2B</td>
+</tr>
+<tr>
+<td>GQA</td>
+<td>每组 Q 头共享 1 组 KV（MQA↔MHA 之间的频谱）</td>
+<td>cache 大幅缩小，性能几乎不掉</td>
+<td>消融显示略差于 MHA</td>
+<td>Llama、Qwen3、Gemma</td>
+</tr>
+<tr>
+<td>MLA</td>
+<td>K&#x2F;V 先<strong>压缩到低维 latent 再缓存</strong>，用时上投影还原（类比 LoRA 的降&#x2F;升投影）</td>
+<td>cache 比 GQA 更小</td>
+<td>多一次矩阵乘；实现复杂</td>
+<td>DeepSeek V2&#x2F;V3&#x2F;R1、Kimi K2、GLM-5</td>
+</tr>
+</tbody></table>
+<ul>
+<li>因果关键：GQA 是”共享式”省内存（少存几份），MLA 是”压缩式”省内存（每份存小点）。DeepSeek-V2 消融给出反直觉结论：<strong>MLA &gt; MHA &gt; GQA</strong>（建模质量），压缩本身有正则化收益。</li>
+<li>但经验值：<strong>&lt;100B 规模 GQA 更好调</strong>，MLA 的收益在大模型上才稳定兑现（Sarvam 的选择佐证：30B 用 GQA，105B 用 MLA）。</li>
+</ul>
+<h3 id="主线二：缩小注意力范围（滑窗-SWA-→-学习式稀疏-DSA）"><a href="#主线二：缩小注意力范围（滑窗-SWA-→-学习式稀疏-DSA）" class="headerlink" title="主线二：缩小注意力范围（滑窗 SWA → 学习式稀疏 DSA）"></a>主线二：缩小注意力范围（滑窗 SWA → 学习式稀疏 DSA）</h3><ul>
+<li><strong>滑窗注意力（SWA）</strong>：每个 token 只看最近 W 个 token。换来 KV cache 和计算都封顶；丢掉的是直接的长程检索能力——所以没人全用滑窗，都是<strong>混合比例</strong>：Gemma 2（1:1，窗口 4096）→ Gemma 3（5:1，窗口 1024）→ gpt-oss（1:1，窗口仅 128）→ 小米 MiMo（5:1，128）。趋势是窗口越来越小、全注意力层越来越稀，靠少量全注意力层兜底长程依赖。</li>
+<li><strong>DSA（DeepSeek 稀疏注意力，V3.2）</strong>：固定窗口太死板，改成<strong>学出来该看谁</strong>——lightning indexer 对每个历史 token 打相似度分（ReLU 打分，作用在 MLA 压缩表示上），token selector 取 top-k&#x3D;2048 建稀疏掩码。复杂度 O(L²)→O(L·k)。代价：多一个 indexer 组件要训练，推理栈要写自定义 kernel。</li>
+<li><strong>DeepSeek V4 的 CSA&#x2F;HCA</strong>（更激进）：不再是”每 token 一条 KV”，而是<strong>沿序列维压缩</strong>——把每 4 个（CSA，配稀疏选择）或 128 个（HCA，配密集注意力）token 汇总成一条压缩 KV。1M 上下文时 KV cache 只有 V3.2 的 10%。代价：丢 token 级细节，所以两种机制交替 + 保留 128 token 的滑窗兜底。</li>
+</ul>
+<h3 id="主线三：线性-混合注意力（不存-KV，存一个状态）"><a href="#主线三：线性-混合注意力（不存-KV，存一个状态）" class="headerlink" title="主线三：线性&#x2F;混合注意力（不存 KV，存一个状态）"></a>主线三：线性&#x2F;混合注意力（不存 KV，存一个状态）</h3><ul>
+<li><strong>Gated DeltaNet</strong>（Qwen3-Next、Kimi Linear）：像 RNN 一样逐 token 更新一个固定大小的记忆矩阵 S。α 门控制遗忘、β 门控制写入。计算 O(n)，<strong>内存与上下文长度无关</strong>。</li>
+<li>代价直白：全部历史被压进固定状态，<strong>精确检索能力差</strong>（”第 3 段第 2 句说了啥”这种查不准）。所以都是 <strong>3:1 混合</strong>——3 层线性 + 1 层全注意力，全注意力层负责精确检索。</li>
+<li>Kimi Linear 的改进 KDA：把 DeltaNet 的标量门升级为<strong>通道级门控</strong>，配 MLA（NoPE）做全注意力层；对比全 MLA 架构 KV cache 省 75%、解码吞吐最高 6x。</li>
+<li><strong>反面教材必须记住</strong>：MiniMax M1 用了线性注意力，M2 <strong>退回全注意力</strong>——官方复盘：常规 prompt 没问题，但推理链和多轮 Agent 任务精度崩，且推理基础设施对线性注意力优化不足。→ 混合注意力对 Agent 场景是”理论合适、生态未熟”。</li>
+</ul>
+<h3 id="支线：位置编码与门控的新共识"><a href="#支线：位置编码与门控的新共识" class="headerlink" title="支线：位置编码与门控的新共识"></a>支线：位置编码与门控的新共识</h3><ul>
+<li><strong>NoPE</strong>：SmolLM3 每 4 层去掉 RoPE、Kimi Linear 的 MLA 层全用 NoPE——因果掩码本身隐含顺序信息，不加位置编码反而长度泛化更好。</li>
+<li><strong>partial RoPE &#x2F; p-RoPE</strong>：MiniMax-M2 只旋转一半维度、Gemma 4 只旋转 25%，避免超长序列”过度旋转”损伤表征。</li>
+<li><strong>Gated Attention</strong>：注意力输出乘一个 sigmoid 门（Qwen3-Next、Trinity），官方说法是消除 attention sink 和巨激活、稳训练。gpt-oss 用的是另一招：给每个头加一个可学习的 sink logit（虚拟”不看任何人”选项）。</li>
+</ul>
+<p><strong>工程师判断</strong>：</p>
+<ul>
+<li>选型口诀：<strong>GQA 是稳健默认；大模型（&gt;100B）看 MLA；长上下文&#x2F;Agent 高吞吐需求看混合线性，但先确认推理框架（vLLM&#x2F;SGLang）支持成熟度</strong>——Raschka 本人实测：本地跑经典 GQA 架构的 tok&#x2F;sec 反而高于混合架构，因为 kernel 优化到位。</li>
+<li>读模型卡看 <code>num_key_value_heads</code>（&lt;<code>num_attention_heads</code> 即 GQA，&#x3D;1 即 MQA）、滑窗比例与窗口、是否混合线性层。</li>
+<li>面试讲 MHA→GQA→MLA：<strong>动机全是 KV cache</strong>，GQA 靠共享、MLA 靠压缩，MLA 反超 MHA 是意外之喜。</li>
+</ul>
+<h2 id="KV-Cache-与推理成本"><a href="#KV-Cache-与推理成本" class="headerlink" title="KV Cache 与推理成本"></a>KV Cache 与推理成本</h2><p><strong>人话结论</strong>：KV cache 是”用内存换计算”——不缓存，每生成一个 token 都要对全部历史重算 K&#x2F;V（计算 O(n²)）；缓存了，每步只算新 token（O(n)），但内存随上下文线性涨。它就是长上下文贵的根源，也是上一节所有花活的靶子。</p>
+<h3 id="为什么存在"><a href="#为什么存在" class="headerlink" title="为什么存在"></a>为什么存在</h3><p>自回归生成时，历史 token 的 K、V 在每一步都完全相同。不缓存 &#x3D; 每步重复劳动。Raschka 实测：124M 小模型 CPU 生成，加 KV cache <strong>5x 加速</strong>。</p>
+<h3 id="实现要点（读源码-自己写时的检查清单）"><a href="#实现要点（读源码-自己写时的检查清单）" class="headerlink" title="实现要点（读源码&#x2F;自己写时的检查清单）"></a>实现要点（读源码&#x2F;自己写时的检查清单）</h3><div class="code-container" data-rel="Python"><figure class="iseeu highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 核心逻辑：新 token 的 KV 拼到缓存尾部，注意力对全缓存计算</span></span><br><span class="line"><span class="keyword">if</span> use_cache:</span><br><span class="line">    <span class="keyword">if</span> <span class="variable language_">self</span>.cache_k <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="variable language_">self</span>.cache_k, <span class="variable language_">self</span>.cache_v = keys_new, values_new</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        <span class="variable language_">self</span>.cache_k = torch.cat([<span class="variable language_">self</span>.cache_k, keys_new], dim=<span class="number">1</span>)</span><br><span class="line">        <span class="variable language_">self</span>.cache_v = torch.cat([<span class="variable language_">self</span>.cache_v, values_new], dim=<span class="number">1</span>)</span><br><span class="line">    keys, values = <span class="variable language_">self</span>.cache_k, <span class="variable language_">self</span>.cache_v</span><br></pre></td></tr></table></figure></div>
+
+<ul>
+<li>必须维护 <code>current_pos</code> 追踪位置（RoPE&#x2F;掩码要用真实全局位置，不是本次输入的相对位置）。</li>
+<li>每个新序列前必须 <code>reset_cache()</code>，否则上一条对话的 KV 串进来，输出静默污染。</li>
+<li>生产级优化：预分配 <code>max_seq_len</code> 大张量代替反复 <code>torch.cat</code>（避免内存碎片和拷贝）；滑窗截断 <code>cache_k[:, :, -window_size:, :]</code> 给内存封顶。</li>
+</ul>
+<h3 id="内存账（为什么大家拼命压它）"><a href="#内存账（为什么大家拼命压它）" class="headerlink" title="内存账（为什么大家拼命压它）"></a>内存账（为什么大家拼命压它）</h3><p><code>KV cache ≈ batch × 层数 × n_tokens × kv头数 × head_dim × 2(K和V) × 字节数</code></p>
+<p>四个可压的因子对应四类手段：</p>
+<table>
+<thead>
+<tr>
+<th>压哪个因子</th>
+<th>手段</th>
+<th>幅度示例</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>kv 头数</td>
+<td>GQA &#x2F; MQA</td>
+<td>头数缩到 1&#x2F;4~1&#x2F;头数</td>
+</tr>
+<tr>
+<td>head_dim（每份大小）</td>
+<td>MLA 压缩、CCA（ZAYA1：直接在压缩空间做注意力，连 FLOPs 也省）</td>
+<td>—</td>
+</tr>
+<tr>
+<td>n_tokens</td>
+<td>滑窗截断、DSA top-k、CSA&#x2F;HCA 序列压缩</td>
+<td>V4 在 1M 上下文压到 V3.2 的 10%</td>
+</tr>
+<tr>
+<td>层数</td>
+<td><strong>跨层 KV 共享</strong>（Gemma 4：35 层只有前 15 层算 KV，后 20 层复用同类型前层的 KV）</td>
+<td>约省一半；E2B 在 128K 省 2.7GB</td>
+</tr>
+<tr>
+<td>（彻底不存）</td>
+<td>线性注意力固定状态：<code>n_heads × head_dim²</code>，与长度无关</td>
+<td>3:1 混合下 cache 曲线近乎平</td>
+</tr>
+</tbody></table>
+<p>代价共性：所有压缩都是有损近似，压过头掉检索精度——这就是为什么每个方案都留”兜底”（全注意力层、滑窗分支、混合比例）。</p>
+<p><strong>工程师判断</strong>：</p>
+<ul>
+<li>估算部署内存 &#x3D; 权重 + KV cache 峰值。长上下文 Agent 场景 KV cache 常反超权重成为大头，选型时<strong>先按目标上下文长度算 KV 账</strong>再看跑分。</li>
+<li>排查”生成越长越慢&#x2F;OOM”先查：有没有启用 cache、有没有预分配、多会话是否隔离 cache。</li>
+<li>面试可讲的深度点：KV cache 为什么不缓存 Q？——因为每步只需要<strong>当前</strong> token 的 Q 去查全部历史 K&#x2F;V，历史 Q 用不上。</li>
+</ul>
+<h2 id="MoE-稀疏化"><a href="#MoE-稀疏化" class="headerlink" title="MoE 稀疏化"></a>MoE 稀疏化</h2><p><strong>人话结论</strong>：MoE 把一个大 FFN 换成 N 个小 FFN（专家）+ 一个路由器，每个 token 只激活其中几个。目的是<strong>把”知识容量”和”每 token 计算量”解耦</strong>：模型可以有 1T 参数的知识，但每个 token 只花 30B 的算力。</p>
+<h3 id="机制与因果"><a href="#机制与因果" class="headerlink" title="机制与因果"></a>机制与因果</h3><ul>
+<li>解决什么：密集模型要更多容量就得全量加参，训练和推理成本同步涨。</li>
+<li>怎么解：router（一个小线性层）给每个 token 挑 top-k 个专家，只跑这几个。DeepSeek V3：671B 总参 &#x2F; 37B 激活，256 个专家每 token 激活 9 个（8 路由 + 1 共享）。</li>
+<li>代价：①权重仍要全部装进显存（省算不省存）；②路由不均衡需要辅助损失&#x2F;技巧；③微调和 RL 更难伺候（Gemma 4 特意同时出 MoE 版和 dense 版，dense 版就是给后训练用户的）。</li>
+</ul>
+<h3 id="两个设计分歧（读模型卡时的鉴别点）"><a href="#两个设计分歧（读模型卡时的鉴别点）" class="headerlink" title="两个设计分歧（读模型卡时的鉴别点）"></a>两个设计分歧（读模型卡时的鉴别点）</h3><table>
+<thead>
+<tr>
+<th>分歧</th>
+<th>路线 A</th>
+<th>路线 B</th>
+<th>现状</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>共享专家</td>
+<td>有（DeepSeek V3、GLM-4.5、Qwen3-Next）：1 个专家常开，接住通用模式，让其余专家更专精</td>
+<td>无（Qwen3）：官方解释是推理优化收益不明显</td>
+<td>Qwen3-Next 又加回来了——共享专家略占上风</td>
+</tr>
+<tr>
+<td>专家形状</td>
+<td><strong>多而小</strong>（DeepSeekMoE 路线，256 个小专家）：组合灵活、专精度高</td>
+<td><strong>少而大</strong>（gpt-oss 32 个、Llama 4 Maverick 激活 2 个大专家、Mistral 3、Trinity）：推理吞吐和部署友好</td>
+<td>多小专家是主流，少大专家是吞吐派</td>
+</tr>
+</tbody></table>
+<h3 id="稀疏度竞赛（激活参数占比一路走低）"><a href="#稀疏度竞赛（激活参数占比一路走低）" class="headerlink" title="稀疏度竞赛（激活参数占比一路走低）"></a>稀疏度竞赛（激活参数占比一路走低）</h3><p>Qwen3 235B-A22B 约 9.4% → MiniMax-M2 4.37% → DeepSeek V4-Pro 是目前最稀疏的旗舰。趋势含义：总参代表知识上限，激活参代表单 token 成本，两者比值越极端，”存储换算力”的杠杆越大。</p>
+<p>其他工程细节：GLM-4.5&#x2F;V3 前几层用 dense（路由在浅层不稳）；ZAYA1 极端到每 token 只激活 1 个路由专家。</p>
+<p><strong>工程师判断</strong>：</p>
+<ul>
+<li>部署自查三问：显存装得下<strong>总参数</strong>吗？框架支持专家并行吗？我的场景是吞吐敏感（考虑少大专家模型）还是质量敏感？</li>
+<li>微调选型：MoE 后训练坑多，个人&#x2F;小团队优先 dense 版本或走 LoRA。</li>
+<li>面试一句话：MoE 的本质是”每 token 的条件计算”，与 KV cache 优化正交——一个省 FFN 的算力，一个省注意力的内存，2025 年后旗舰模型两个都要。</li>
+</ul>
+<h2 id="推理时扩展（inference-time-scaling）与-reasoning-effort"><a href="#推理时扩展（inference-time-scaling）与-reasoning-effort" class="headerlink" title="推理时扩展（inference-time scaling）与 reasoning effort"></a>推理时扩展（inference-time scaling）与 reasoning effort</h2><p><strong>人话结论</strong>：提升模型效果有两个独立旋钮——训练时多花钱（更大模型&#x2F;更多数据&#x2F;RLVR）、推理时多花钱（多生成 token、多采样几次）。Reasoning effort 就是把第二个旋钮做成产品开关。两条曲线会交叉：<strong>小模型开高 effort 常能追平大模型开低 effort</strong>，这是成本优化的核心依据。</p>
+<h3 id="推理模型的底层事实（祛魅三连）"><a href="#推理模型的底层事实（祛魅三连）" class="headerlink" title="推理模型的底层事实（祛魅三连）"></a>推理模型的底层事实（祛魅三连）</h3><ol>
+<li>“推理模型”&#x3D; 输出中间推理轨迹（reasoning trace）再给答案的模型，不是真的像人一样思考。</li>
+<li><code>&lt;think&gt;&lt;/think&gt;</code> 标签是<strong>装饰性</strong>的：只为让 UI&#x2F;管线分离思考与答案，靠 RLVR 阶段的格式奖励（R &#x3D; R_accuracy + R_format）训出来，换任何分隔符效果一样。<strong>能力</strong>来自 RLVR 本身——只用可验证的最终答案对错（数学用符号校验、代码用测试）做奖励，模型就自发学会分步、回溯、自我纠错（”Aha 时刻”）；推理轨迹本身不进 loss。</li>
+<li>2025 年后几乎所有旗舰模型都是 RLVR 训过的，”是不是推理模型”已经是伪问题，真问题是”推理开关怎么控制”。</li>
+</ol>
+<h3 id="从开关到旋钮：控制方式演进"><a href="#从开关到旋钮：控制方式演进" class="headerlink" title="从开关到旋钮：控制方式演进"></a>从开关到旋钮：控制方式演进</h3><table>
+<thead>
+<tr>
+<th>代际</th>
+<th>形态</th>
+<th>实现</th>
+<th>代表</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>1. 专用模型</td>
+<td>想省 token 就换模型</td>
+<td>独立后训练</td>
+<td>V3（不想）&#x2F;R1（想，且关不掉）</td>
+</tr>
+<tr>
+<td>2. 混合开关</td>
+<td>同一模型 on&#x2F;off</td>
+<td>Thinking Mode Fusion：SFT 混入 <code>/think</code> 和 <code>/no_think</code> 样本；关&#x3D;硬塞空 <code>&lt;think&gt;&lt;/think&gt;</code></td>
+<td>Qwen3、GLM-5、Nemotron</td>
+</tr>
+<tr>
+<td>3. 档位 effort</td>
+<td>low&#x2F;medium&#x2F;high</td>
+<td>系统提示写 “Reasoning effort: high” + 训练期按档位配不同长度惩罚（RL）或不同长度目标（SFT）</td>
+<td>gpt-oss、GPT-5 系</td>
+</tr>
+<tr>
+<td>4. 连续值</td>
+<td>0.0~1.0</td>
+<td>RL 中 λ(e) 按 effort 值调 per-token 成本</td>
+<td>Inkling</td>
+</tr>
+</tbody></table>
+<ul>
+<li><p>摇摆史插曲：Qwen3 首发主打混合开关，2507 版本又拆回 Instruct&#x2F;Thinking 两个专用模型（官方称混合模式拖累基础质量）；随后 GLM&#x2F;Kimi&#x2F;DeepSeek 用更精细的配方证明单模型多档可行——“混合伤性能”是配方问题，不是原理缺陷。</p>
+</li>
+<li><p>训练侧套路总结（六家旗舰对比后的共性）：① SFT&#x2F;模板引入模式标签；② RL 阶段按模式给不同上下文窗口和长度惩罚（DeepSeek V4 甚至分别训 Non-think&#x2F;Think-High&#x2F;Think-Max 三个专家再蒸馏回一个模型；Kimi K3 训 3 域×3 档共 9 个专家再多师蒸馏）；③ 抗截断鲁棒性训练——Nemotron 用随机截断的推理轨迹做 SFT，Qwen3 支持推理中途被强停后直接出答案。</p>
+</li>
+<li><p>Kimi K2.5 的 Toggle：预算 RL 和自由 RL 交替，token 用量降 25-30% 而分数几乎不掉——证明”废话推理”有很大压缩空间。</p>
+</li>
+<li><p>效果规律：effort↑ → token↑ → 准确率↑，但<strong>边际递减明显</strong>，最高档常不经济（GPT-5.6 曲线、Inkling 数据一致）。</p>
+</li>
+</ul>
+<h3 id="effort-之外的推理时扩展武器库"><a href="#effort-之外的推理时扩展武器库" class="headerlink" title="effort 之外的推理时扩展武器库"></a>effort 之外的推理时扩展武器库</h3><p>CoT 提示 → 自一致性（采样 N 次多数投票）→ Best-of-N + 验证器 → 自我改进（self-refinement）→ 搜索。极端案例：DeepSeekMath-V2 用”生成器 + 验证器 + 元验证器”三 LLM 体系（GAN 式左右互搏）+ 大量采样，把开源模型推到奥数金牌水平——<strong>证明推理时堆算力可以买到训练买不到的上限</strong>，代价是延迟和费用爆炸，只适合准确率压倒一切的场景。</p>
+<p><strong>工程师判断</strong>：</p>
+<ul>
+<li>Agent 成本优化第一杠杆：<strong>按任务难度路由 effort</strong>，简单工具调用用 low、规划&#x2F;调试用 high；Raschka 预判 harness 内置自动路由是下一步，但显式覆盖入口要留。</li>
+<li>选开源模型做 Agent，查模型卡三件事：effort 怎么传（系统提示&#x2F;<code>chat_template_kwargs</code>&#x2F;API 参数）、有没有硬 token 预算能力、被截断后能否正常出答案。</li>
+<li>面试高分角度：训练 scaling 与推理 scaling 是两条可交叉的成本曲线，报价&#x2F;延迟约束下解的是”选哪个模型 × 开多大 effort”的二维优化，不是”选最强模型”。</li>
+</ul>
+<h2 id="2025-2026-架构趋势总结"><a href="#2025-2026-架构趋势总结" class="headerlink" title="2025-2026 架构趋势总结"></a>2025-2026 架构趋势总结</h2><p><strong>人话结论</strong>：transformer 没被取代，但转向”为长上下文和 Agent 场景做架构特化”。质的提升更多来自数据、RLVR 配方和推理时手段，架构改动主要在<strong>降成本</strong>。</p>
+<ol>
+<li><strong>长上下文效率是唯一主旋律</strong>：KV 共享（Gemma 4）、按层注意力预算（Laguna）、压缩空间注意力（ZAYA1 CCA）、序列压缩（V4 CSA&#x2F;HCA）、混合线性（Qwen3-Next&#x2F;Kimi Linear&#x2F;Nemotron 的 Mamba-2）——全部服务于”reasoning + Agent 囤 token”的现实。</li>
+<li><strong>收敛与分叉并存</strong>：主干高度趋同（Mistral 3 直接采用 DeepSeek V3 架构；各家互相抄零件），同时出现分叉实验——文本扩散模型（并行去噪、低延迟场景，Gemini Diffusion 将首发工业级；短板：难流式输出、难工具调用）、代码世界模型（学”代码跑起来会发生什么”）、微型递归模型（TRM 700 万参数刷 ARC，未来可能成为大 LLM 的”推理工具”）。目前都不动摇自回归 transformer 的 SOTA 地位。</li>
+<li><strong>残差流开始被动刀</strong>：DeepSeek 的 mHC（多路并行残差流 + 双随机矩阵约束混合，训练开销仅 +6.7%）进了 V4 旗舰——注意力&#x2F;FFN 之外的最后一块处女地也开工了。</li>
+<li><strong>GRPO 工程化成熟</strong>：DAPO&#x2F;Dr. GRPO 系列技巧（去 KL、clip-higher、token 级 loss、截断重要性采样等）已是标配，RL 训练从”玄学易崩”变成可复现工程。2026 预期：RLVR 扩到数学&#x2F;代码之外的可验证域。</li>
+<li><strong>复杂度警告</strong>：基础 transformer block ≈ 50-100 行 PyTorch，现代旗舰的 attention 花活让代码复杂度 ~10x。学习路径建议保持 Raschka 式打法：从 GPT-2 起点一次加一个零件。</li>
+<li><strong>Benchmaxxing 时代的评估观</strong>：公开榜单只能做门槛筛选（低于阈值→淘汰），不能做排序依据（Llama 4 高分翻车为鉴）；上手实测 + 自建任务集不可替代。</li>
+<li><strong>MTP（多 token 预测）走向标配</strong>：训练时让模型同时预测后面第 1、2 个 token（DeepSeek V3、Qwen3-Next、GLM-4.5 均采用），训练信号更密；推理时该模块可直接当自带草稿头做投机解码。代价：多一份头部训练开销，推理框架要支持”起草-验证-回退”逻辑。</li>
+<li><strong>优化器换代苗头</strong>：Muon（矩阵正交化更新）在 Kimi K2（1T 参数）上完成首次万亿级验证，损失曲线更平稳，是 AdamW 长期统治后第一个被旗舰模型采信的挑战者，2026 多家跟进。</li>
+<li><strong>训练成本祛魅</strong>：DeepSeek V3 “$5.5M 训练成本”只算最后一次预训练的 GPU 租金，不含消融、失败 run、人力与数据——读任何”XX 百万美元训出旗舰”的新闻先问口径。</li>
+</ol>
+<h2 id="附：关键数字速查表"><a href="#附：关键数字速查表" class="headerlink" title="附：关键数字速查表"></a>附：关键数字速查表</h2><p>选型估算和面试时可直接引用的硬数字（均出自精读素材）：</p>
+<table>
+<thead>
+<tr>
+<th>数字</th>
+<th>含义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>5x</td>
+<td>124M 模型 CPU 生成启用 KV cache 的加速比</td>
+</tr>
+<tr>
+<td>1&#x2F;10</td>
+<td>DeepSeek V4 在 1M 上下文的 KV cache 相对 V3.2</td>
+</tr>
+<tr>
+<td>27%</td>
+<td>V4 长上下文注意力 FLOPs 相对 V3.2</td>
+</tr>
+<tr>
+<td>75% &#x2F; 6x</td>
+<td>Kimi Linear 相对全 MLA：KV cache 节省 &#x2F; 解码吞吐提升</td>
+</tr>
+<tr>
+<td>2.7GB</td>
+<td>Gemma 4 E2B 跨层 KV 共享在 128K 上下文省下的显存（bf16）</td>
+</tr>
+<tr>
+<td>3:1</td>
+<td>线性混合架构的主流层比（3 线性 : 1 全注意力）</td>
+</tr>
+<tr>
+<td>128</td>
+<td>gpt-oss &#x2F; MiMo &#x2F; V4 滑窗兜底的窗口 token 数</td>
+</tr>
+<tr>
+<td>671B &#x2F; 37B</td>
+<td>DeepSeek V3 总参 &#x2F; 激活参（256 专家激活 9 个）</td>
+</tr>
+<tr>
+<td>4.37%</td>
+<td>MiniMax-M2 激活参数占比（稀疏度竞赛代表）</td>
+</tr>
+<tr>
+<td>2048</td>
+<td>DSA lightning indexer 的 top-k 选取数</td>
+</tr>
+<tr>
+<td>25-30%</td>
+<td>Kimi K2.5 Toggle 训练带来的推理 token 用量下降</td>
+</tr>
+<tr>
+<td>+6.7%</td>
+<td>mHC 多路残差流的训练额外开销</td>
+</tr>
+<tr>
+<td>7M &#x2F; $500</td>
+<td>TRM 递归小模型的参数量 &#x2F; 训练成本（刷 ARC）</td>
+</tr>
+</tbody></table>
+<h2 id="延伸阅读（源文件）"><a href="#延伸阅读（源文件）" class="headerlink" title="延伸阅读（源文件）"></a>延伸阅读（源文件）</h2><p><strong>精读（Raschka，均在 <code>博客素材/raschka/</code>）</strong>：</p>
+<ul>
+<li><code>2025-07-19_The_Big_LLM_Architecture_Comparison.md</code> —— 23 个开源架构逐个拆解，本文架构主干与 MoE 节的主素材</li>
+<li><code>2026-03-22_A_Visual_Guide_to_Attention_Variants_in_Modern_LLMs.md</code> —— MHA&#x2F;GQA&#x2F;MLA&#x2F;SWA&#x2F;DSA&#x2F;门控&#x2F;混合全景</li>
+<li><code>2025-06-17_Understanding_and_Coding_the_KV_Cache_in_LLMs_from_Scratch.md</code> —— KV cache 从零实现 + 优化</li>
+<li><code>2025-12-03_From_DeepSeek_V3_to_V3.2__Architecture,_Sparse_Attention,_and_RL_Updates.md</code> —— MLA&#x2F;DSA&#x2F;GRPO 更新细节</li>
+<li><code>2025-08-09_From_GPT-2_to_gpt-oss__Analyzing_the_Architectural_Advances.md</code> —— 7 个零件替换的因果 + MXFP4&#x2F;宽深</li>
+<li><code>2026-07-18_Controlling_Reasoning_Effort_in_LLMs.md</code> —— effort 档位六家旗舰训练配方对比</li>
+<li><code>2026-05-16_Recent_Developments_in_LLM_Architectures__KV_Sharing,_mHC,_and_Compressed_Attention.md</code> —— KV 共享&#x2F;PLE&#x2F;CCA&#x2F;mHC&#x2F;CSA-HCA</li>
+<li><code>2025-11-04_Beyond_Standard_LLMs.md</code> —— 线性混合&#x2F;文本扩散&#x2F;世界模型&#x2F;递归小模型</li>
+<li><code>2025-12-30_The_State_Of_LLMs_2025__Progress,_Problems,_and_Predictions.md</code> —— 年度综述与预测</li>
+<li><code>2026-01-24_Categories_of_Inference-Time_Scaling_for_Improved_LLM_Reasoning.md</code> —— 推理时扩展分类（本地版被付费墙截断，仅概览可读）</li>
+</ul>
+<p><strong>浏览（相关但未深挖）</strong>：</p>
+<ul>
+<li><code>lilianweng/2025-05-01_Why_We_Think.md</code>、<code>2023-01-27_The_Transformer_Family_Version_2.0.md</code>、<code>2023-01-10_Large_Transformer_Model_Inference_Optimization.md</code> —— 本地存档均为开头截断的 stub，仅存标题与首段，可按 source 链接读原文</li>
+<li><code>jayalammar/</code> —— 以 2020-2023 图解入门为主（图解 GPT-3 等），与本主题重叠但深度已被 Raschka 素材覆盖</li>
+</ul>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>标题:</strong> LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链</li>
+        <li><strong>作者:</strong> phenix-fledgling</li>
+        <li><strong>创建于
+                :</strong> 2026-07-29 15:00:00</li>
+        
+            <li>
+                <strong>更新于
+                    :</strong> 2026-07-29 19:15:49
+            </li>
+        
+        <li>
+            <strong>链接:</strong> https://blog.xugua.xyz//post/LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链.html
+        </li>
+        <li>
+            <strong>
+                版权声明:
+            </strong>
+            
+
+            
+                本文章采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a> 进行许可。
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/LLM%E6%9E%B6%E6%9E%84/">#LLM架构</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/KV-Cache/">#KV Cache</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/MoE/">#MoE</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/post/AI%20Agent%20%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BB%8E%20Coding%20Agent%20%E8%A7%A3%E5%89%96%E5%88%B0%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C%E6%B5%81.html">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">AI Agent 工程实践：从 Coding Agent 解剖到日常工作流</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        评论
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-CN',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">LLM 架构演进与推理优化：从 MHA 到 MLA 的因果链</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%80%E5%BC%A0%E5%9B%BE%E7%9C%8B%E6%87%82%E7%8E%B0%E4%BB%A3-LLM-%E6%9E%B6%E6%9E%84%E4%B8%BB%E5%B9%B2"><span class="nav-text">一张图看懂现代 LLM 架构主干</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#GPT-2-%E2%86%92-%E7%8E%B0%E4%BB%A3%E6%9E%B6%E6%9E%84%E7%9A%84-7-%E4%B8%AA%E6%9B%BF%E6%8D%A2%EF%BC%8C%E6%AF%8F%E4%B8%AA%E9%83%BD%E6%9C%89%E5%9B%A0%E6%9E%9C"><span class="nav-text">GPT-2 → 现代架构的 7 个替换，每个都有因果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%BD-vs-%E6%B7%B1%EF%BC%88%E5%90%8C%E5%8F%82%E6%95%B0%E9%87%8F%E6%80%8E%E4%B9%88%E6%91%86%EF%BC%89"><span class="nav-text">宽 vs 深（同参数量怎么摆）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%87%8F%E5%8C%96%E4%B8%8E%E6%9C%AC%E5%9C%B0%E9%83%A8%E7%BD%B2%EF%BC%88gpt-oss-%E7%9A%84-MXFP4-%E7%A4%BA%E8%8C%83%EF%BC%89"><span class="nav-text">量化与本地部署（gpt-oss 的 MXFP4 示范）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E5%8A%9B%E7%9A%84%E6%BC%94%E8%BF%9B%E5%9B%A0%E6%9E%9C%E9%93%BE"><span class="nav-text">注意力的演进因果链</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E7%BA%BF%E4%B8%80%EF%BC%9A%E5%8E%8B%E7%BC%A9%E6%AF%8F-token-%E7%9A%84-KV%EF%BC%88MHA-%E2%86%92-MQA-GQA-%E2%86%92-MLA%EF%BC%89"><span class="nav-text">主线一：压缩每 token 的 KV（MHA → MQA&#x2F;GQA → MLA）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E7%BA%BF%E4%BA%8C%EF%BC%9A%E7%BC%A9%E5%B0%8F%E6%B3%A8%E6%84%8F%E5%8A%9B%E8%8C%83%E5%9B%B4%EF%BC%88%E6%BB%91%E7%AA%97-SWA-%E2%86%92-%E5%AD%A6%E4%B9%A0%E5%BC%8F%E7%A8%80%E7%96%8F-DSA%EF%BC%89"><span class="nav-text">主线二：缩小注意力范围（滑窗 SWA → 学习式稀疏 DSA）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BB%E7%BA%BF%E4%B8%89%EF%BC%9A%E7%BA%BF%E6%80%A7-%E6%B7%B7%E5%90%88%E6%B3%A8%E6%84%8F%E5%8A%9B%EF%BC%88%E4%B8%8D%E5%AD%98-KV%EF%BC%8C%E5%AD%98%E4%B8%80%E4%B8%AA%E7%8A%B6%E6%80%81%EF%BC%89"><span class="nav-text">主线三：线性&#x2F;混合注意力（不存 KV，存一个状态）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%94%AF%E7%BA%BF%EF%BC%9A%E4%BD%8D%E7%BD%AE%E7%BC%96%E7%A0%81%E4%B8%8E%E9%97%A8%E6%8E%A7%E7%9A%84%E6%96%B0%E5%85%B1%E8%AF%86"><span class="nav-text">支线：位置编码与门控的新共识</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#KV-Cache-%E4%B8%8E%E6%8E%A8%E7%90%86%E6%88%90%E6%9C%AC"><span class="nav-text">KV Cache 与推理成本</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E5%AD%98%E5%9C%A8"><span class="nav-text">为什么存在</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E8%A6%81%E7%82%B9%EF%BC%88%E8%AF%BB%E6%BA%90%E7%A0%81-%E8%87%AA%E5%B7%B1%E5%86%99%E6%97%B6%E7%9A%84%E6%A3%80%E6%9F%A5%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-text">实现要点（读源码&#x2F;自己写时的检查清单）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E8%B4%A6%EF%BC%88%E4%B8%BA%E4%BB%80%E4%B9%88%E5%A4%A7%E5%AE%B6%E6%8B%BC%E5%91%BD%E5%8E%8B%E5%AE%83%EF%BC%89"><span class="nav-text">内存账（为什么大家拼命压它）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#MoE-%E7%A8%80%E7%96%8F%E5%8C%96"><span class="nav-text">MoE 稀疏化</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9C%BA%E5%88%B6%E4%B8%8E%E5%9B%A0%E6%9E%9C"><span class="nav-text">机制与因果</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E4%B8%AA%E8%AE%BE%E8%AE%A1%E5%88%86%E6%AD%A7%EF%BC%88%E8%AF%BB%E6%A8%A1%E5%9E%8B%E5%8D%A1%E6%97%B6%E7%9A%84%E9%89%B4%E5%88%AB%E7%82%B9%EF%BC%89"><span class="nav-text">两个设计分歧（读模型卡时的鉴别点）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%A8%80%E7%96%8F%E5%BA%A6%E7%AB%9E%E8%B5%9B%EF%BC%88%E6%BF%80%E6%B4%BB%E5%8F%82%E6%95%B0%E5%8D%A0%E6%AF%94%E4%B8%80%E8%B7%AF%E8%B5%B0%E4%BD%8E%EF%BC%89"><span class="nav-text">稀疏度竞赛（激活参数占比一路走低）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%97%B6%E6%89%A9%E5%B1%95%EF%BC%88inference-time-scaling%EF%BC%89%E4%B8%8E-reasoning-effort"><span class="nav-text">推理时扩展（inference-time scaling）与 reasoning effort</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8E%A8%E7%90%86%E6%A8%A1%E5%9E%8B%E7%9A%84%E5%BA%95%E5%B1%82%E4%BA%8B%E5%AE%9E%EF%BC%88%E7%A5%9B%E9%AD%85%E4%B8%89%E8%BF%9E%EF%BC%89"><span class="nav-text">推理模型的底层事实（祛魅三连）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%8E%E5%BC%80%E5%85%B3%E5%88%B0%E6%97%8B%E9%92%AE%EF%BC%9A%E6%8E%A7%E5%88%B6%E6%96%B9%E5%BC%8F%E6%BC%94%E8%BF%9B"><span class="nav-text">从开关到旋钮：控制方式演进</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#effort-%E4%B9%8B%E5%A4%96%E7%9A%84%E6%8E%A8%E7%90%86%E6%97%B6%E6%89%A9%E5%B1%95%E6%AD%A6%E5%99%A8%E5%BA%93"><span class="nav-text">effort 之外的推理时扩展武器库</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2025-2026-%E6%9E%B6%E6%9E%84%E8%B6%8B%E5%8A%BF%E6%80%BB%E7%BB%93"><span class="nav-text">2025-2026 架构趋势总结</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%99%84%EF%BC%9A%E5%85%B3%E9%94%AE%E6%95%B0%E5%AD%97%E9%80%9F%E6%9F%A5%E8%A1%A8"><span class="nav-text">附：关键数字速查表</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB%EF%BC%88%E6%BA%90%E6%96%87%E4%BB%B6%EF%BC%89"><span class="nav-text">延伸阅读（源文件）</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">phenix-fledgling</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 69 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+        
+        
+            
+                
+        
+                
+        
+                
+
+                    
+                        <script data-swup-reload-script src="/js/agent-chat.js"></script>
+                    
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="图片查看器">
+	<button class="image-viewer-close" type="button" aria-label="关闭">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="上一页">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="关闭">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="下一页">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>

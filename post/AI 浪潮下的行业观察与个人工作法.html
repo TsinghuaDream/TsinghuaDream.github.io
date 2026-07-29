@@ -1,0 +1,1163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="keywords" content="AI Agent, Java, 架构">
+    
+    
+    <meta name="author" content="phenix-fledgling">
+    
+    <!-- Completely eliminate flash of wrong theme -->
+    <script>
+        (function() {
+            const THEME_KEY = "REDEFINE-THEME-STATUS";
+            const DARK = "dark", LIGHT = "light";
+            
+            // Get preferred theme
+            function getTheme() {
+                try {
+                    const saved = localStorage.getItem(THEME_KEY);
+                    if (saved) {
+                        const { isDark } = JSON.parse(saved);
+                        return isDark ? DARK : LIGHT;
+                    }
+                } catch (e) {}
+                
+                return matchMedia("(prefers-color-scheme: dark)").matches ? DARK : LIGHT;
+            }
+            
+            // Apply theme to document
+            function applyTheme(theme) {
+                const isDark = theme === DARK;
+                const root = document.documentElement;
+                
+                // Set classes for compatibility
+                root.classList.add(theme);
+                root.classList.remove(isDark ? LIGHT : DARK);
+                root.style.colorScheme = theme;
+            }
+            
+            // Initial application
+            const theme = getTheme();
+            applyTheme(theme);
+            
+            // Listen for system preference changes
+            matchMedia("(prefers-color-scheme: dark)").addEventListener("change", ({ matches }) => {
+                // Only update if using system preference (no localStorage entry)
+                if (!localStorage.getItem(THEME_KEY)) {
+                    applyTheme(matches ? DARK : LIGHT);
+                }
+            });
+            
+            // Set body classes ASAP (before DOMContentLoaded)
+            (function() {
+                const addBodyClass = () => {
+                    const b = document.body;
+                    if (!b) return false;
+                    b.classList.add(theme + "-mode");
+                    return true;
+                };
+
+                // Try immediately
+                if (addBodyClass()) return;
+
+                // Observe until body exists
+                const mo = new MutationObserver(() => {
+                    if (addBodyClass()) mo.disconnect();
+                });
+                mo.observe(document.documentElement, { childList: true, subtree: true });
+            })();
+        })();
+    </script>
+    
+    <!-- preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    
+    <!--- Seo Part-->
+    
+    <link rel="canonical" href="https://blog.xugua.xyz/post/ai 浪潮下的行业观察与个人工作法.html"/>
+    <meta name="robots" content="index,follow">
+    <meta name="googlebot" content="index,follow">
+    <meta name="revisit-after" content="1 days">
+    
+    
+        
+        <meta name="description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="AI 浪潮下的行业观察与个人工作法">
+<meta property="og:url" content="https://blog.xugua.xyz/post/AI%20%E6%B5%AA%E6%BD%AE%E4%B8%8B%E7%9A%84%E8%A1%8C%E4%B8%9A%E8%A7%82%E5%AF%9F%E4%B8%8E%E4%B8%AA%E4%BA%BA%E5%B7%A5%E4%BD%9C%E6%B3%95.html">
+<meta property="og:site_name" content="菲尼克斯blog">
+<meta property="og:description" content="Hexo Theme Redefine, Redefine Your Hexo Journey.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+<meta property="article:published_time" content="2026-07-29T06:20:00.000Z">
+<meta property="article:modified_time" content="2026-07-29T11:15:49.201Z">
+<meta property="article:author" content="phenix-fledgling">
+<meta property="article:tag" content="AI工作法">
+<meta property="article:tag" content="行业观察">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://blog.xugua.xyz/images/redefine-og.webp">
+    
+    
+    <!--- Icon Part-->
+    <link rel="icon" type="image/png" href="/images/redefine-favicon.svg" sizes="192x192">
+    <link rel="apple-touch-icon" sizes="180x180" href="/images/redefine-favicon.svg">
+    <meta name="theme-color" content="#A31F34">
+    <link rel="shortcut icon" href="/images/redefine-favicon.svg">
+    <!--- Page Info-->
+    
+    <title>
+        
+            AI 浪潮下的行业观察与个人工作法 | 菲尼克斯blog
+        
+    </title>
+
+    
+<link rel="stylesheet" href="/fonts/Chillax/chillax.css">
+
+
+    <!--- Inject Part-->
+    
+        
+            
+    
+            
+    
+
+    
+<link rel="stylesheet" href="/css/style.css">
+
+
+    
+        
+<link rel="stylesheet" href="/css/build/tailwind.css">
+
+    
+
+    
+<link rel="stylesheet" href="/fonts/GeistMono/geist-mono.css">
+
+    
+<link rel="stylesheet" href="/fonts/Geist/geist.css">
+
+    <!--- Font Part-->
+    
+    
+    
+    
+    
+    
+
+    <script id="hexo-configurations">
+    window.config = {"hostname":"blog.xugua.xyz","root":"/","language":"zh-CN"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"delete_mask":false,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","highlight_theme":{"light":"github","dark":"vs2015"},"font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"pangu_js":false,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"light"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null},"title":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":{"enable":false,"custom_message":null},"side_tools":{"gear_rotation":true,"auto_expand":false},"open_graph":{"enable":true,"image":"/images/redefine-og.webp","description":"Hexo Theme Redefine, Redefine Your Hexo Journey."},"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"菲尼克斯blog","subtitle":{"text":["从 Java 到 AI Agent 的工程手记","拆解 Harness Agent，亲手造一个个人 Agent"],"hitokoto":{"enable":false,"show_author":false,"api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":[{"icon":"fa-brands fa-github","url":null},{"icon":"fa-brands fa-twitter","url":null},{"icon":"fa-solid fa-at","url":"you@example.com"},{"icon":"fa-brands fa-telegram","url":null},{"icon":"/images/custom-icon.svg","url":null}],"qrs":[{"icon":"fa-brands fa-weixin","qr":null},{"icon":"/images/custom-icon.svg","qr":null}]}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"11.4.1","theme":{"light":"default","dark":"dark"}}},"version":"2.9.0","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"},"Archives":{"path":"/archives","icon":"fa-regular fa-box-archive"},"Tags":{"path":"/tags","icon":"fa-regular fa-tags"},"Categories":{"path":"/categories","icon":"fa-regular fa-folder-open"},"About":{"path":"/about","icon":"fa-regular fa-user"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur","masonry":{"batch_size":12,"initial_batch_size":24}},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","excerpt_length":200,"categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footer":{"runtime":{"enable":true,"launch_time":"2020-04-01 00:00:00"},"icon":"<i class=\"fa-solid fa-heart fa-beat\" style=\"--fa-animation-duration: 0.5s; color: #f54545\"></i>","start":"2022/8/17 11:45:14","statistics":true,"customize":null,"icp":{"enable":false,"number":null,"url":null}},"footerStart":"2022/8/17 11:45:14","mermaid":{"style":{"light":"default","dark":"dark"}}};
+    window.lang_ago = {"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"};
+    window.i18n = {"search":"站内搜索您需要的内容...","toc":"目录","prev":"上一页","next":"下一页","prev_posts":"上一篇","next_posts":"下一篇","page":"第 %d 页","recent_posts":"最新文章","share":"分享","powered_by":"由 %s 驱动","theme":"主题","rss_feed":"RSS Feed","category":"分类","categories":"分类","tag":"标签","tags":"标签","post":"文章","posts":"文章","tagcloud":"标签云","comment":"评论","comments":"评论","top":"置顶","sticky":"置顶","go-back-home":"回到首页","masonry_loading":"照片加载中...","image_viewer":"图片查看器","close":"关闭","exif":{"title":"EXIF","cards":{"camera":"相机","lens":"镜头","exposure":"曝光","other":"其他"},"fields":{"make":"品牌","model":"机型","date_taken":"拍摄时间","lens_model":"镜头","focal_length":"焦距","focus_mode":"对焦模式","shutter":"快门","aperture":"光圈","iso":"感光度","exposure_program":"曝光程序","exposure_compensation":"曝光补偿","metering_mode":"测光模式","flash":"闪光灯","white_balance":"白平衡","latitude":"纬度","longitude":"经度","altitude":"海拔"},"status":{"loading":"加载中...","no_exif":"无 EXIF 信息","library_missing":"EXIF 库未加载","image_source_missing":"图片地址不可用","unavailable":"EXIF 不可用（可能被 CORS 阻止或缺少元数据）","flag_unavailable":"EXIF 不可用"}},"home":"首页","archive":"归档","archives":"归档","about":"关于","links":"链接","link":"链接","friends":"友情链接","friend":"友情链接","timeline":"时间轴","shuoshuo":"说说","bookmarks":"书签","site_uv":"访问人数","site_pv":"总访问量","read_more":"阅读全文","wordcount":"字","min2read":"分钟","changelog":"更新日志","status":"状态","runtime":"博客已运行","days":"天","hours":"小时","minutes":"分钟","seconds":"秒","optimized_by":"并由 Evan 进行优化","rights":"版权所有","site_posts":"共撰写了 %s 篇文章","site_wordcount":"共 %s 字","copyright":{"title":"标题","author":"作者","link":"链接","create_time":"创建于","update_time":"更新于","license_title":"版权声明","license_content":"本文章采用 %s 进行许可。","all_rights_reserved":"版权所有 &#169 %s，禁止转载。","public_domain":"本文为公有领域作品，可自由转载、引用。"},"ago":{"second":"%s 秒前","minute":"%s 分钟前","hour":"%s 小时前","day":"%s 天前","week":"%s 周前","month":"%s 个月前","year":"%s 年前"},"create_time":"创建","update_time":"更新","expired":"这篇文章最后更新于 %s 天前，内容可能已经过时。"};
+    window.data = {"masonry":false};
+  </script>
+    
+    <!--- Fontawesome Part-->
+    
+<link rel="stylesheet" href="/fontawesome/fontawesome.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/brands.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/solid.min.css">
+
+    
+<link rel="stylesheet" href="/fontawesome/regular.min.css">
+
+    
+    
+    
+    
+<meta name="generator" content="Hexo 8.1.2"></head>
+
+
+<body>
+	<div class="progress-bar-container">
+	
+
+	
+	<span class="pjax-progress-bar"></span>
+	<!--        <span class="swup-progress-icon">-->
+	<!--            <i class="fa-solid fa-circle-notch fa-spin"></i>-->
+	<!--        </span>-->
+	
+</div>
+
+<main class="page-container" id="swup">
+
+	
+
+	<div class="main-content-container flex flex-col justify-between min-h-dvh">
+		<div class="main-content-header">
+			<header class="navbar-container px-6 md:px-12">
+    <div class="navbar-content transition-navbar ">
+        <div class="left">
+            
+            <a class="logo-title" href="/">
+                
+                菲尼克斯blog
+                
+            </a>
+        </div>
+
+        <div class="right">
+            <!-- PC -->
+            <div class="desktop">
+                <ul class="navbar-list">
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/"
+                                        >
+                                    <i class="fa-regular fa-house fa-fw"></i>
+                                    首页
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/archives"
+                                        >
+                                    <i class="fa-regular fa-box-archive fa-fw"></i>
+                                    归档
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/tags"
+                                        >
+                                    <i class="fa-regular fa-tags fa-fw"></i>
+                                    标签
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/categories"
+                                        >
+                                    <i class="fa-regular fa-folder-open fa-fw"></i>
+                                    分类
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                        
+                            
+
+                            <li class="navbar-item">
+                                <!-- Menu -->
+                                <a class=""
+                                   href="/about"
+                                        >
+                                    <i class="fa-regular fa-user fa-fw"></i>
+                                    关于
+                                    
+                                </a>
+
+                                <!-- Submenu -->
+                                
+                            </li>
+                    
+                    
+                </ul>
+            </div>
+            <!-- Mobile -->
+            <div class="mobile">
+                
+                <div class="icon-item navbar-bar">
+                    <div class="navbar-bar-middle"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile sheet -->
+    <div class="navbar-drawer h-dvh w-full absolute top-0 left-0 bg-background-color flex flex-col justify-between">
+        <ul class="drawer-navbar-list flex flex-col px-4 justify-center items-start">
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/"
+                        >
+                            <span>
+                                首页
+                            </span>
+                            
+                                <i class="fa-regular fa-house fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/archives"
+                        >
+                            <span>
+                                归档
+                            </span>
+                            
+                                <i class="fa-regular fa-box-archive fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/tags"
+                        >
+                            <span>
+                                标签
+                            </span>
+                            
+                                <i class="fa-regular fa-tags fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/categories"
+                        >
+                            <span>
+                                分类
+                            </span>
+                            
+                                <i class="fa-regular fa-folder-open fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+                
+                    
+
+                    <li class="drawer-navbar-item text-base my-1.5 flex flex-col w-full">
+                        
+                        <a class="py-1.5 px-2 flex flex-row items-center justify-between gap-1 hover:!text-primary active:!text-primary text-2xl font-semibold group border-b border-border-color hover:border-primary w-full "
+                           href="/about"
+                        >
+                            <span>
+                                关于
+                            </span>
+                            
+                                <i class="fa-regular fa-user fa-sm fa-fw"></i>
+                            
+                        </a>
+                        
+
+                        
+                    </li>
+            
+
+            
+            
+        </ul>
+
+        <div class="statistics flex justify-around my-2.5">
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/tags">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">65</div>
+        <div class="label text-third-text-color text-sm">标签</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/categories">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">22</div>
+        <div class="label text-third-text-color text-sm">分类</div>
+    </a>
+    <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">69</div>
+        <div class="label text-third-text-color text-sm">文章</div>
+    </a>
+</div>
+    </div>
+
+    <div class="window-mask"></div>
+
+</header>
+
+
+		</div>
+
+		<div class="main-content-body transition-fade-up">
+			
+
+			<div class="main-content">
+				<div class="post-page-container flex relative justify-between box-border w-full h-full">
+	<div class="article-content-container">
+
+		<div class="article-title relative w-full">
+			
+			<div class="w-full flex items-center pt-6 justify-start">
+				<h1 class="article-title-regular text-second-text-color tracking-tight text-4xl md:text-6xl font-semibold px-2 sm:px-6 md:px-8 py-3">AI 浪潮下的行业观察与个人工作法</h1>
+			</div>
+			
+		</div>
+
+		
+		<div class="article-header flex flex-row gap-2 items-center px-2 sm:px-6 md:px-8">
+			<div class="avatar w-[46px] h-[46px] shrink-0 rounded-medium border border-border-color p-px">
+				<img src="https://github.com/TsinghuaDream.png">
+			</div>
+			<div class="info flex flex-col justify-between">
+				<div class="author flex items-center">
+					<span class="name text-default-text-color text-lg font-semibold">phenix-fledgling</span>
+					
+					<span class="author-label ml-1.5 text-xs px-2 py-0.5 rounded-small text-third-text-color border border-shadow-color-1">Lv5</span>
+					
+				</div>
+				<div class="meta-info">
+					<div class="article-meta-info">
+    <span class="article-date article-meta-item">
+        <i class="fa-regular fa-pen-fancy"></i>&nbsp;
+        <span class="desktop">2026-07-29 14:20</span>
+        <span class="mobile">2026-07-29 14:20</span>
+        <span class="hover-info">创建</span>
+    </span>
+    
+        <span class="article-date article-meta-item">
+            <i class="fa-regular fa-wrench"></i>&nbsp;
+            <span class="desktop">2026-07-29 19:15:49</span>
+            <span class="mobile">2026-07-29 19:15:49</span>
+            <span class="hover-info">更新</span>
+        </span>
+    
+
+    
+        <span class="article-categories article-meta-item">
+            <i class="fa-regular fa-folders"></i>&nbsp;
+            <ul>
+                
+                
+                    
+                        
+                        <li>
+                            <a href="/categories/AI%E7%9F%A5%E8%AF%86%E6%B2%89%E6%B7%80/">AI知识沉淀</a>&nbsp;
+                        </li>
+                    
+                    
+                
+            </ul>
+        </span>
+    
+    
+        <span class="article-tags article-meta-item">
+            <i class="fa-regular fa-tags"></i>&nbsp;
+            <ul>
+                
+                    <li>
+                        <a href="/tags/%E8%A1%8C%E4%B8%9A%E8%A7%82%E5%AF%9F/">行业观察</a>&nbsp;
+                    </li>
+                
+                    <li>
+                        | <a href="/tags/AI%E5%B7%A5%E4%BD%9C%E6%B3%95/">AI工作法</a>&nbsp;
+                    </li>
+                
+            </ul>
+        </span>
+    
+
+    
+    
+    
+    
+        <span class="article-pv article-meta-item">
+            <i class="fa-regular fa-eye"></i>&nbsp;<span id="busuanzi_value_page_pv"></span>
+        </span>
+    
+</div>
+
+				</div>
+			</div>
+		</div>
+		
+
+		
+
+
+		<div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
+			<blockquote>
+<p>一句话总纲：<strong>行业层面，中美差距在收窄、竞争在”铁幕化”；评测层面，公开 benchmark 正在集体失效；个人层面，赢家不是拥有最强模型的人，而是最会搭配”够用的模型 + 一手信源 + 可复用工作流”的人。</strong></p>
+</blockquote>
+<hr>
+<h2 id="中美-AI-竞争的真实图景"><a href="#中美-AI-竞争的真实图景" class="headerlink" title="中美 AI 竞争的真实图景"></a>中美 AI 竞争的真实图景</h2><p><strong>结论：差距存在（约 3-6 个月），但”差距有多大”本身是个多维问题——模型分数、用户体感、顶级用法、商业模式、地缘约束，每个维度答案都不一样。</strong></p>
+<h3 id="差距的多维拆解（池建强）"><a href="#差距的多维拆解（池建强）" class="headerlink" title="差距的多维拆解（池建强）"></a>差距的多维拆解（池建强）</h3><p>池建强 2026 年 2 月的观点，论据链完整，值得整体记住：</p>
+<ol>
+<li><strong>专业判断维度</strong>：做基模的一线同学判断——编程模型差 5%-10%，整体差 3-6 个月，”不会超过一年”。国际榜单结论类似：LMArena 编程榜前五是美国模型、后五是中国模型；文本能力前十只剩百度 ERNIE-5.0 一家中国模型。</li>
+<li><strong>局部领先维度</strong>：开源权重模型中国领先；OCR 领域 PaddleOCR-VL-1.5 直接做到 SOTA。</li>
+<li><strong>用户体感维度</strong>：普通中文用户觉得豆包&#x2F;千问&#x2F;DeepSeek 比 ChatGPT 好用（中文语料+本地场景）；做补全和模板任务的人觉得 MiniMax 又好又便宜；开多 Agent 并行做复杂工程的人觉得 Claude 断层领先。<strong>体感差异的根源：99% 的用户根本压榨不到模型能力极限</strong>——模型花 100 倍功夫提升 5%，大部分人感知不到。</li>
+<li><strong>顶级用法维度</strong>：真正拉开差距的是”能设计出顶级用法的人”。Anthropic 的 Nicholas Carlini 用 16 个并行 Claude 实例、近 2000 次会话、约 2 万美元 API 费用，几乎无人工干预地从零写出能编译 Linux 6.9 的 C 编译器。池的评价：”99% 的工程师别说完成实验了，设计实验都困难。”</li>
+<li><strong>趋势判断</strong>：Scaling Law 边际效益递减、预训练和强化训练显疲态、行业开始追逐 Online Learning 第三范式——<strong>范式切换期对追赶者有利</strong>，2026 年如果算力问题部分解决，差距会进一步缩小。</li>
+</ol>
+<h3 id="地缘政治：铁幕已经落下（池建强）"><a href="#地缘政治：铁幕已经落下（池建强）" class="headerlink" title="地缘政治：铁幕已经落下（池建强）"></a>地缘政治：铁幕已经落下（池建强）</h3><p>2025 年 9 月 5 日，Anthropic 宣布停止向中国资本控股（持股 &gt;50%）企业提供 Claude 服务，且明确封堵”注册在新加坡&#x2F;开曼曲线救国”的路径。因果链：</p>
+<ul>
+<li>AI 被美国政府视为与石油、芯片同级的<strong>战略资源&#x2F;国防资产</strong>，出口管制从硬件（芯片）延伸到软件（模型 API）。</li>
+<li>对 Anthropic 自身，这也是商业风险规避——一家依赖美国政府关系持续融资的公司，选边站不意外。</li>
+<li>后果：国内开发者与最强编程模型渐行渐远；投资人开始把”用不用得上 Claude”计入合规风险；字节 Trae、阿里 Qoder 等出海 IDE 全部受牵连。</li>
+<li>池的判断：<strong>断供是痛苦的，但也是国产替代最直接的催化剂</strong>——正如当年的芯片产业。”面对，继续向前走就好了。”</li>
+</ul>
+<h3 id="为什么美国闭源、中国开源？（池建强-Simon-Willison-Ben-Thompson）"><a href="#为什么美国闭源、中国开源？（池建强-Simon-Willison-Ben-Thompson）" class="headerlink" title="为什么美国闭源、中国开源？（池建强 + Simon Willison&#x2F;Ben Thompson）"></a>为什么美国闭源、中国开源？（池建强 + Simon Willison&#x2F;Ben Thompson）</h3><p>两边说法可以互相印证，但出发点不同：</p>
+<ul>
+<li><strong>池建强（商业逻辑视角）</strong>：美国头部实验室投入数十亿美元，闭源 API 授权是收回算力投入的商业壁垒；中国公司后发，开源是用”好用且免费”换开发者生态和垂直市场普及率，同时算力受限倒逼分布式创新——让全球开发者帮你优化推理效率。</li>
+<li><strong>Ben Thompson（经 Simon Willison 转述，美国视角）</strong>：直指美国实验室的虚伪——自己用未授权数据训练，却在 ToS 里禁止别人蒸馏。他的政策建议：美国应立法明确”采集训练数据属于 fair use”，并<strong>禁止服务条款封杀蒸馏</strong>——因为蒸馏”本质上就是调 API”，根本堵不住，不如反向拥抱。他还观察到：Qwen 3.8 Max 从”不开源”逆转为开源权重发布，可能与高层公开讲话鼓励”开源、开放、协作、共享”直接相关——<strong>中国的开源路线有产业政策背书</strong>。</li>
+<li><strong>注意开源权重 ≠ 开源</strong>（Simon Willison）：Kimi K3 的许可证已不再自称”modified MIT”——MaaS 业务年收入超 2000 万美元须与月之暗面另签协议。Kimi 自己也诚实地只用”open weight”一词。<strong>开源权重是获客漏斗，商业闸门留在许可证里。</strong> 定价同样在走高：K3 定价 $3&#x2F;$15，与 Claude Sonnet 同档，是中国实验室迄今最贵的模型。</li>
+</ul>
+<h3 id="泡沫的另一面：狂热正在腐蚀决策（Simon-Willison-阮一峰）"><a href="#泡沫的另一面：狂热正在腐蚀决策（Simon-Willison-阮一峰）" class="headerlink" title="泡沫的另一面：狂热正在腐蚀决策（Simon Willison &#x2F; 阮一峰）"></a>泡沫的另一面：狂热正在腐蚀决策（Simon Willison &#x2F; 阮一峰）</h3><ul>
+<li>Nik Suresh（经 Simon 转述）的咨询见闻：有高管<strong>从未用过任何 AI 工具</strong>，却刚为一家 20 亿美元营收的公司写完全盘 AI 战略；有公司搞”token 排行榜”，工程师被迫让 AI 把 Go 仓库改写成 Zig 来刷量保饭碗。最深刻的机制分析：<strong>“100x 生产力”的谎言无人戳破，不是因为大家信，而是因为客户高管说了这话，供应商高管如果泼冷水就等于攻击客户、丢掉企业合同</strong>——诚实在商业结构上被惩罚。</li>
+<li>阮一峰第 403 期给了成本数字：Anthropic 的人均 AI 计算支出已是工资总额的 2.3 倍（人均年薪 22.4 万美元之外再花 51.5 万美元）；美国 top 1% 软件公司人均 AI 费用中位数 13.7 万美元。<strong>AI 让程序员用人成本增加 40%-230%，如果产出不能同幅增长，AI 对公司是负收益</strong>——这是”AI 提效”叙事下很少被算的账。</li>
+<li>阮一峰第 404 期引加州大学调查：AI 没有减少工作量，反而通过职责扩散（人人都写代码，工程师被迫审非专业同事的 vibe code）、工作&#x2F;生活边界模糊、多任务幻觉、自我强化循环制造了<strong>新型倦怠</strong>——“感觉效率更高了，但没有感觉轻松，反而更忙了”。</li>
+</ul>
+<hr>
+<h2 id="国产模型与算力自主"><a href="#国产模型与算力自主" class="headerlink" title="国产模型与算力自主"></a>国产模型与算力自主</h2><p><strong>结论：LongCat-2.0 证明了”国产算力训练万亿参数模型”从口号变成了工程事实；其意义不在单一模型，而在验证了一条可复现的技术路径——但要清醒：这是厂商自述，且软件生态的护城河比芯片本身更深。</strong></p>
+<h3 id="LongCat-2-0-意味着什么（美团技术团队）"><a href="#LongCat-2-0-意味着什么（美团技术团队）" class="headerlink" title="LongCat-2.0 意味着什么（美团技术团队）"></a>LongCat-2.0 意味着什么（美团技术团队）</h3><p>关键事实：业界首个在<strong>五万卡国产算力集群</strong>上完成全流程训练与推理的万亿参数模型（总参数 1.6T、平均激活约 48B、原生 1M 上下文、预训练超 30T tokens），并同步开源模型权重与<strong>国产卡（NPU）推理代码</strong>。</p>
+<p>拆开看它为什么难、以及跨过去意味着什么：</p>
+<ol>
+<li><strong>稳定性工程是真门槛</strong>：万卡级训练的硬件故障、通信异常、显存压力、数值波动是拦路虎。美团的解法——卡间通信异常处理+弹性扩缩卡+自动故障恢复（月均日故障率降 70%+）、确定性算子+Bitwise 一致性验证（保证训练正确性）、流水线调度+算子级控核（MFU 提升 1.5 倍），最终稳态日吞吐超 1T tokens&#x2F;day。<strong>这套”在不完美硬件上稳定训练”的工程能力，本身就是新护城河。</strong></li>
+<li><strong>架构为算力受限而设计</strong>：LongCat 稀疏注意力（计算量平方级降线性级）、零计算专家（token 级动态激活 33B~56B，简单 token 不耗算力）、N-gram Embedding（MoE 稀疏度已 97% 时，参数投给 Embedding 比继续加专家收益更高）。<strong>算力约束逼出了效率创新</strong>——这与阮一峰第 404 期讲的硬件逻辑完全同构：内存带宽是本地推理的死穴，而 MoE 每 token 只读一小部分参数，恰好绕开带宽瓶颈。国产模型清一色 MoE+稀疏化，不是巧合，是约束下的最优解。</li>
+<li><strong>开源国产卡推理代码是生态邀约</strong>：提供 BF16&#x2F;FP8&#x2F;INT8 多精度版本，明确目标是”盘活存量国产算力，让老卡也能跑万亿模型”。对行业的含义：<strong>出口管制的威慑力边际下降</strong>——存量卡+优化的软件栈也能支撑前沿模型服务。</li>
+<li><strong>真实用量佐证</strong>：LongCat-2.0 预览版已跻身 OpenRouter 全球调用量前三（Hermes&#x2F;Claude Code&#x2F;OpenClaw 场景分列第一、二、三）。注意这个证据的性质：<strong>OpenRouter 调用量是开发者用真金白银投的票，比自报 benchmark 硬得多</strong>。</li>
+<li><strong>保持怀疑的部分</strong>：SWE-bench Pro 59.5”领先 GPT-5.5 和 Claude Opus 4.6”是厂商自报成绩，参照下一节的评测方法论打折看待。</li>
+</ol>
+<h3 id="算力生态的历史纵深（廖雪峰）"><a href="#算力生态的历史纵深（廖雪峰）" class="headerlink" title="算力生态的历史纵深（廖雪峰）"></a>算力生态的历史纵深（廖雪峰）</h3><p>廖雪峰《GPU 简史》补上了”为什么算力自主这么难”的历史因果链：Nvidia 的崛起不是芯片单点胜利——90 年代全力押注 Direct3D 击败 3dfx；2007 年推出 CUDA 把 GPU 变成通用并行计算平台；2012 年 Hinton 团队用 CUDA 训练 AlexNet 夺冠 ImageNet，从此所有 AI 算法绑定 CUDA 生态。<strong>30 年软件生态积累才是护城河，国产替代真正要补的是”CUDA 时刻”，不只是流片。</strong> 这也解释了为什么 LongCat 把国产卡推理代码开源出来如此重要——生态要靠开发者用出来。</p>
+<h3 id="一个哲学注脚（阮一峰）"><a href="#一个哲学注脚（阮一峰）" class="headerlink" title="一个哲学注脚（阮一峰）"></a>一个哲学注脚（阮一峰）</h3><p>第 405 期引伊里奇《能源与公平》（1973）：”资源低于某阈值时，增长改善公平；高于阈值后，增长以牺牲公平为代价。”套到算力上：普及算力提升所有人福利，但算力过剩后只会让少数人拉大优势。阮一峰自己的态度是悲观的：”为了经济效率，不可能保证资源平均分配。”——与”1% 的人凭大数据占据 90% 财富”（廖雪峰读卡普兰《人工智能时代》的担忧）互为印证。这条线索提醒我们：<strong>算力集中是行业结构性趋势，个人策略应该是”借力最大的池子”而非”自建小池子”。</strong></p>
+<hr>
+<h2 id="Benchmark-的水分与识别"><a href="#Benchmark-的水分与识别" class="headerlink" title="Benchmark 的水分与识别"></a>Benchmark 的水分与识别</h2><p><strong>结论：公开 benchmark 的失效不是因为厂商集体作弊，而是三重结构性原因——榜单饱和失去区分度、自报成绩天然是营销、公开目标必然被优化（Goodhart 定律）。识别方法：看第三方评测、看真实用量、自建私有 eval。</strong></p>
+<h3 id="水分从哪来"><a href="#水分从哪来" class="headerlink" title="水分从哪来"></a>水分从哪来</h3><ol>
+<li><strong>榜单饱和</strong>（美团 LoHoSearch）：BrowseComp 上顶尖模型准确率一年内从 30% 冲到 90%+，区分度归零。人工出题有系统性局限——标注者只能基于自己已知的实体出题，无法控制搜索空间。美团的解法是让机器基于 762 万实体知识图谱自动出题：新基准上最强的 GPT-5.5 只有 34.74%，解一道题平均工具调用从 35 次涨到 61 次。<strong>当一个 benchmark 大家都接近满分时，它已经变成了营销道具而非测量工具。</strong></li>
+<li><strong>自报成绩即营销</strong>（Simon Willison）：Kimi K3 自报 benchmark”大多超过 Claude Opus 4.8 max 和 GPT-5.5 high”——发布会成绩单永远挑对自己有利的对比项。Simon 的做法是永远等第三方（Artificial Analysis 的私有长程评测、Arena 人工投票）交叉验证。</li>
+<li><strong>刷榜与反刷榜的军备竞赛</strong>（池建强）：有人质疑 LMArena 可以针对性训练刷榜，池的观察是越来越难——机器评测+动态训练场+案例测试+人工投票多管齐下。他的反证很朴素：”文本能力前十就剩一家中国模型，其他家怎么不刷上去呢？”</li>
+</ol>
+<h3 id="pelicanmaxxing-事件：一次教科书级的质疑与验证（Simon-Willison）"><a href="#pelicanmaxxing-事件：一次教科书级的质疑与验证（Simon-Willison）" class="headerlink" title="pelicanmaxxing 事件：一次教科书级的质疑与验证（Simon Willison）"></a>pelicanmaxxing 事件：一次教科书级的质疑与验证（Simon Willison）</h3><p>Simon 的”鹈鹕骑自行车”测试火了 21 个月后，社区开始怀疑实验室在针对性训练（pelicanmaxxing）。Dylan Castillo 做了严谨验证：8 种动物 × 6 种交通工具 &#x3D; 48 个提示词，7 个模型各跑 3 次，用两个模型辅助评分。结论：<strong>没有证据</strong>——鹈鹕不比其他动物画得好，自行车不比其他交通工具画得好，鹈鹕×自行车组合也没有超出单项预测的加成。</p>
+<p>这个事件的三层教训：</p>
+<ul>
+<li><strong>公开怀疑要用可检验的实验回应</strong>，而不是站队互喷——这是技术社区最珍贵的品质。</li>
+<li>但 Simon 自己承认：pelican 测试与真实能力的<strong>相关性已经断裂</strong>——GLM-5.2 画的鹈鹕超过 Claude Fable 5，但”我再爱 GLM 也不认为它是 Fable 级模型”。它最大的盲区是完全测不到当今最重要的能力：<strong>agentic 工具调用和长对话下的稳定性</strong>。</li>
+<li>pelican 的残余价值恰恰不在”排名”：它是强迫自己上手新模型的 hello world、是成本探针（K3 一只鹈鹕烧了 13241 个 reasoning token、25 美分——立刻暴露”只有 max 推理档”的问题）、是隐藏系统提示探测器（95 个输入 token 对应 10 个可见 token，推出约 85 token 的隐藏提示）。<strong>一个跑过的小实验，胜过十份转述的评测报告。</strong></li>
+</ul>
+<h3 id="更诚实的评测在测什么（美团三连）"><a href="#更诚实的评测在测什么（美团三连）" class="headerlink" title="更诚实的评测在测什么（美团三连）"></a>更诚实的评测在测什么（美团三连）</h3><p>美团 LongCat 团队 2026 年连发三个 benchmark，共同发现是：<strong>模型在静态问答上已经很强，但在长程、动态、个性化场景全线崩塌</strong>——</p>
+<ul>
+<li><strong>VitaBench 2.0</strong>（长期用户建模）：最强的 Claude Opus 4.6 在”开卷”（全量历史可见）模式下平均分才刚过 0.5；接入 Agentic Memory 或 RAG 后性能<strong>反而下降</strong>——“记忆不是装上就好”；开启思考模式在个性化任务上不稳定提升（高智商≠高情商）；所有模型在”需要主动提问”的任务上断崖式下跌（Claude 家族 46.0→27.4）；连把真实偏好直接喂给模型，多数仍然失败。</li>
+<li><strong>MineExplorer</strong>（动态开放世界）：18 个顶级多模态模型集体考砸，最强的 Claude Opus 4.6 总成功率仅 41 分，从 1-hop 的 77 分跌到 4-hop 的 12 分；普遍规律”感知 &gt; 行动 &gt; 推理”——看得见世界，串不成策略；近 60% 失败是”走不到目标”；加步数、加记忆帧都救不了。</li>
+<li>这些结果对 Agent 开发者是路线图：<strong>个性化、长程规划、主动澄清，正是当前模型的三大真空地带，也是 harness 层最值得投入的地方。</strong></li>
+</ul>
+<h3 id="识别水分的实操清单"><a href="#识别水分的实操清单" class="headerlink" title="识别水分的实操清单"></a>识别水分的实操清单</h3><ol>
+<li>厂商自报成绩一律视为营销材料，等第三方交叉验证（Artificial Analysis、Arena 人投榜）。</li>
+<li>看<strong>真实用量</strong>信号：OpenRouter 调用量排行、开发者社区的自发口碑，比分数更难造假。</li>
+<li>警惕已饱和的 benchmark（80%+ 集体高分 &#x3D; 失去区分度）。</li>
+<li><strong>自建私有 eval</strong>：从自己业务里抽 3-5 个代表性任务，新模型来了先跑一遍——学 Simon 的 pelican 思路，重点不是排名而是”强迫上手 + 成本探针”。</li>
+<li>分清模型、工具（harness）、使用者三层（池建强）：”用这个工具做页面不好看”，可能是工具不行、模型不行，也可能是你不行。归因错了，选型必错。</li>
+</ol>
+<hr>
+<h2 id="AI-时代个人工作法"><a href="#AI-时代个人工作法" class="headerlink" title="AI 时代个人工作法"></a>AI 时代个人工作法</h2><p><strong>结论：把 AI 当放大器而不是替身——它放大的是你已有的工程判断力。没有判断力，烧再多 token 也做不出能上线的系统。</strong></p>
+<h3 id="怎么用-AI-写代码（廖雪峰的三次实践-池建强的社群观察）"><a href="#怎么用-AI-写代码（廖雪峰的三次实践-池建强的社群观察）" class="headerlink" title="怎么用 AI 写代码（廖雪峰的三次实践 + 池建强的社群观察）"></a>怎么用 AI 写代码（廖雪峰的三次实践 + 池建强的社群观察）</h3><p>廖雪峰用三个真实项目蹚出一条方法论演进线：</p>
+<ul>
+<li><strong>ASCII Draw（AI Coding）</strong>：浏览器聊天+手动粘贴的”古法编程”，5 天约 10 小时做完 Web 版 Monodraw，95% 代码 AI 写，花费 $0（手写估计 3 个月）。核心心法：①先给总体规划和开发原则，②<strong>小步改进，每跑通一个小功能就提交 Git</strong>，③最高效的调试法是<strong>把日志喂给 AI</strong>——告诉它计算路径的输入输出，它立刻明白自己哪算错了；④流程类&#x2F;通用功能基本粘贴就能用，小众功能要反复重写——正确率与训练素材数量正相关。</li>
+<li><strong>串口调试器（Spec Coding）</strong>：先花 1 小时画好 UI（控件全部改成有意义的变量名，如 <code>buttonSend</code>），再花 1 小时写 SPEC.md，然后一句”完成所有代码”——5 分钟跑通 90%。经验：<strong>SPEC 不但要描述功能，还要描述架构约束</strong>（如”收发数据必须异步线程，不能阻塞 UI”）；重要功能要配示例。</li>
+<li><strong>对”人人都能编程”的回答</strong>：”完全不懂编程能使用 AI Coding 吗？以后不好说，现阶段洗洗睡吧。”</li>
+</ul>
+<p>池建强从 Vibe Coding 社群上千条讨论里提炼的三条，与廖雪峰互相印证：</p>
+<ol>
+<li><strong>没有技术背景别上来搞复杂业务系统</strong>。连 https、前后端分离、API 都不知道，AI 拿不到准确 prompt 就会自己糊弄一套——“Token 白烧，系统没法上线，安全问题一大堆”。先做单机或逻辑简单的东西。</li>
+<li>他自己的 CatReader 是最好的注脚：一个人 Vibe 出可用的离线版很容易，但<strong>一旦涉及网络、数据库、用户系统、生产环境、安全，要开放给成千上万人用，门槛依然很高</strong>——后期前后端分离、跨域、CICD 都需要研发团队支持。</li>
+<li><strong>记录即创作</strong>：聊完就忘、重复提问是最大的效率黑洞；把实践写下来，很多没弄明白的地方在写的过程里就明白了。</li>
+</ol>
+<h3 id="怎么选模型和工具（多方合流）"><a href="#怎么选模型和工具（多方合流）" class="headerlink" title="怎么选模型和工具（多方合流）"></a>怎么选模型和工具（多方合流）</h3><ul>
+<li><strong>不是所有任务都需要最强模型</strong>（张戈 Beggar 的核心思想）：把研发流程拆成 9 个角色，每个角色配”能力够用的最便宜模型”——编排用 deepseek-v4-pro（0.16 倍率）、常规编码用 v4-flash（0.06 倍率）、方案设计才上 glm-5.2（0.79 倍率），加双 Reviewer 交叉审查兜底质量，<strong>成本直降 90%</strong>。这是”模型分层”思想在个人工作流的落地。</li>
+<li><strong>国产模型日常够用</strong>：池建强用 glm-5.2 两小时做出 CatReader 微信移动版；”国际版纯血 pro 非常抗用，能力国内顶级”。日常补全、模板任务、中文场景，国产模型性价比碾压。</li>
+<li><strong>工作模式从 chat 转向 agentic</strong>（Ethan Mollick 经 Simon 转述）：一年前的选型指南还是”选哪个聊天框”，现在是”选哪个能一口气干几小时人类工作量的 agent 系统”（Codex&#x2F;ChatGPT Work、Claude Code&#x2F;Cowork）。跟进方向要押在 agent 能力上。</li>
+<li><strong>本地部署要懂硬件账</strong>（阮一峰第 404 期）：独显（RTX 5090，32GB 显存&#x2F;1792GB&#x2F;s 带宽）跑不动 70B 模型——显存不够；统一内存迷你机（128GB 内存&#x2F;256GB&#x2F;s 带宽）装得下但生成龟速——带宽不够。现阶段本地最优解：<strong>统一内存机器 + 中等规模 MoE 模型</strong>（如 30B-A3B，每 token 只读 2GB，理论 100+ token&#x2F;s），且提示词不能太长（算力弱导致 prefill 慢，4000 token 文档要等 40 秒）。</li>
+</ul>
+<h3 id="国内环境下的现实约束与对策"><a href="#国内环境下的现实约束与对策" class="headerlink" title="国内环境下的现实约束与对策"></a>国内环境下的现实约束与对策</h3><ul>
+<li><strong>合规风险纳入技术选型</strong>：Claude 已对中国资本控股企业断供且封堵曲线路径。个人学习可以研究，但<strong>任何商业项目的模型依赖要有国产 Plan B</strong>，架构上做好模型可替换（统一网关&#x2F;抽象层）。</li>
+<li><strong>远离灰产 token</strong>（Simon Willison 转述 Relay Market 调查）：国内存在成熟的 token 转售灰产——用滥用免费试用、无保护客服机器人代理、盗刷信用卡拿到的 API 额度打折转卖（主要用 one-api&#x2F;new-api 搭代理池）。<strong>明显低于官价的”中转 API”大概率来路不正</strong>，账号随时被封、数据安全无保障。反过来，自己对外暴露 LLM 应用时也要防被薅：给 API key 设硬性花费上限。</li>
+<li><strong>一手信源对冲信息污染</strong>（池建强）：他逐字核查过一条刷屏假新闻——“ChatGPT 和 Codex 合体了”，源头是 9to5mac 一句”will soon put Codex functionality inside the ChatGPT app”被国内 AI 媒体错译放大。他的对策是自建 CatReader：直接订阅各大实验室 Blog、研究报告、知名实践者博客和 X 发言。”AI 时代语言已经不是障碍了，获取最好的信息才是最重要的。”</li>
+<li><strong>防 AI 倦怠</strong>（阮一峰第 404 期）：AI 制造的新型倦怠有明确机制（职责扩散、边界模糊、多任务幻觉、自强化循环），对策也明确：重要决定前停一下、安排任务顺序减少上下文切换、预留真正的人际交往时间。第 403 期那句言论值得贴在桌上：”程序员的工作曾属于冥想类工作，现在更像不停接单的餐厅服务员”——<strong>心流时间要主动保卫</strong>。</li>
+<li><strong>长期定位</strong>（廖雪峰，写于 2016 年但依然成立）：”不要和机器人竞争工作，你竞争不过；要做设计和制造机器人的工作。”对后端转 Agent 方向的工程师，这句话的 2026 版就是：别去卷”会用 AI 写代码”，去卷”会造 Agent 系统、会评测、会搭 harness”。</li>
+</ul>
+<hr>
+<h2 id="值得关注的信号源"><a href="#值得关注的信号源" class="headerlink" title="值得关注的信号源"></a>值得关注的信号源</h2><table>
+<thead>
+<tr>
+<th>信号源</th>
+<th>类型</th>
+<th>为什么值得订阅</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>阮一峰《科技爱好者周刊》</td>
+<td>中文周刊</td>
+<td>每周固定输出，硬件账&#x2F;成本账算得清楚，文摘选材有社会视角</td>
+</tr>
+<tr>
+<td>池建强 MacTalk</td>
+<td>中文博客</td>
+<td>产品人视角的 AI 实践，中美对比克制不煽情，假新闻核查能力强</td>
+</tr>
+<tr>
+<td>Simon Willison（simonwillison.net）</td>
+<td>英文博客</td>
+<td>每个新模型第一时间上手实测，评测方法论的行业标杆，转述必附出处</td>
+</tr>
+<tr>
+<td>廖雪峰官网</td>
+<td>中文博客</td>
+<td>资深工程师的 AI Coding 一手实录（AI&#x2F;Vibe&#x2F;Spec Coding 三部曲），不贩卖焦虑</td>
+</tr>
+<tr>
+<td>美团技术团队 &#x2F; LongCat</td>
+<td>厂商技术博客</td>
+<td>国产算力+万亿模型的一手工程细节；VitaBench&#x2F;LoHoSearch&#x2F;MineExplorer 是诚实评测的样本</td>
+</tr>
+<tr>
+<td>OpenRouter 排行榜</td>
+<td>用量数据</td>
+<td>真实调用量 &#x3D; 开发者用钱投票，比 benchmark 分数难造假</td>
+</tr>
+<tr>
+<td>Artificial Analysis &#x2F; LMArena</td>
+<td>第三方评测</td>
+<td>私有长程评测 + 人工投票，交叉验证厂商自报成绩</td>
+</tr>
+<tr>
+<td>各实验室官方 Blog（Anthropic&#x2F;OpenAI&#x2F;Moonshot&#x2F;智谱等）</td>
+<td>一手信源</td>
+<td>池建强的核心建议：读原文，不读攒稿 AI 媒体</td>
+</tr>
+</tbody></table>
+<hr>
+<h2 id="延伸阅读（源文件清单）"><a href="#延伸阅读（源文件清单）" class="headerlink" title="延伸阅读（源文件清单）"></a>延伸阅读（源文件清单）</h2><p><strong>阮一峰（3 篇，精读）</strong></p>
+<ul>
+<li><code>ruanyifeng/2026-07-10_科技爱好者周刊（第_403_期）：为什么_Dropbox_不成功.md</code>（AI 成本超过工程师）</li>
+<li><code>ruanyifeng/2026-07-16_科技爱好者周刊（第_404_期）：你需要知道的_AI_内存知识.md</code>（本地推理硬件账、AI 倦怠文摘）</li>
+<li><code>ruanyifeng/2026-07-24_科技爱好者周刊（第_405_期）：资源，社会公平与算力.md</code>（算力与公平）</li>
+</ul>
+<p><strong>池建强 MacTalk（10 篇，精读）</strong></p>
+<ul>
+<li><code>mactalk/2025-09-10_Claude_这条路在中国企业这里彻底断掉了.md</code>（AI 地缘政治）</li>
+<li><code>mactalk/2026-02-13_中美_AI_竞争的差距到底有多大？.md</code>（本文核心素材）</li>
+<li><code>mactalk/2026-05-28_想_Vibe_就别错过这个巨大的流动知识库.md</code>（Vibe Coding 社群三条经验）</li>
+<li><code>mactalk/2026-06-04_CatReader_上线：重启_RSS_阅读.md</code>（一手信源方法论、Vibe 的边界）</li>
+<li><code>mactalk/2026-06-06_谁说_ChatGPT_和_Codex_合体了？.md</code>（AI 媒体假新闻核查）</li>
+<li><code>mactalk/2026-06-15_两小时用智谱_glm_5.2_实现了_CatReader_的移动微信版.md</code>（国产模型实战）</li>
+<li><code>mactalk/2025-06-01_墨问发布_OpenAI、社区版_mcp_和_chrome_AI_剪藏助手.md</code>、<code>mactalk/2025-10-10_开始构建墨问的_Web_版本.md</code>、<code>mactalk/2025-12-18_AI知识库上线：墨问时间知识库.md</code>、<code>mactalk/2026-05-25_墨问_Web_社区版本上线，本月_墨问_cli_之后的第二个发布.md</code>（墨问产品实践，佐证”AI 时代 Web 回归&#x2F;知识流动”观点）</li>
+</ul>
+<p><strong>美团技术团队（6 篇，精读）</strong></p>
+<ul>
+<li><code>meituan/2026-07-29_美团_LongCat-2.0_正式发布：在国产算力集群上完成全流程训练与推理的万亿参数模型.md</code></li>
+<li><code>meituan/2026-07-29_正式开源！美团_LongCat-2.0_同步开放国产卡推理代码.md</code></li>
+<li><code>meituan/2026-07-29_美团正式发布_CatPaw：全场景_AI_Agent，从个人提效到企业智能化.md</code></li>
+<li><code>meituan/2026-07-29_LongCat_开源_VitaBench_2.0：长期动态智能体基准新标杆.md</code></li>
+<li><code>meituan/2026-07-29_下一代搜索智能体评测基准！美团开源LoHoSearch，用知识图谱校准AI能力认知.md</code></li>
+<li><code>meituan/2026-07-29_让AI离开温室，走向动态世界：MineExplorer揭示顶级多模态大模型被忽视的能力断层.md</code></li>
+</ul>
+<p><strong>廖雪峰（6 篇，精读）</strong></p>
+<ul>
+<li><code>liaoxuefeng/2026-05-15_AI到底会不会写代码.md</code>（AI 不需要人类高级语言的思想实验）</li>
+<li><code>liaoxuefeng/2026-05-15_AI_Coding从零到一实现ASCII_Draw.md</code></li>
+<li><code>liaoxuefeng/2026-05-15_Spec_Coding从零到一实现串口调试器.md</code></li>
+<li><code>liaoxuefeng/2026-05-15_GPU简史兼论Nvidia的崛起.md</code></li>
+<li><code>liaoxuefeng/2026-05-15_GPT接入简明指南.md</code>（”能不能用好 AI，关键看能不能表述清楚问题”）</li>
+<li><code>liaoxuefeng/2026-05-15_人工智能时代的危机.md</code>（2016 年书评，”做造机器人的人”）</li>
+</ul>
+<p><strong>Simon Willison（7 篇，精读）</strong></p>
+<ul>
+<li><code>simonwillison/2026-07-20_Who&#39;s_Afraid_of_Chinese_Models_.md</code></li>
+<li><code>simonwillison/2026-07-19_AI_Mania_Is_Eviscerating_Global_Decision-Making.md</code></li>
+<li><code>simonwillison/2026-07-16_Kimi_K3,_and_what_we_can_still_learn_from_the_pelican_benchmark.md</code></li>
+<li><code>simonwillison/2026-07-22_Are_AI_labs_pelicanmaxxing_.md</code></li>
+<li><code>simonwillison/2026-07-26_An_Inside_Look_at_the_Relay_Market_Powering_Token_Resellers_and_Fraud.md</code></li>
+<li><code>simonwillison/2026-07-27_moonshotai_Kimi-K3.md</code>（开源权重许可证分析）</li>
+<li><code>simonwillison/2026-07-27_An_opinionated_guide_to_which_AI_to_use_to_do_stuff.md</code>（chat→agentic 迁移）</li>
+</ul>
+<p><strong>张戈（2 篇，RSS 摘要残片但含核心信息，已引用）</strong></p>
+<ul>
+<li><code>zhangge/2026-07-09_Beggar：让_CodeBuddy_多_Agent_协作研发成本直降_90%_的开源套件.md</code>（模型分层降本，全文见 zhang.ge&#x2F;5171.html）</li>
+<li><code>zhangge/2025-01-16_FastTTS：支持私有化部署和源阅读无缝对接的语音合成服务.md</code>（edge-tts 私有化方案，全文见 zhang.ge&#x2F;5170.html）</li>
+</ul>
+<p><strong>浏览后未纳入（4 篇，原因见备注）</strong></p>
+<ul>
+<li><code>meituan/2026-07-29_ICML_2026___美团技术团队学术论文精选.md</code>（论文目录合集，无独立观点）</li>
+<li><code>meituan/2026-07-29_直播回放·含_ACL&#39;26_杰出论文___美团_AI_顶会论文_32_篇精讲.md</code>（活动预告）</li>
+<li><code>meituan/2026-07-29_美团技术团队顶会论文分享：搜索推荐ASX专场.md</code>（会议预告）</li>
+<li><code>meituan/2026-07-29_美团海报生成_AIGC_技术创新与实践.md</code>（垂直 AIGC 工程细节，与本文主题不符）</li>
+</ul>
+
+		</div>
+
+		
+		<div class="post-copyright-info w-full my-8 px-2 sm:px-6 md:px-8">
+			<div class="article-copyright-info-container">
+    <ul>
+        <li><strong>标题:</strong> AI 浪潮下的行业观察与个人工作法</li>
+        <li><strong>作者:</strong> phenix-fledgling</li>
+        <li><strong>创建于
+                :</strong> 2026-07-29 14:20:00</li>
+        
+            <li>
+                <strong>更新于
+                    :</strong> 2026-07-29 19:15:49
+            </li>
+        
+        <li>
+            <strong>链接:</strong> https://blog.xugua.xyz//post/AI 浪潮下的行业观察与个人工作法.html
+        </li>
+        <li>
+            <strong>
+                版权声明:
+            </strong>
+            
+
+            
+                本文章采用 <a class="license" target="_blank" rel="noopener" href="https://creativecommons.org/licenses/by-nc-sa/4.0">CC BY-NC-SA 4.0</a> 进行许可。
+            
+        </li>
+    </ul>
+</div>
+
+		</div>
+		
+
+		
+		<ul class="post-tags-box text-lg mt-1.5 flex-wrap justify-center flex md:hidden">
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/%E8%A1%8C%E4%B8%9A%E8%A7%82%E5%AF%9F/">#行业观察</a>&nbsp;
+			</li>
+			
+			<li class="tag-item mx-0.5">
+				<a href="/tags/AI%E5%B7%A5%E4%BD%9C%E6%B3%95/">#AI工作法</a>&nbsp;
+			</li>
+			
+		</ul>
+		
+
+		
+
+		
+		<div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+			
+			<div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="prev" rel="prev" href="/post/AI%20Agent%20%E5%B7%A5%E7%A8%8B%E5%AE%9E%E8%B7%B5%EF%BC%9A%E4%BB%8E%20Coding%20Agent%20%E8%A7%A3%E5%89%96%E5%88%B0%E6%97%A5%E5%B8%B8%E5%B7%A5%E4%BD%9C%E6%B5%81.html">
+					<span class="left arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-left"></i>
+					</span>
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">AI Agent 工程实践：从 Coding Agent 解剖到日常工作流</span>
+						<span class="post-nav-item">上一篇</span>
+					</span>
+				</a>
+			</div>
+			
+			
+			<div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+				<a class="next" rel="next" href="/post/%E7%BB%8F%E5%85%B8%E5%B7%A5%E7%A8%8B%E6%99%BA%E6%85%A7%EF%BC%9AAI%20%E4%B9%8B%E5%A4%96%E4%B8%8D%E4%BC%9A%E8%BF%87%E6%97%B6%E7%9A%84%E5%BA%95%E5%AD%90%E5%8A%9F%E5%A4%AB.html">
+					<span class="title flex justify-center items-center">
+						<span class="post-nav-title-item truncate max-w-48">经典工程智慧：AI 之外不会过时的底子功夫</span>
+						<span class="post-nav-item">下一篇</span>
+					</span>
+					<span class="right arrow-icon flex justify-center items-center">
+						<i class="fa-solid fa-chevron-right"></i>
+					</span>
+				</a>
+			</div>
+			
+		</div>
+		
+
+
+		
+		<div class="comment-container px-2 sm:px-6 md:px-8 pb-8">
+			<div class="comments-container mt-10 w-full ">
+    <div id="comment-anchor" class="w-full h-2.5"></div>
+    <div class="comment-area-title w-full my-1.5 md:my-2.5 text-xl md:text-3xl font-bold">
+        评论
+    </div>
+    
+
+        
+            
+    <div id="waline"></div>
+    <script type="module" data-swup-reload-script>
+      import { init } from '/js/libs/waline.js';
+
+      (function() {
+        const startPath = location.pathname;
+        const startTime = Date.now();
+        const retryDelay = 200;
+        const retryLimit = 5000;
+
+        const runWaline = () => {
+          if (location.pathname !== startPath) {
+            return;
+          }
+
+          const container = document.getElementById('waline');
+          if (!container) {
+            if (Date.now() - startTime < retryLimit) {
+              setTimeout(runWaline, retryDelay);
+            }
+            return;
+          }
+
+          if (window.redefineWalineInstance?.destroy) {
+            window.redefineWalineInstance.destroy();
+          }
+
+          container.innerHTML = '';
+          window.redefineWalineInstance = init({
+            el: '#waline',
+            serverURL: 'https://example.example.com',
+            path: location.pathname,
+            dark: 'body[class~="dark-mode"]',
+            reaction: false,
+            requiredMeta: ['nick', 'mail'],
+            emoji: [],
+                      lang: 'zh-CN',
+          });
+        };
+
+        runWaline();
+      })();
+    </script>
+
+
+
+        
+    
+</div>
+
+		</div>
+		
+	</div>
+
+	
+	<div class="toc-content-container">
+		<div class="post-toc-wrap">
+	<div class="post-toc">
+		<div class="toc-title">目录</div>
+		<div class="page-title">AI 浪潮下的行业观察与个人工作法</div>
+		<ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%B8%AD%E7%BE%8E-AI-%E7%AB%9E%E4%BA%89%E7%9A%84%E7%9C%9F%E5%AE%9E%E5%9B%BE%E6%99%AF"><span class="nav-text">中美 AI 竞争的真实图景</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B7%AE%E8%B7%9D%E7%9A%84%E5%A4%9A%E7%BB%B4%E6%8B%86%E8%A7%A3%EF%BC%88%E6%B1%A0%E5%BB%BA%E5%BC%BA%EF%BC%89"><span class="nav-text">差距的多维拆解（池建强）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%B0%E7%BC%98%E6%94%BF%E6%B2%BB%EF%BC%9A%E9%93%81%E5%B9%95%E5%B7%B2%E7%BB%8F%E8%90%BD%E4%B8%8B%EF%BC%88%E6%B1%A0%E5%BB%BA%E5%BC%BA%EF%BC%89"><span class="nav-text">地缘政治：铁幕已经落下（池建强）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E7%BE%8E%E5%9B%BD%E9%97%AD%E6%BA%90%E3%80%81%E4%B8%AD%E5%9B%BD%E5%BC%80%E6%BA%90%EF%BC%9F%EF%BC%88%E6%B1%A0%E5%BB%BA%E5%BC%BA-Simon-Willison-Ben-Thompson%EF%BC%89"><span class="nav-text">为什么美国闭源、中国开源？（池建强 + Simon Willison&#x2F;Ben Thompson）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A1%E6%B2%AB%E7%9A%84%E5%8F%A6%E4%B8%80%E9%9D%A2%EF%BC%9A%E7%8B%82%E7%83%AD%E6%AD%A3%E5%9C%A8%E8%85%90%E8%9A%80%E5%86%B3%E7%AD%96%EF%BC%88Simon-Willison-%E9%98%AE%E4%B8%80%E5%B3%B0%EF%BC%89"><span class="nav-text">泡沫的另一面：狂热正在腐蚀决策（Simon Willison &#x2F; 阮一峰）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%9B%BD%E4%BA%A7%E6%A8%A1%E5%9E%8B%E4%B8%8E%E7%AE%97%E5%8A%9B%E8%87%AA%E4%B8%BB"><span class="nav-text">国产模型与算力自主</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#LongCat-2-0-%E6%84%8F%E5%91%B3%E7%9D%80%E4%BB%80%E4%B9%88%EF%BC%88%E7%BE%8E%E5%9B%A2%E6%8A%80%E6%9C%AF%E5%9B%A2%E9%98%9F%EF%BC%89"><span class="nav-text">LongCat-2.0 意味着什么（美团技术团队）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E5%8A%9B%E7%94%9F%E6%80%81%E7%9A%84%E5%8E%86%E5%8F%B2%E7%BA%B5%E6%B7%B1%EF%BC%88%E5%BB%96%E9%9B%AA%E5%B3%B0%EF%BC%89"><span class="nav-text">算力生态的历史纵深（廖雪峰）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%80%E4%B8%AA%E5%93%B2%E5%AD%A6%E6%B3%A8%E8%84%9A%EF%BC%88%E9%98%AE%E4%B8%80%E5%B3%B0%EF%BC%89"><span class="nav-text">一个哲学注脚（阮一峰）</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Benchmark-%E7%9A%84%E6%B0%B4%E5%88%86%E4%B8%8E%E8%AF%86%E5%88%AB"><span class="nav-text">Benchmark 的水分与识别</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B0%B4%E5%88%86%E4%BB%8E%E5%93%AA%E6%9D%A5"><span class="nav-text">水分从哪来</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#pelicanmaxxing-%E4%BA%8B%E4%BB%B6%EF%BC%9A%E4%B8%80%E6%AC%A1%E6%95%99%E7%A7%91%E4%B9%A6%E7%BA%A7%E7%9A%84%E8%B4%A8%E7%96%91%E4%B8%8E%E9%AA%8C%E8%AF%81%EF%BC%88Simon-Willison%EF%BC%89"><span class="nav-text">pelicanmaxxing 事件：一次教科书级的质疑与验证（Simon Willison）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9B%B4%E8%AF%9A%E5%AE%9E%E7%9A%84%E8%AF%84%E6%B5%8B%E5%9C%A8%E6%B5%8B%E4%BB%80%E4%B9%88%EF%BC%88%E7%BE%8E%E5%9B%A2%E4%B8%89%E8%BF%9E%EF%BC%89"><span class="nav-text">更诚实的评测在测什么（美团三连）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AF%86%E5%88%AB%E6%B0%B4%E5%88%86%E7%9A%84%E5%AE%9E%E6%93%8D%E6%B8%85%E5%8D%95"><span class="nav-text">识别水分的实操清单</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#AI-%E6%97%B6%E4%BB%A3%E4%B8%AA%E4%BA%BA%E5%B7%A5%E4%BD%9C%E6%B3%95"><span class="nav-text">AI 时代个人工作法</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E7%94%A8-AI-%E5%86%99%E4%BB%A3%E7%A0%81%EF%BC%88%E5%BB%96%E9%9B%AA%E5%B3%B0%E7%9A%84%E4%B8%89%E6%AC%A1%E5%AE%9E%E8%B7%B5-%E6%B1%A0%E5%BB%BA%E5%BC%BA%E7%9A%84%E7%A4%BE%E7%BE%A4%E8%A7%82%E5%AF%9F%EF%BC%89"><span class="nav-text">怎么用 AI 写代码（廖雪峰的三次实践 + 池建强的社群观察）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%80%8E%E4%B9%88%E9%80%89%E6%A8%A1%E5%9E%8B%E5%92%8C%E5%B7%A5%E5%85%B7%EF%BC%88%E5%A4%9A%E6%96%B9%E5%90%88%E6%B5%81%EF%BC%89"><span class="nav-text">怎么选模型和工具（多方合流）</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9B%BD%E5%86%85%E7%8E%AF%E5%A2%83%E4%B8%8B%E7%9A%84%E7%8E%B0%E5%AE%9E%E7%BA%A6%E6%9D%9F%E4%B8%8E%E5%AF%B9%E7%AD%96"><span class="nav-text">国内环境下的现实约束与对策</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%80%BC%E5%BE%97%E5%85%B3%E6%B3%A8%E7%9A%84%E4%BF%A1%E5%8F%B7%E6%BA%90"><span class="nav-text">值得关注的信号源</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BB%B6%E4%BC%B8%E9%98%85%E8%AF%BB%EF%BC%88%E6%BA%90%E6%96%87%E4%BB%B6%E6%B8%85%E5%8D%95%EF%BC%89"><span class="nav-text">延伸阅读（源文件清单）</span></a></li></ol>
+
+	</div>
+</div>
+	</div>
+	
+</div>
+
+			</div>
+
+			
+		</div>
+
+		<div class="main-content-footer">
+			<footer class="footer mt-5 py-5 h-auto text-base text-third-text-color relative border-t-2 border-t-border-color">
+    <div class="info-container py-3 text-center">
+        
+        <div class="text-center">
+            &copy;
+            
+              <span>2022</span>
+              -
+            
+            2026&nbsp;&nbsp;<i class="fa-solid fa-heart fa-beat" style="--fa-animation-duration: 0.5s; color: #f54545"></i>&nbsp;&nbsp;<a href="/">phenix-fledgling</a>
+            
+                
+                <p class="post-count space-x-0.5">
+                    <span>
+                        共撰写了 69 篇文章
+                    </span>
+                    
+                </p>
+            
+        </div>
+        
+            <script data-swup-reload-script src="https://cn.vercount.one/js"></script>
+            <div class="relative text-center lg:absolute lg:right-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-right">
+                
+                    <span id="busuanzi_container_site_uv" class="lg:!block">
+                        <span class="text-sm">访问人数</span>
+                        <span id="busuanzi_value_site_uv"></span>
+                    </span>
+                
+                
+                    <span id="busuanzi_container_site_pv" class="lg:!block">
+                        <span class="text-sm">总访问量</span>
+                        <span id="busuanzi_value_site_pv"></span>
+                    </span>
+                
+            </div>
+        
+        <div class="relative text-center lg:absolute lg:left-[20px] lg:top-1/2 lg:-translate-y-1/2 lg:text-left">
+            <span class="lg:block text-sm">由 <?xml version="1.0" encoding="utf-8"?><!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd"><svg class="relative top-[2px] inline-block align-baseline" version="1.1" id="圖層_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="1rem" height="1rem" viewBox="0 0 512 512" enable-background="new 0 0 512 512" xml:space="preserve"><path fill="#0E83CD" d="M256.4,25.8l-200,115.5L56,371.5l199.6,114.7l200-115.5l0.4-230.2L256.4,25.8z M349,354.6l-18.4,10.7l-18.6-11V275H200v79.6l-18.4,10.7l-18.6-11v-197l18.5-10.6l18.5,10.8V237h112v-79.6l18.5-10.6l18.5,10.8V354.6z"/></svg><a target="_blank" class="text-base" href="https://hexo.io">Hexo</a> 驱动</span>
+            <span class="text-sm lg:block">主题&nbsp;<a class="text-base" target="_blank" href="https://github.com/EvanNotFound/hexo-theme-redefine">Redefine v2.9.0</a></span>
+        </div>
+        
+        
+        
+        
+            
+                
+        
+                
+        
+                
+
+                    
+                        <script data-swup-reload-script src="/js/agent-chat.js"></script>
+                    
+        
+        
+    </div>  
+</footer>
+		</div>
+	</div>
+
+	
+	<div class="post-tools">
+		<div class="post-tools-container">
+	<ul class="article-tools-list">
+		<!-- TOC aside toggle -->
+		
+		<li class="right-bottom-tools page-aside-toggle">
+			<i class="fa-regular fa-outdent"></i>
+		</li>
+		
+
+		<!-- go comment -->
+		
+		<li class="go-comment">
+			<i class="fa-regular fa-comments"></i>
+		</li>
+		
+	</ul>
+</div>
+	</div>
+	
+
+	<div class="right-side-tools-container">
+		<div class="side-tools-container">
+	<ul class="hidden-tools-list">
+		<li class="right-bottom-tools tool-font-adjust-plus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-plus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-font-adjust-minus flex justify-center items-center">
+			<i class="fa-regular fa-magnifying-glass-minus"></i>
+		</li>
+
+		<li class="right-bottom-tools tool-dark-light-toggle flex justify-center items-center">
+			<i class="fa-regular fa-moon"></i>
+		</li>
+
+		<!-- rss -->
+		
+
+		
+
+		<li class="right-bottom-tools tool-scroll-to-bottom flex justify-center items-center">
+			<i class="fa-regular fa-arrow-down"></i>
+		</li>
+	</ul>
+
+	<ul class="visible-tools-list">
+		<li class="right-bottom-tools toggle-tools-list flex justify-center items-center">
+			<i class="fa-regular fa-cog fa-spin"></i>
+		</li>
+		
+		<li class="right-bottom-tools tool-scroll-to-top flex justify-center items-center">
+			<i class="arrow-up fas fa-arrow-up"></i>
+			<span class="percent"></span>
+		</li>
+		
+		
+	</ul>
+</div>
+	</div>
+
+	<div class="image-viewer-container" role="dialog" aria-modal="true" aria-label="图片查看器">
+	<button class="image-viewer-close" type="button" aria-label="关闭">
+		<i class="fa-solid fa-xmark"></i>
+	</button>
+	<button class="image-viewer-prev" type="button" aria-label="上一页">
+		<i class="fa-solid fa-chevron-left"></i>
+	</button>
+	<div class="image-viewer-frame">
+		<img src="" alt="">
+	</div>
+	<div class="image-viewer-exif-panel hidden absolute left-1/2 bottom-20 -translate-x-1/2 w-[min(92vw,420px)] max-h-[60vh] overflow-hidden rounded-2xl bg-background-color-transparent-80 p-4 text-left shadow-redefine-flat backdrop-blur-md" role="dialog" aria-label="EXIF" aria-hidden="true">
+		<div class="flex items-center justify-between mb-3">
+			<span class="text-sm font-semibold text-first-text-color">EXIF</span>
+			<button class="image-viewer-exif-close flex h-8 w-8 items-center justify-center rounded-full bg-background-color-transparent-80 text-first-text-color transition hover:bg-background-color-transparent-40" type="button" aria-label="关闭">
+				<i class="fa-solid fa-xmark text-[0.65rem]"></i>
+			</button>
+		</div>
+		<div class="image-viewer-exif-cards grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-[50vh] overflow-y-auto pr-1 scrollbar-hide"></div>
+		<template class="image-viewer-exif-card-template">
+			<div class="rounded-lg bg-background-color-transparent-40 px-3 py-2">
+				<div class="image-viewer-exif-card-header flex items-center gap-2 mb-1">
+					<i class="image-viewer-exif-card-icon fa-solid fa-circle-info text-xs text-third-text-color"></i>
+					<div class="image-viewer-exif-card-title text-xs font-semibold text-first-text-color"></div>
+				</div>
+				<div class="image-viewer-exif-card-items flex flex-col gap-1"></div>
+			</div>
+		</template>
+	</div>
+	<button class="image-viewer-exif-toggle flex items-center gap-2 hidden absolute left-1/2 bottom-6 -translate-x-1/2 rounded-full border border-border-color bg-background-color-transparent-80 px-4 py-2 text-first-text-color backdrop-blur-md transition hover:bg-background-color-transparent-40" type="button" aria-label="EXIF" aria-expanded="false">
+		<i class="fa-solid fa-circle-info text-xs"></i>
+		<span class="text-xs font-semibold uppercase tracking-wider">EXIF</span>
+	</button>
+	<button class="image-viewer-next" type="button" aria-label="下一页">
+		<i class="fa-solid fa-chevron-right"></i>
+	</button>
+</div>
+
+
+	
+
+</main>
+
+
+
+<script src="/js/build/libs/Swup.min.js"></script>
+
+<script src="/js/build/libs/SwupSlideTheme.min.js"></script>
+
+<script src="/js/build/libs/SwupScriptsPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupProgressPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupScrollPlugin.min.js"></script>
+
+<script src="/js/build/libs/SwupPreloadPlugin.min.js"></script>
+
+<script>
+    window.swup = new Swup({
+        plugins: [
+            new SwupScriptsPlugin({
+                optin: true,
+            }),
+            new SwupProgressPlugin(),
+            new SwupScrollPlugin({
+                offset: 80,
+            }),
+            new SwupSlideTheme({
+                mainElement: ".main-content-body",
+            }),
+            new SwupPreloadPlugin(),
+        ],
+        containers: ["#swup"],
+    });
+
+    window.dispatchEvent(
+        new CustomEvent("redefine:swup:ready", {
+            detail: {
+                swup: window.swup,
+            },
+        }),
+    );
+</script>
+
+
+
+
+	
+<script src="/js/build/main.js" type="module"></script>
+
+
+
+    
+<script src="/js/build/libs/odometer.min.js"></script>
+
+    
+<link rel="stylesheet" href="/assets/odometer-theme-minimal.css">
+
+
+
+
+
+
+
+  
+<script src="/js/build/libs/Typed.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+<script src="/js/build/libs/moment-with-locales.min.js" data-swup-reload-script=""></script>
+
+
+
+	
+</body>
+
+</html>
