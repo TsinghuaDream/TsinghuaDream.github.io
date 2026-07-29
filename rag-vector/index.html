@@ -1,0 +1,614 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>向量与 RAG · 会动的图解</title>
+  <style>
+    :root {
+      --bg: #111313;
+      --panel: #1b1e1e;
+      --panel-2: #232727;
+      --text: #f3f1ea;
+      --muted: #a5aca8;
+      --line: #38403d;
+      --teal: #45d6b3;
+      --blue: #83aaff;
+      --yellow: #f4bd63;
+      --coral: #f47d83;
+      --green: #94dc83;
+      --sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+      --mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--sans);
+      line-height: 1.6;
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      opacity: .25;
+      background-image: radial-gradient(#6a7771 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: linear-gradient(to bottom, #000, transparent 80%);
+    }
+    a { color: inherit; }
+    button { font: inherit; }
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 5;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 24px;
+      border-bottom: 1px solid transparent;
+      transition: background .2s, border-color .2s;
+    }
+    .nav.scrolled { background: rgba(17, 19, 19, .92); border-color: var(--line); }
+    .brand, .eyebrow, .mono { font-family: var(--mono); }
+    .brand { color: var(--muted); font-size: 12px; letter-spacing: .18em; }
+    .brand::before { content: "●"; color: var(--teal); margin-right: 8px; }
+    .nav-links { display: flex; gap: 20px; font: 12px var(--mono); color: var(--muted); }
+    .nav-links a { text-decoration: none; }
+    .nav-links a:hover { color: var(--yellow); }
+    @media (max-width: 640px) { .nav-links { display: none; } }
+
+    .hero {
+      position: relative;
+      min-height: 680px;
+      height: 100vh;
+      overflow: hidden;
+      border-bottom: 1px solid var(--line);
+    }
+    #hero-canvas { position: absolute; inset: 0; width: 100%; height: 100%; }
+    .hero-copy { position: absolute; left: 8vw; bottom: 15vh; max-width: 620px; }
+    .eyebrow { color: var(--yellow); font-size: 12px; letter-spacing: .18em; }
+    h1, h2, h3 { margin: 0; line-height: 1.15; }
+    h1 { margin-top: 18px; font-size: clamp(42px, 7vw, 86px); letter-spacing: -.05em; }
+    h1 em { color: var(--teal); font-style: normal; }
+    .hero-copy p { max-width: 42em; margin: 20px 0 0; color: var(--muted); font-size: 16px; }
+    .scroll-hint { position: absolute; bottom: 24px; left: 50%; color: var(--muted); font: 11px var(--mono); transform: translateX(-50%); animation: bob 1.8s ease-in-out infinite; }
+    @keyframes bob { 50% { transform: translate(-50%, 7px); } }
+
+    main, footer { position: relative; max-width: 1040px; margin: auto; }
+    section { padding: 110px 24px 0; }
+    .section-title { max-width: 700px; }
+    .section-title h2 { margin-top: 12px; font-size: clamp(32px, 5vw, 58px); letter-spacing: -.04em; }
+    .section-title p { margin: 16px 0 0; color: var(--muted); }
+    .accent-teal { color: var(--teal); }
+    .accent-yellow { color: var(--yellow); }
+    .accent-coral { color: var(--coral); }
+
+    .vector-demo { display: grid; grid-template-columns: 1fr 1.45fr; gap: 44px; align-items: center; margin-top: 52px; }
+    @media (max-width: 760px) { .vector-demo { grid-template-columns: 1fr; } }
+    .word { font-size: clamp(50px, 8vw, 92px); font-weight: 800; letter-spacing: -.08em; }
+    .word-buttons { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+    .word-buttons button, .phase button, .replay {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      color: var(--muted);
+      background: transparent;
+      padding: 7px 15px;
+      cursor: pointer;
+      transition: .2s;
+    }
+    .word-buttons button:hover, .word-buttons button.active, .phase button.active, .phase button:hover, .replay:hover {
+      color: var(--yellow); border-color: var(--yellow); background: #2a2419;
+    }
+    .vec-wrap { position: relative; }
+    .vec-bracket { position: absolute; top: 0; bottom: 0; border: 2px solid var(--teal); border-radius: 14px; opacity: .35; pointer-events: none; }
+    .vec-bracket.left { left: -8px; border-right: none; width: 14px; }
+    .vec-bracket.right { right: -8px; border-left: none; width: 14px; }
+    .vec-label { position: absolute; top: -10px; left: 50%; transform: translateX(-50%); background: var(--bg); color: var(--teal); font: 11px var(--mono); padding: 2px 14px; white-space: nowrap; }
+    .numbers { display: flex; flex-wrap: wrap; gap: 10px; }
+    .number {
+      min-width: 78px;
+      padding: 11px 9px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      background: var(--panel);
+      text-align: center;
+      font: 21px var(--mono);
+    }
+    .number small { display: block; margin-top: 2px; color: var(--muted); font: 10px var(--mono); }
+    .vec-raw { margin-top: 18px; padding: 18px 20px; border: 1px solid var(--teal); border-radius: 10px; background: #0e1010; font: 14px var(--mono); color: var(--teal); overflow-x: auto; white-space: nowrap; line-height: 1.6; }
+    .vec-raw .bracket { color: #5582; font-size: 32px; vertical-align: -8px; }
+    .vec-raw .comma { color: #5582; }
+    .vec-raw .invoke { color: var(--muted); font-size: 12px; margin-left: 12px; }
+    .distance { margin-top: 22px; color: var(--muted); }
+    .distance span { display: inline-block; margin: 6px 6px 0 0; padding: 5px 11px; border: 1px solid var(--line); border-radius: 999px; font: 12px var(--mono); }
+    .near::before, .far::before { content: "●"; margin-right: 6px; }
+    .near { color: var(--teal); }
+    .far { color: var(--coral); }
+
+    .search-box { position: relative; height: 430px; margin-top: 48px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+    #search-canvas { width: 100%; height: 100%; cursor: crosshair; }
+    .search-readout { position: absolute; right: 0; bottom: 0; left: 0; padding: 12px 16px; border-top: 1px solid var(--line); background: rgba(27, 30, 30, .93); color: var(--muted); font: 13px var(--mono); }
+    .search-readout b { color: var(--yellow); }
+    .hint-text { margin-top: 10px; color: var(--muted); font: 12px var(--mono); }
+
+    .rag { margin-top: 48px; }
+    .phase { display: flex; flex-wrap: wrap; gap: 8px; }
+    .phase button { border-radius: 8px; font: 12px var(--mono); }
+    .rag-stage { position: relative; height: 430px; margin-top: 16px; overflow: hidden; border: 1px solid var(--line); border-radius: 14px; background: var(--panel); }
+    .stage-content { position: absolute; inset: 0 0 56px; display: grid; place-items: center; }
+    .stage { position: absolute; inset: 0; display: grid; place-items: center; opacity: 0; transform: translateY(12px); pointer-events: none; transition: opacity .4s, transform .4s; }
+    .rag[data-step="0"] .stage-doc, .rag[data-step="1"] .stage-chunks, .rag[data-step="2"] .stage-space, .rag[data-step="3"] .stage-space, .rag[data-step="4"] .stage-answer { opacity: 1; transform: none; }
+    .document { width: 260px; padding: 22px; border: 1px solid var(--line); border-radius: 11px; background: var(--panel-2); }
+    .doc-name { color: var(--muted); font: 12px var(--mono); }
+    .doc-line { height: 8px; margin-top: 14px; border-radius: 5px; background: #39403d; }
+    .doc-line:nth-child(3) { width: 82%; } .doc-line:nth-child(4) { width: 94%; } .doc-line:nth-child(5) { width: 70%; } .doc-line:nth-child(6) { width: 88%; }
+    .chunks { display: grid; grid-template-columns: repeat(2, minmax(130px, 190px)); gap: 13px; }
+    .chunk { min-height: 92px; padding: 13px; border: 1px solid var(--line); border-top: 3px solid var(--teal); border-radius: 9px; background: var(--panel-2); color: var(--muted); font-size: 13px; }
+    .chunk:nth-child(3), .chunk:nth-child(4) { border-top-color: var(--blue); }
+    .chunk b { color: var(--teal); font: 12px var(--mono); } .chunk:nth-child(3) b, .chunk:nth-child(4) b { color: var(--blue); }
+    .space { width: min(630px, 92%); height: 300px; }
+    .space svg { width: 100%; height: 100%; }
+    .stage-answer .answer { width: min(470px, 88%); padding: 18px; border: 1px solid #6e5527; border-radius: 10px; background: var(--panel-2); font-size: 13px; }
+    .answer small { color: var(--muted); font: 11px var(--mono); }
+    .answer p { margin: 9px 0; color: var(--muted); }
+    .answer strong { color: var(--green); }
+    .stage-caption { position: absolute; right: 0; bottom: 0; left: 0; height: 56px; display: grid; place-items: center; padding: 0 18px; border-top: 1px solid var(--line); color: var(--muted); font-size: 14px; text-align: center; }
+    .replay { position: absolute; top: 14px; right: 14px; z-index: 2; padding: 6px 12px; font: 11px var(--mono); }
+    .dot { transform-box: fill-box; transform-origin: center; }
+    .rag[data-step="2"] .dot, .rag[data-step="3"] .dot, .rag[data-step="4"] .dot { animation: pop .6s both; }
+    .rag[data-step="2"] .dot:nth-child(2), .rag[data-step="3"] .dot:nth-child(2), .rag[data-step="4"] .dot:nth-child(2) { animation-delay: .1s; }
+    .rag[data-step="2"] .dot:nth-child(3), .rag[data-step="3"] .dot:nth-child(3), .rag[data-step="4"] .dot:nth-child(3) { animation-delay: .2s; }
+    @keyframes pop { from { transform: scale(0); } to { transform: scale(1); } }
+    @media (max-width: 560px) { .rag-stage { height: 500px; } .chunks { grid-template-columns: repeat(2, 1fr); padding: 0 15px; } .chunk { font-size: 12px; } }
+
+    .one-line { font-size: 19px; color: var(--text); line-height: 1.7; padding: 20px 26px; border: 1px solid var(--teal); border-left: 4px solid var(--teal); border-radius: 12px; background: var(--panel); max-width: 64ch; margin-bottom: 18px; }
+    .one-line b { color: var(--teal); }
+    .tune-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-top: 30px; }
+    @media (max-width: 760px) { .tune-grid { grid-template-columns: 1fr; } }
+    .tune-card { padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+    .tune-card .tn { color: var(--yellow); font: 12px var(--mono); margin-bottom: 10px; }
+    .tune-card h3 { font-size: 17px; margin: 0 0 12px; }
+    .tune-card p { color: var(--muted); font-size: 13px; line-height: 1.8; margin: 8px 0 0; }
+    .tune-card .ex { margin-top: 12px; padding: 10px 12px; background: #0e1010; border: 1px solid var(--line); border-radius: 8px; font: 12px var(--mono); color: var(--teal); white-space: pre-wrap; line-height: 1.6; }
+    .tune-card b { color: var(--yellow); font-weight: 600; }
+    .pitfalls { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 46px; }
+    .embed-pipe { margin-top: 48px; display: grid; grid-template-columns: 1fr auto 1fr auto 1fr; gap: 0; align-items: stretch; }
+    @media (max-width: 760px) { .embed-pipe { grid-template-columns: 1fr; } }
+    .ep-box { border: 1px solid var(--line); border-radius: 14px; padding: 24px; background: var(--panel); display: flex; flex-direction: column; justify-content: center; }
+    .ep-box h3 { margin: 0 0 12px; font-size: 17px; }
+    .ep-label { color: var(--muted); font: 12px var(--mono); margin-bottom: 10px; }
+    .ep-text { font-size: 24px; font-weight: 700; letter-spacing: -.04em; }
+    .ep-arrow { display: flex; align-items: center; justify-content: center; color: var(--muted); font: 28px var(--mono); padding: 0 8px; }
+    @media (max-width: 760px) { .ep-arrow { display: none; } }
+    .ep-model .mo-name { font: 13px var(--mono); color: var(--teal); border: 1px solid #2a5a4c; border-radius: 10px; padding: 18px 22px; text-align: center; }
+    .ep-model .mo-name b { display: block; font-size: 11px; color: var(--muted); margin-bottom: 6px; }
+    .ep-model .mo-no { color: var(--muted); font: 12px var(--mono); margin-top: 14px; }
+    .ep-bars { display: flex; gap: 3px; align-items: flex-end; justify-content: center; height: 80px; margin-top: 14px; }
+    .ep-bars i { width: 10px; border-radius: 3px 3px 0 0; background: var(--teal); opacity: 0; transform: scaleY(0); transform-origin: bottom; }
+    .ep-note { margin-top: 18px; color: var(--muted); font-size: 14px; line-height: 1.8; max-width: 58ch; }
+    .ep-note b { color: var(--yellow); font-weight: 600; }
+    .store-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 48px; }
+    @media (max-width: 760px) { .store-grid { grid-template-columns: 1fr; } }
+    .store-card { border: 1px solid var(--line); border-radius: 14px; padding: 26px; background: var(--panel); }
+    .store-card h3 { margin: 0 0 16px; font-size: 20px; }
+    .store-card .tag { display: inline-block; padding: 4px 12px; border-radius: 999px; font: 11px var(--mono); margin-bottom: 16px; }
+    .store-card .tag.teal { color: var(--teal); border: 1px solid var(--teal); }
+    .store-card .tag.blue { color: var(--blue); border: 1px solid var(--blue); }
+    .store-card .sql { font: 12px var(--mono); background: #0e1010; border: 1px solid var(--line); border-radius: 9px; padding: 15px; overflow-x: auto; white-space: pre; line-height: 1.7; }
+    .store-card .sql .kw { color: var(--yellow); } .store-card .sql .ty { color: var(--teal); } .store-card .sql .cm { color: #5c6660; } .store-card .sql .st { color: var(--coral); }
+    .store-card p { margin: 14px 0 0; color: var(--muted); font-size: 13px; line-height: 1.7; }
+    .store-card p b { color: var(--text); font-weight: 600; }
+    .hnsw-viz { margin-top: 18px; }
+    .hnsw-viz svg { width: 100%; max-width: 300px; display: block; }
+    .why-pg { margin-top: 28px; padding: 22px 26px; border: 1px solid var(--line); border-left: 3px solid var(--teal); border-radius: 12px; background: var(--panel); }
+    .why-pg h3 { margin: 0 0 12px; font-size: 18px; }
+    .why-pg p { margin: 10px 0; color: var(--muted); font-size: 14px; line-height: 1.8; }
+    .why-pg p b { color: var(--teal); font-weight: 600; }
+    .why-pg .vs { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 16px; }
+    @media (max-width: 640px) { .why-pg .vs { grid-template-columns: 1fr; } }
+    .why-pg .vs div { padding: 14px 16px; border: 1px solid var(--line); border-radius: 9px; background: var(--panel-2); }
+    .why-pg .vs h4 { margin: 0 0 8px; font-size: 14px; }
+    .why-pg .vs p { margin: 6px 0 0; font-size: 13px; line-height: 1.7; }
+    .hnsw-viz .hnsw-cap { margin-top: 10px; color: var(--muted); font: 12px var(--mono); }
+    .store-compare { margin-top: 30px; display: grid; grid-template-columns: 0.8fr 1fr 1fr 1fr; gap: 0; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+    .store-compare div { padding: 13px 16px; font-size: 13px; border-right: 1px solid var(--line); }
+    .store-compare div:last-child { border-right: none; }
+    .store-compare .sh { font: 12px var(--mono); color: var(--yellow); background: var(--panel-2); }
+    .store-compare b { color: var(--teal); }
+    @media (max-width: 760px) { .pitfalls { grid-template-columns: 1fr; } }
+    .pitfall { min-height: 220px; padding: 22px; border: 1px solid var(--line); border-radius: 12px; background: var(--panel); }
+    .pitfall .num { color: var(--coral); font: 32px Georgia, serif; }
+    .pitfall h3 { margin-top: 12px; font-size: 19px; }
+    .pitfall p { margin: 9px 0 0; color: var(--muted); font-size: 14px; }
+    footer { padding: 110px 24px 70px; }
+    .takeaway { display: flex; gap: 22px; padding: 22px 0; border-bottom: 1px solid var(--line); }
+    .takeaway b { color: var(--yellow); font-weight: 600; }
+    .takeaway .n { min-width: 30px; color: var(--yellow); font: 30px Georgia, serif; }
+    .footer-note { margin-top: 28px; color: var(--muted); font: 12px var(--mono); text-align: center; }
+    [data-reveal] { opacity: 0; transform: translateY(22px); transition: opacity .65s, transform .65s; }
+    [data-reveal].visible { opacity: 1; transform: none; }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } [data-reveal] { opacity: 1; transform: none; } }
+  </style>
+</head>
+<body>
+  <header class="nav" id="nav">
+    <div class="brand">VECTOR / RAG</div>
+    <nav class="nav-links"><a href="#vector">01 向量</a><a href="#embed">02 变向量</a><a href="#search">03 检索</a><a href="#storage">04 存储</a><a href="#rag">05 RAG</a><a href="#summary">06 总结</a></nav>
+  </header>
+
+  <section class="hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-copy">
+      <div class="eyebrow">INTERVIEW · START HERE</div>
+      <h1>把文字，<br><em>变成坐标。</em></h1>
+      <p>向量不是玄学。它只是把文字变成数字，然后用“距离”找相似内容。往下滚，看它怎么变成 RAG。</p>
+    </div>
+    <div class="scroll-hint">SCROLL ↓</div>
+  </section>
+
+  <main>
+    <section id="vector">
+      <div class="section-title" data-reveal>
+        <div class="eyebrow">01 · VECTOR</div>
+        <h2>文字 → 一串数字</h2>
+        <p>Embedding 模型把一句话编码成一串数字。数字本身不重要，重要的是：<span class="accent-teal">意思接近，坐标就接近。</span></p>
+      </div>
+      <div class="vector-demo" data-reveal>
+        <div>
+          <div class="word" id="word">国王</div>
+          <div class="word-buttons" id="word-buttons"></div>
+        </div>
+        <div>
+          <div class="numbers" id="numbers"></div>
+          <div class="vec-raw" id="vec-raw"><span class="bracket">[</span> <span id="vec-numbers"></span> <span class="bracket">]</span><span class="invoke">// 这就是"国王"的向量</span></div>
+          <div class="distance">语义距离：<span class="near">近 · <b id="near-word">女王</b></span><span class="far">远 · <b id="far-word">汽车</b></span></div>
+          <p style="margin-top:20px;color:var(--muted);font-size:14px;line-height:1.8;max-width:54ch">向量的结构就是一个<b style="color:var(--teal)">数字数组</b>，编程里长这样：<b style="color:var(--yellow)">[0.85, 0.90, 0.10, ...]</b>，方括号括起来、逗号分隔。这些数字不是随机生成的——是 Embedding 模型读完"国王"这个词后算出来的。每个位置叫一个<b style="color:var(--yellow)">维度</b>，真实模型通常 768 或 1024 维（这里简化为 8 维演示）。</p>
+        </div>
+      </div>
+    </section>
+    <section id="embed">
+      <div class="section-title" data-reveal>
+        <div class="eyebrow">02 · EMBED</div>
+        <h2>文字怎么变向量</h2>
+        <p>不是魔法，是一个叫 Embedding 的模型。把文字喂进去，它吐出一串固定长度的数字。</p>
+      </div>
+      <div class="embed-pipe" data-reveal>
+        <div class="ep-box">
+          <div class="ep-label">输入</div>
+          <h3>一段文字</h3>
+          <div class="ep-text" id="ep-input-text">猫是可爱的动物</div>
+        </div>
+        <div class="ep-arrow">→</div>
+        <div class="ep-box ep-model">
+          <div class="ep-label">Embedding 模型</div>
+          <div class="mo-name"><b>例：bge-m3 / text-embedding-3</b>bge-small-zh-v1.5<br>1024 维</div>
+          <div class="mo-no">不管输入多长，输出维度固定</div>
+        </div>
+        <div class="ep-arrow">→</div>
+        <div class="ep-box ep-out">
+          <div class="ep-label">输出</div>
+          <h3>一串数字</h3>
+          <div class="ep-bars" id="ep-bars"></div>
+        </div>
+      </div>
+      <div class="ep-note" data-reveal>
+        <p>关键事实：<b>文档和问题必须用同一个模型</b>，否则坐标体系不同，没法比距离。换模型 = 全量重灌库。<b>L2 归一化</b>后，cosine 等于内积，检索可以用更快的内积算子。</p>
+      </div>
+    </section>
+
+    <section id="search">
+      <div class="section-title" data-reveal>
+        <div class="eyebrow">03 · SEARCH</div>
+        <h2>检索 = 找最近的点</h2>
+        <p>问题也先变成向量，再从所有文档块里找距离最近的几个。移动鼠标，让橙色的“问题”去找答案。</p>
+      </div>
+      <div class="search-box" data-reveal><canvas id="search-canvas"></canvas><div class="search-readout" id="search-readout"></div></div>
+      <div class="hint-text">鼠标移开后，问题会自动移动。</div>
+    </section>
+    <section id="storage">
+      <div class="section-title" data-reveal>
+        <div class="eyebrow">04 · STORAGE</div>
+        <h2>向量存哪里</h2>
+        <p>三个东西是<b>独立的</b>：pgvector 是 PostgreSQL 插件，Chroma 是独立轻量库，Milvus 是独立分布式库。</p>
+      </div>
+      <div class="store-grid" data-reveal>
+        <div class="store-card">
+          <span class="tag teal">pgvector</span>
+          <h3>pgvector = PostgreSQL + 向量插件</h3>
+<div class="sql"><span class="kw">CREATE EXTENSION</span> <span class="ty">vector</span>;
+
+<span class="kw">CREATE TABLE</span> chunks (
+  id <span class="ty">serial</span> PRIMARY KEY,
+  text <span class="ty">text</span>,
+  embedding <span class="ty">vector</span>(1024)
+);
+
+<span class="cm">-- HNSW 索引</span>
+<span class="kw">CREATE INDEX ON</span> chunks
+<span class="kw">USING</span> hnsw (embedding vector_ip_ops)
+<span class="kw">WITH</span> (m = 16, ef_construction = 64);
+
+<span class="cm">-- 检索：内积 + 过滤</span>
+<span class="kw">SELECT</span> text, embedding <span class="st">&lt;#&gt;</span> '[...]' <span class="kw">AS</span> score
+<span class="kw">FROM</span> chunks
+<span class="kw">WHERE</span> source = 'wiki'
+<span class="kw">ORDER BY</span> embedding <span class="st">&lt;#&gt;</span> '[...]'
+<span class="kw">LIMIT</span> 5;</div>
+          <p>向量就是表里一列。<b>事务、join、备份全是现成的</b>。百万级以内 + 需要混合过滤，运维成本最低。</p>
+        </div>
+        <div class="store-card">
+          <span class="tag blue">Milvus（独立）</span>
+          <h3>专用分布式向量库</h3>
+          <div class="hnsw-viz"><svg viewBox="0 0 280 140" role="img" aria-label="HNSW graph layers">
+            <g stroke="#38403d" stroke-width="1">
+              <line x1="60" y1="20" x2="140" y2="18"/><line x1="140" y1="18" x2="220" y2="22"/><line x1="60" y1="20" x2="220" y2="22"/>
+            </g>
+            <g stroke="#38403d" stroke-width="1" opacity=".7">
+              <line x1="40" y1="55" x2="100" y2="50"/><line x1="100" y1="50" x2="170" y2="58"/><line x1="170" y1="58" x2="240" y2="52"/><line x1="40" y1="55" x2="170" y2="58"/><line x1="100" y1="50" x2="240" y2="52"/>
+            </g>
+            <g stroke="#2a5a4c" stroke-width="1" opacity=".5">
+              <line x1="30" y1="90" x2="80" y2="95"/><line x1="80" y1="95" x2="130" y2="88"/><line x1="130" y1="88" x2="185" y2="95"/><line x1="185" y1="95" x2="255" y2="90"/><line x1="30" y1="90" x2="130" y2="88"/><line x1="80" y1="95" x2="185" y2="95"/><line x1="130" y1="88" x2="255" y2="90"/>
+            </g>
+            <g stroke="#333a37" stroke-width="1" opacity=".3">
+              <line x1="20" y1="125" x2="70" y2="120"/><line x1="70" y1="120" x2="120" y2="125"/><line x1="120" y1="125" x2="170" y2="120"/><line x1="170" y1="120" x2="220" y2="125"/><line x1="220" y1="125" x2="270" y2="120"/>
+            </g>
+            <g fill="#45d6b3"><circle cx="60" cy="20" r="5"/><circle cx="140" cy="18" r="5"/><circle cx="220" cy="22" r="5"/></g>
+            <g fill="#83aaff"><circle cx="40" cy="55" r="4"/><circle cx="100" cy="50" r="4"/><circle cx="170" cy="58" r="4"/><circle cx="240" cy="52" r="4"/></g>
+            <g fill="#45d6b3" opacity=".7"><circle cx="30" cy="90" r="3.5"/><circle cx="80" cy="95" r="3.5"/><circle cx="130" cy="88" r="3.5"/><circle cx="185" cy="95" r="3.5"/><circle cx="255" cy="90" r="3.5"/></g>
+            <g fill="#83aaff" opacity=".5"><circle cx="20" cy="125" r="3"/><circle cx="70" cy="120" r="3"/><circle cx="120" cy="125" r="3"/><circle cx="170" cy="120" r="3"/><circle cx="220" cy="125" r="3"/><circle cx="270" cy="120" r="3"/></g>
+          </svg><div class="hnsw-cap">HNSW 索引：多层图，上稀下密。从顶层入口快速跳到底层近邻。</div></div>
+          <p>独立分布式服务，etcd 管元数据、MinIO 存数据。<b>上亿级、高 QPS 场景</b>。一致性可设 Strong / Bounded，代价是延迟。</p>
+        </div>
+      </div>
+      <div class="store-compare" data-reveal>
+        <div><div class="sh">对比</div></div>
+        <div><div class="sh">Chroma</div><small style="font-size:11px">独立轻量库</small></div>
+        <div><div class="sh">pgvector</div><small style="font-size:11px">PostgreSQL 扩展</small></div>
+        <div><div class="sh">Milvus</div><small style="font-size:11px">独立分布式</small></div>
+        <div>定位</div>
+        <div>轻量原型</div>
+        <div>SQL 即向量库</div>
+        <div>分布式专用</div>
+        <div>数据量</div>
+        <div><b>万级</b></div>
+        <div><b>&lt; 百万级</b></div>
+        <div><b>&gt; 亿级</b></div>
+        <div>运维</div>
+        <div><b>几乎为零</b></div>
+        <div><b>已有 PG 就零新增</b></div>
+        <div>多一套分布式</div>
+        <div>适用</div>
+        <div>demo / POC</div>
+        <div><b>生产首选</b></div>
+        <div><b>超大规模</b></div>
+      </div>
+<div class="why-pg" data-reveal>
+        <h3>为什么是 PostgreSQL，不是 MySQL？</h3>
+        <p>同样是关系型数据库，为什么向量检索生态先在 PG 上成熟？<b>答案在扩展架构。</b></p>
+        <p>PostgreSQL 的扩展接口允许第三方注册<b>新数据类型、新操作符、甚至新索引方法</b>。pgvector 就是通过这个接口把 vector 类型和 HNSW 索引插进 PG，不用改 PG 源码。</p>
+        <div class="vs">
+          <div>
+            <h4 style="color:var(--teal)">PostgreSQL ✅</h4>
+            <p>插件可注册新索引方法<br>HNSW/IVFFlat 通过插件接入<br>已有 PG → 一条 CREATE EXTENSION 搞定</p>
+          </div>
+          <div>
+            <h4 style="color:var(--coral)">MySQL / Oracle ❌</h4>
+            <p>插件层不能注册新索引方法<br>MySQL 9.0 加了 VECTOR 类型但还没有向量索引<br>Oracle 没有向量索引插件<br>要改源码才行，社区没跟上</p>
+          </div>
+        </div>
+        <p style="margin-top:14px">选型结论：已有 PostgreSQL → 加 pgvector 插件；只有 MySQL → 上 Chroma 或 Milvus 做独立向量服务。</p>
+      </div>
+    </section>
+    <section id="rag">
+      <div class="section-title" data-reveal>
+        <div class="eyebrow">05 · RAG</div>
+        <h2>先找资料，再回答</h2>
+        <p>RAG 就是：把最相关的资料塞进提示词，让模型“照着资料答”。点击步骤，也可以等它自动播放。</p>
+      </div>
+      <div class="rag" id="rag-demo" data-step="0" data-reveal>
+        <div class="phase" id="phase-buttons">
+          <button class="active">① 文档</button><button>② 切块</button><button>③ 向量化</button><button>④ 检索</button><button>⑤ 生成</button>
+        </div>
+        <div class="rag-stage">
+          <button class="replay" id="replay">↻ 重播</button>
+          <div class="stage-content">
+            <div class="stage stage-doc"><div class="document"><div class="doc-name">宠物与交通.docx</div><div class="doc-line"></div><div class="doc-line"></div><div class="doc-line"></div><div class="doc-line"></div></div></div>
+            <div class="stage stage-chunks"><div class="chunks"><div class="chunk"><b>块①</b><br>猫是可爱的动物，常被当作宠物。</div><div class="chunk"><b>块②</b><br>狗是人类的朋友，也是常见宠物。</div><div class="chunk"><b>块③</b><br>汽车需要加油，跑得很快。</div><div class="chunk"><b>块④</b><br>火车在铁轨上跑，能拉很多人。</div></div></div>
+            <div class="stage stage-space"><div class="space"><svg viewBox="0 0 640 300" role="img" aria-label="向量空间">
+              <g stroke="#38403d" stroke-width="1"><path d="M40 250H610M40 200H610M40 150H610M40 100H610M40 50H610"/><path d="M40 20V250M150 20V250M260 20V250M370 20V250M480 20V250M590 20V250"/></g>
+              <g fill="#45d6b3" class="dot"><circle cx="176" cy="131" r="8"/><text x="190" y="126" fill="#a5aca8" font-size="13">猫块</text></g>
+              <g fill="#45d6b3" class="dot"><circle cx="212" cy="170" r="8"/><text x="226" y="188" fill="#a5aca8" font-size="13">狗块</text></g>
+              <g fill="#83aaff" class="dot"><circle cx="495" cy="104" r="8"/><text x="510" y="99" fill="#a5aca8" font-size="13">汽车块</text></g>
+              <g fill="#83aaff" class="dot"><circle cx="530" cy="183" r="8"/><text x="545" y="188" fill="#a5aca8" font-size="13">火车块</text></g>
+              <g fill="#f4bd63" class="dot"><circle cx="194" cy="150" r="9"/><text x="194" y="130" text-anchor="middle" fill="#f4bd63" font-size="13">问题</text></g>
+              <path d="M194 150L176 131M194 150L212 170" stroke="#f4bd63" stroke-dasharray="5 5"/>
+            </svg></div></div>
+            <div class="stage stage-answer"><div class="answer"><small>模型收到的提示</small><p><span class="accent-yellow">问题：</span>哪些是宠物？</p><p><span class="accent-teal">资料：</span>猫是宠物；狗是常见宠物。</p><strong>回答：猫和狗都是常见的宠物。</strong></div></div>
+          </div>
+          <div class="stage-caption" id="stage-caption">一份大文档，模型一次读不完，也太贵。</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="summary">
+      <div class="section-title" data-reveal>
+        <div class="eyebrow">06 · SUMMARY & TUNING</div>
+        <h2>一句话总结 + 调优</h2>
+      </div>
+
+      <div class="one-line" data-reveal>
+        RAG 的本质就一句：<b>把跟问题最相关的几块资料，塞进提示词，让模型照着答。</b>效果不好，先查切块和检索，别先怪模型。
+      </div>
+
+      <div data-reveal style="margin-top:30px">
+        <h3 style="font-size:20px;margin-bottom:8px">选型三问</h3>
+        <p style="color:var(--muted);font-size:14px;line-height:1.8;max-width:60ch"><b style="color:var(--yellow)">Q1 模型能调参吗？</b> 不能。模型是别人训好的，你只能选型：拿真实语料各跑一遍，比 recall@5，选分数高的。<br><b style="color:var(--yellow)">Q2 换模型会怎样？</b> 全库重灌——不同模型向量空间不同，距离没法比，所以文档和查询必须用同一个模型。<br><b style="color:var(--yellow)">Q3 工程上怎么调优？</b> 下面三个手段 ↓</p>
+      </div>
+
+      <div class="tune-grid">
+        <div class="tune-card" data-reveal>
+          <div class="tn">① 查询前缀</div>
+          <h3>查询时加指令</h3>
+          <p>bge 系列要求查询侧加一段前缀指令，文档侧不加。不加前缀 → 多好几个点召回。<b>只有部分模型需要</b>（bge 系列要，OpenAI 不需要），用之前看文档。</p>
+          <div class="ex">文档侧: "猫是宠物"
+查询侧: "为这个句子生成表示
+        用于检索相关文章：
+        猫是宠物吗"</div>
+        </div>
+        <div class="tune-card" data-reveal>
+          <div class="tn">② 归一化</div>
+          <h3>让两个向量同量级</h3>
+          <p>向量是一串数字，长度可能不一样大。归一化 = 把每个向量缩成统一长度（长度 = 1）。归一化后，<b>cosine 距离 = 内积</b>，可以用更快的内积算子 <code>&lt;#&gt;</code> 替代 <code>&lt;=&gt;</code>，检索更快。多数现代模型已经内置归一化。</p>
+          <div class="ex">// 归一化前: 长度不等
+[0.85, 0.90, 0.10, ...]
+[0.12, 0.28, 0.85, ...]
+
+// 归一化后: 长度都是 1
+可直接用 <#> 内积算子</div>
+        </div>
+        <div class="tune-card" data-reveal>
+          <div class="tn">③ 调 top-k</div>
+          <h3>检索取几个结果</h3>
+          <p>k = 检索时取距离最近的几个文档块。<b>k 太小</b>（如 3）→ 可能漏掉正确答案。<b>k 太大</b>（如 50）→ 带回大量噪音，模型被干扰。从 5 开始调，看 recall（召回率）和 precision（精确率）的拐点。</p>
+          <div class="ex">k=3  → 召回高，但可能漏
+k=5  → 平衡点（推荐起点）
+k=10 → 可能带噪音
+k=50 → 太多噪音干扰模型</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="takeaway" data-reveal><div class="n">1</div><div>向量就是文字的坐标。<b>语义近 = 距离近。</b></div></div>
+    <div class="takeaway" data-reveal><div class="n">2</div><div>RAG = <b>先检索</b>相关资料，再让模型照着答。</div></div>
+    <div class="takeaway" data-reveal><div class="n">3</div><div>效果不好，先查<b>切块和检索</b>。</div></div>
+  </footer>
+
+  <script>
+    const $ = (s) => document.querySelector(s);
+    const $$ = (s) => [...document.querySelectorAll(s)];
+    const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const colors = ['#45d6b3', '#83aaff', '#f4bd63', '#94dc83'];
+    const points = [
+      ['猫', 18, 29, 0], ['狗', 25, 23, 0], ['兔子', 14, 38, 0], ['老虎', 29, 39, 0],
+      ['汽车', 68, 22, 1], ['火车', 78, 29, 1], ['飞机', 72, 14, 1], ['轮船', 83, 20, 1],
+      ['苹果', 23, 73, 2], ['香蕉', 32, 78, 2], ['面包', 17, 84, 2], ['米饭', 28, 88, 2],
+      ['电脑', 67, 70, 3], ['手机', 77, 75, 3], ['人工智能', 70, 85, 3], ['机器人', 81, 81, 3]
+    ].map(([word, x, y, group], i) => ({word, x, y, group, phase: i * .7}));
+
+    function sizeCanvas(canvas) {
+      const ratio = devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * ratio;
+      canvas.height = rect.height * ratio;
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
+      return {ctx, width: rect.width, height: rect.height};
+    }
+    function drawGrid(ctx, width, height) {
+      ctx.strokeStyle = '#28302d'; ctx.lineWidth = 1; ctx.beginPath();
+      for (let x = 0; x < width; x += 72) { ctx.moveTo(x, 0); ctx.lineTo(x, height); }
+      for (let y = 0; y < height; y += 72) { ctx.moveTo(0, y); ctx.lineTo(width, y); }
+      ctx.stroke();
+    }
+
+    const heroCanvas = $('#hero-canvas');
+    const searchCanvas = $('#search-canvas');
+    let hero = sizeCanvas(heroCanvas), search = sizeCanvas(searchCanvas);
+    addEventListener('resize', () => { hero = sizeCanvas(heroCanvas); search = sizeCanvas(searchCanvas); });
+    let heroHover = -1, query = null;
+    heroCanvas.addEventListener('mousemove', (event) => {
+      const rect = heroCanvas.getBoundingClientRect();
+      const x = event.clientX - rect.left, y = event.clientY - rect.top;
+      let nearest = -1, distance = Infinity;
+      points.forEach((point, index) => { const px = point.x / 100 * hero.width, py = point.y / 100 * hero.height; const d = Math.hypot(px - x, py - y); if (d < distance) { distance = d; nearest = index; } });
+      heroHover = distance < 32 ? nearest : -1;
+    });
+    heroCanvas.addEventListener('mouseleave', () => { heroHover = -1; });
+    searchCanvas.addEventListener('mousemove', (event) => { const rect = searchCanvas.getBoundingClientRect(); query = {x: event.clientX - rect.left, y: event.clientY - rect.top}; });
+    searchCanvas.addEventListener('mouseleave', () => { query = null; });
+
+    function drawHero(time) {
+      const {ctx, width, height} = hero; ctx.clearRect(0, 0, width, height); drawGrid(ctx, width, height);
+      const placed = points.map((p, i) => ({...p, px: p.x / 100 * width + (reduceMotion ? 0 : Math.sin(time * .0007 + p.phase) * 4), py: p.y / 100 * height + (reduceMotion ? 0 : Math.cos(time * .0006 + p.phase) * 4), i}));
+      placed.forEach((a) => { const b = placed.filter((p) => p.group === a.group && p.i !== a.i).sort((p, q) => Math.hypot(p.px - a.px, p.py - a.py) - Math.hypot(q.px - a.px, q.py - a.py))[0]; if (b) { ctx.strokeStyle = colors[a.group] + '22'; ctx.beginPath(); ctx.moveTo(a.px, a.py); ctx.lineTo(b.px, b.py); ctx.stroke(); } });
+      placed.forEach((p) => { const active = p.i === heroHover; ctx.fillStyle = colors[p.group]; ctx.globalAlpha = active ? 1 : .78; ctx.beginPath(); ctx.arc(p.px, p.py, active ? 8 : 5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; if (active) { ctx.strokeStyle = colors[p.group]; ctx.beginPath(); ctx.arc(p.px, p.py, 14, 0, Math.PI * 2); ctx.stroke(); ctx.fillStyle = '#f3f1ea'; ctx.font = '12px monospace'; ctx.fillText(p.word + '  (' + (p.x / 100).toFixed(2) + ', ' + (p.y / 100).toFixed(2) + ')', Math.min(p.px + 15, width - 160), Math.max(p.py - 14, 24)); } });
+    }
+
+    let lastSearchReadout = '';
+    function drawSearch(time) {
+      const {ctx, width, height} = search; ctx.clearRect(0, 0, width, height); drawGrid(ctx, width, height);
+      const placed = points.map((p) => ({...p, px: p.x / 100 * width, py: p.y / 100 * height}));
+      const qx = query ? query.x : width * .5 + (reduceMotion ? 0 : Math.cos(time * .0004) * width * .28);
+      const qy = query ? query.y : height * .5 + (reduceMotion ? 0 : Math.sin(time * .0005) * height * .25);
+      const ranked = placed.map((p) => ({p, d: Math.hypot(p.px - qx, p.py - qy)})).sort((a, b) => a.d - b.d).slice(0, 3);
+      ranked.forEach((item) => { const score = Math.max(3, Math.round(100 * Math.exp(-item.d / 100))); ctx.strokeStyle = '#f4bd6388'; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.moveTo(qx, qy); ctx.lineTo(item.p.px, item.p.py); ctx.stroke(); ctx.setLineDash([]); ctx.fillStyle = '#f4bd63'; ctx.font = '12px monospace'; ctx.fillText(score + '%', item.p.px + 10, item.p.py - 8); });
+      placed.forEach((p) => { const selected = ranked.some((item) => item.p === p); ctx.fillStyle = colors[p.group]; ctx.globalAlpha = selected ? 1 : .45; ctx.beginPath(); ctx.arc(p.px, p.py, selected ? 7 : 5, 0, Math.PI * 2); ctx.fill(); ctx.globalAlpha = 1; if (selected) { ctx.fillStyle = '#f3f1ea'; ctx.font = '12px sans-serif'; ctx.fillText(p.word, p.px + 10, p.py + 18); } });
+      ctx.fillStyle = '#f4bd63'; ctx.shadowColor = '#f4bd63'; ctx.shadowBlur = 16; ctx.beginPath(); ctx.arc(qx, qy, 8, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0;
+      const values = ranked.map((item) => item.p.word + Math.max(3, Math.round(100 * Math.exp(-item.d / 100)))).join('|');
+      if (values !== lastSearchReadout) { lastSearchReadout = values; $('#search-readout').innerHTML = '问题 → 最近：<b>' + ranked.map((item) => item.p.word + ' ' + Math.max(3, Math.round(100 * Math.exp(-item.d / 100))) + '%').join('</b> · <b>') + '</b>'; }
+    }
+    function frame(time) { drawHero(time); drawSearch(time); requestAnimationFrame(frame); }
+    requestAnimationFrame(frame);
+
+    const vectors = { '国王': [.85, .90, .10, .50, .20, .70, .10, .60], '女王': [.83, .87, .12, .52, .22, .68, .12, .58], '猫': [.10, .25, .88, .15, .70, .10, .80, .20], '狗': [.12, .28, .85, .18, .66, .12, .78, .22], '汽车': [.75, .08, .05, .90, .10, .45, .05, .85] };
+    const numbers = $('#numbers'), vecNumbers = $('#vec-numbers'), wordButtons = $('#word-buttons');
+    let currentValues = vectors['国王'].map(() => 0), animationId;
+    Object.keys(vectors).forEach((word) => { const button = document.createElement('button'); button.textContent = word; button.addEventListener('click', () => selectWord(word)); wordButtons.append(button); });
+    const dimLabels = ['第1维','第2维','第3维','第4维','第5维','第6维','第7维','第8维'];
+    dimLabels.forEach((label) => { const item = document.createElement('div'); item.className = 'number'; item.innerHTML = '<span>0.00</span><small>' + label + '</small>'; numbers.append(item); });
+    const more = document.createElement('div'); more.className = 'mono'; more.style.color = 'var(--muted)'; more.style.alignSelf = 'center'; more.textContent = '… 还有 760 维'; numbers.append(more);
+    function vectorDistance(a, b) { return Math.hypot(...a.map((value, index) => value - b[index])); }
+    function updateVecRaw() { vecNumbers.innerHTML = currentValues.map((v) => v.toFixed(2)).join('<span class="comma">, </span>'); }
+    function selectWord(word) { $('#word').textContent = word; $('.vec-raw .invoke').textContent = '// 这就是"' + word + '"的向量'; [...wordButtons.children].forEach((button) => button.classList.toggle('active', button.textContent === word)); const start = currentValues.slice(), target = vectors[word], beginning = performance.now(); cancelAnimationFrame(animationId); function tick(now) { const ratio = reduceMotion ? 1 : Math.min(1, (now - beginning) / 500), eased = 1 - Math.pow(1 - ratio, 3); currentValues = start.map((value, index) => value + (target[index] - value) * eased); [...numbers.querySelectorAll('.number span')].forEach((node, index) => node.textContent = currentValues[index].toFixed(2)); updateVecRaw(); if (ratio < 1) animationId = requestAnimationFrame(tick); } animationId = requestAnimationFrame(tick); const alternatives = Object.keys(vectors).filter((key) => key !== word).sort((a, b) => vectorDistance(vectors[word], vectors[a]) - vectorDistance(vectors[word], vectors[b])); $('#near-word').textContent = alternatives[0]; $('#far-word').textContent = alternatives.at(-1); }
+    selectWord('国王');
+
+    // ---- embedding bars animation ----
+    (function() {
+      const bars = $('#ep-bars');
+      const barCount = 40;
+      for (let i = 0; i < barCount; i++) bars.append(Object.assign(document.createElement('i'), {}));
+      let started = false;
+      function animate() {
+        [...bars.children].forEach((bar, i) => {
+          bar.style.transition = 'opacity .3s ease, transform .5s cubic-bezier(.34,1.56,.64,1)';
+          bar.style.transitionDelay = (i * 25) + 'ms';
+          bar.style.height = (20 + Math.random() * 60) + 'px';
+          bar.style.opacity = 1;
+          bar.style.transform = 'scaleY(1)';
+        });
+      }
+      function reset() { [...bars.children].forEach(bar => { bar.style.transition = 'none'; bar.style.height = '0'; bar.style.opacity = 0; bar.style.transform = 'scaleY(0)'; }); }
+      const obs = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting && !started) { started = true; setTimeout(animate, 300); }
+        });
+      }, {threshold: .3});
+      obs.observe(bars);
+      const epSection = $('#embed');
+      const obs2 = new IntersectionObserver(entries => {
+        entries.forEach(entry => { if (!entry.isIntersecting) { reset(); started = false; } });
+      }, {threshold: .1});
+      obs2.observe(epSection);
+    })();
+
+    const rag = $('#rag-demo'), captions = ['一份大文档，模型一次读不完，也太贵。', '切成小块（chunk），每块尽量只讲一件事。', '每个块变成一个向量，存进向量库。', '问题也变成向量，找到距离最近的几块。', '把问题 + 相关资料交给模型，生成回答。'];
+    let step = 0, timer;
+    function setStep(next) { step = next; rag.dataset.step = String(step); $$('#phase-buttons button').forEach((button, index) => button.classList.toggle('active', index === step)); $('#stage-caption').textContent = captions[step]; }
+    function play() { clearInterval(timer); if (!reduceMotion) timer = setInterval(() => setStep((step + 1) % 5), 2600); }
+    $$('#phase-buttons button').forEach((button, index) => button.addEventListener('click', () => { setStep(index); play(); }));
+    $('#replay').addEventListener('click', () => { setStep(0); play(); }); play();
+
+    const reveal = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('visible'); reveal.unobserve(entry.target); } }), {threshold: .15});
+    $$('[data-reveal]').forEach((element) => reveal.observe(element));
+    addEventListener('scroll', () => $('#nav').classList.toggle('scrolled', scrollY > 30));
+  </script>
+</body>
+</html>
