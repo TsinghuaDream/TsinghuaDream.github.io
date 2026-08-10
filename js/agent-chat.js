@@ -186,7 +186,9 @@
 
     fetch(API + "/stream", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      /* text/plain 属“简单请求”免 CORS 预检（云端网关拦 OPTIONS 且不回 allow-origin）；
+         服务端中间件会把它改写回 application/json 再解析 body */
+      headers: { "Content-Type": "text/plain;charset=UTF-8" },
       body: JSON.stringify({ message: q, session: SID })
     }).then(function (r) {
       if (!r.ok || !r.body) throw new Error("no-stream");
@@ -217,7 +219,7 @@
     }).catch(function () {
       fetch(API, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "text/plain;charset=UTF-8" },
         body: JSON.stringify({ message: q, session: SID })
       }).then(function (r) { return r.json(); }).then(function (d) {
         finish(d.reply || d.error);
