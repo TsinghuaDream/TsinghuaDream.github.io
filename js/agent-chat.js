@@ -1,6 +1,6 @@
 /* 菲尼克斯blog · 数字分身聊天挂件（原生 JS，无依赖） */
 (function () {
-  var API = "https://agent.xugua.xyz/chat";
+  var API = "https://vglu3oecmoxv.meoo.fun/chat";
   var SID = (function () {
     try {
       var s = localStorage.getItem("pa_sid");
@@ -180,7 +180,7 @@
       log.scrollTop = log.scrollHeight;
     }
     function offline() {
-      bubble.textContent = "分身暂时不在线（博主的本机 Agent 没开机）。可以先逛逛文章，稍后再来聊。";
+      bubble.textContent = "分身暂时没响应（云端服务可能在重启）。可以先逛逛文章，稍后再来聊。";
       send.disabled = false;
     }
 
